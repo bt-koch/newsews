@@ -64,4 +64,4 @@ class swissdox:
             data = data
         )
 
-        return(r.json())
+        return(request.json())
