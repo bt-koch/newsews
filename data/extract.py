@@ -48,7 +48,7 @@ class swissdox:
         return(yaml.dump(query))
 
     @staticmethod
-    def submit_query(query, run_as_test, name = None, comment = None, expiration_date = None,
+    def submit_query(query, run_as_test, name, comment = None, expiration_date = None,
                      url_query = url_query, headers = headers):
         data = {
             "query": query,
@@ -65,3 +65,16 @@ class swissdox:
         )
 
         return(request.json())
+    
+    @staticmethod
+    def get_queries(url_status = url_status, headers = headers):
+        request = requests.get(
+            url = url_status,
+            headers=headers
+        )
+        return(request.json())
+    
+
+
+
+
