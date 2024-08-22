@@ -10,7 +10,7 @@ class swissdox:
     query_template = {
         "query": {
             "sources": None,
-            "dates": {"from": None, "to": None},
+            "dates": None,
             "languages": None,
             "content": None
         },
@@ -25,29 +25,29 @@ class swissdox:
     default_max_results = 100
     default_columns = ["id", "pubtime", "medium_code", "medium_name", "rubric", "regional", "doctype",
                        "doctype_description", "language", "char_count", "dateline", "head", "subhead",
-                       "article_link", "content_id", "content"]
+                       "content_id", "content"]
     default_version = "1.2"
 
-    def build_query(sources, dates_from, dates_to, languages, #content,
+    @staticmethod
+    def build_query(sources, dates_from, dates_to, languages, content,
                     format = default_format,
                     max_results = default_max_results,
                     columns = default_columns,
-                    version = default_format):
+                    version = default_version):
 
         query = swissdox.query_template
         query["query"]["sources"] = sources
-        query["query"]["dates"]["from"] = dates_from
-        query["query"]["dates"]["to"] = dates_to
+        query["query"]["dates"] = [{"from": dates_from, "to": dates_to}]
         query["query"]["languages"] = languages
-        #query["query"]["content"] = content
+        query["query"]["content"] = content
         query["result"]["format"] = format
         query["result"]["maxResults"] = max_results
         query["result"]["columns"] = columns
-        query["result"]["version"] = version
+        query["version"] = version
 
         return(yaml.dump(query))
 
-
+    @staticmethod
     def submit_query(query, run_as_test, name = None, comment = None, expiration_date = None,
                      url_query = url_query, headers = headers):
         data = {
