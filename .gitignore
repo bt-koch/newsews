@@ -1,0 +1,4 @@
+.DS_Store
+literature/pdf
+credentials/credentials.py
+__pycache__
