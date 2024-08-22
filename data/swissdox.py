@@ -48,3 +48,20 @@ class swissdox:
         return(yaml.dump(query))
 
 
+    def submit_query(query, run_as_test, name = None, comment = None, expiration_date = None,
+                     url_query = url_query, headers = headers):
+        data = {
+            "query": query,
+            "test": "1" if run_as_test else "0",
+            "name": name,
+            "comment": comment,
+            "expirationDate": expiration_date
+        }
+
+        request = requests.post(
+            url = url_query,
+            headers = headers,
+            data = data
+        )
+
+        return(r.json())
