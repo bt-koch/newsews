@@ -45,7 +45,7 @@ class swissdox:
         query["result"]["columns"] = columns
         query["version"] = version
 
-        return(yaml.dump(query))
+        return yaml.dump(query)
 
     @staticmethod
     def submit_query(query, run_as_test, name, comment = None, expiration_date = None,
@@ -64,7 +64,7 @@ class swissdox:
             data = data
         )
 
-        return(request.json())
+        return request.json()
     
     @staticmethod
     def get_queries(url_status = url_status, headers = headers):
@@ -72,8 +72,33 @@ class swissdox:
             url = url_status,
             headers=headers
         )
-        return(request.json())
+        return request.json()
     
+    def get_download_url(query_name):
+        queries = swissdox.get_queries()
+        for query in queries:
+            if query["name"] == query_name:
+                download_url = query["downloadUrl"]
+                if download_url is None:
+                    print("Download URL expired. Submit query again.")
+                return download_url
+        print("No query with query name " + query_name + " available.")
+        return None
+    
+    @staticmethod
+    def download_data(query_name, headers = headers):
+        download_url = swissdox.get_download_url(query_name)
+        request = requests.get(
+            url = download_url,
+            headers = headers
+        )
+        if request.status_code == 200:
+            fp = open("./dataset.tsv.xz", "wb")
+            fp.write(request.content)
+            fp.close()
+        else:
+            print(request.text)
+
 
 
 
