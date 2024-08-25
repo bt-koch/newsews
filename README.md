@@ -18,6 +18,6 @@ class swissdox:
 2. config/environvars.py
 ```py
 class paths:
-    path_data = "<your-base-path-to-store-data>"
+    path_data = "<your-base-path-to-store-data/>"
     path_swissdox = f"{path_data}swissdox/"
 ```
