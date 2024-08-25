@@ -10,10 +10,8 @@ class swissdox:
     headers = {"X-API-Key": credentials.swissdox.key, "X-API-Secret": credentials.swissdox.secret}
     query_template = {
         "query": {
-            "sources": None,
             "dates": None,
-            "languages": None,
-            "content": None
+            "languages": None
         },
         "result": {
             "format": None,
@@ -30,21 +28,24 @@ class swissdox:
     default_version = "1.2"
 
     @staticmethod
-    def build_query(sources, dates_from, dates_to, languages, content,
+    def build_query(dates_from, dates_to, languages, content = None, sources = None,
                     format = default_format,
                     max_results = default_max_results,
                     columns = default_columns,
                     version = default_version):
 
         query = swissdox.query_template
-        query["query"]["sources"] = sources
         query["query"]["dates"] = [{"from": dates_from, "to": dates_to}]
         query["query"]["languages"] = languages
-        query["query"]["content"] = content
         query["result"]["format"] = format
         query["result"]["maxResults"] = max_results
         query["result"]["columns"] = columns
         query["version"] = version
+
+        if sources is not None:
+            query["query"]["sources"] = sources
+        if content is not None:
+            query["query"]["content"] = content
 
         return yaml.dump(query)
 
