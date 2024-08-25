@@ -1,4 +1,5 @@
 .DS_Store
 literature/pdf
-credentials/credentials.py
+config/credentials.py
+config/environvars.py
 __pycache__
