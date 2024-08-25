@@ -87,7 +87,7 @@ class swissdox:
         return None
     
     @staticmethod
-    def download_data(query_name, headers = headers):
+    def extract_data(query_name, headers = headers):
         download_url = swissdox.get_download_url(query_name)
         request = requests.get(
             url = download_url,
