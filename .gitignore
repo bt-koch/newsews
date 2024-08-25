@@ -1,4 +1,5 @@
 .DS_Store
+test.py
 literature/pdf
 config/credentials.py
 config/environvars.py
