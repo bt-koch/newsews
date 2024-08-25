@@ -1,4 +1,5 @@
-import credentials
+import config.credentials as credentials
+import config.environvars as environvars
 import yaml
 import requests
 
@@ -93,7 +94,7 @@ class swissdox:
             headers = headers
         )
         if request.status_code == 200:
-            fp = open("./dataset.tsv.xz", "wb")
+            fp = open(environvars.paths.path_swissdox + query_name + ".tsv.xz", "wb")
             fp.write(request.content)
             fp.close()
         else:
