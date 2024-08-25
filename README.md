@@ -13,6 +13,9 @@ To set up your environment, create following files
 class swissdox:
     key = "<your-swissdox-key>"
     secret = "<your-swissdox-secret>"
+
+class deepl:
+    key = "<your-deepl-key">
 ```
 
 2. `config/environvars.py`
