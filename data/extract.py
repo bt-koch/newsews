@@ -30,7 +30,8 @@ class swissdox:
     default_version = "1.2"
 
     @staticmethod
-    def build_query(dates_from, dates_to, languages, content = None, sources = None,
+    def build_query(dates_from, dates_to,
+                    languages = None, content = None, sources = None,
                     format = default_format,
                     max_results = default_max_results,
                     columns = default_columns,
@@ -38,7 +39,6 @@ class swissdox:
 
         query = swissdox.query_template
         query["query"]["dates"] = [{"from": dates_from, "to": dates_to}]
-        query["query"]["languages"] = languages
         query["result"]["format"] = format
         query["result"]["maxResults"] = max_results
         query["result"]["columns"] = columns
@@ -48,6 +48,8 @@ class swissdox:
             query["query"]["sources"] = sources
         if content is not None:
             query["query"]["content"] = content
+        if languages is not None:
+            query["query"]["languages"] = languages
 
         return yaml.dump(query)
 
@@ -102,6 +104,20 @@ class swissdox:
             fp.close()
         else:
             print(request.text)
+
+    def extract(ric):
+
+        # somehow get query_inputs entry where ric==ric
+        query_input = swissdox.query_inputs[0]
+
+        query = swissdox.build_query(
+            dates_from = query_input['from'],
+            dates_to = query_input['to'],
+            languages = 
+        )
+
+        return query_input
+
 
     query_inputs = [
         {
