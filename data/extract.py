@@ -102,6 +102,7 @@ class swissdox:
             fp = open(environvars.paths.path_swissdox + query_name + ".tsv.xz", "wb")
             fp.write(request.content)
             fp.close()
+            print("data for " + ric + " successfully extracted")
         else:
             print(request.text)
 
@@ -111,12 +112,19 @@ class swissdox:
         query_input = swissdox.query_inputs[0]
 
         query = swissdox.build_query(
-            dates_from = query_input['from'],
-            dates_to = query_input['to'],
-            languages = 
+            dates_from = query_input["from"],
+            dates_to = query_input["to"],
+            content = query_input["content"] 
         )
 
-        return query_input
+        swissdox.submit_query(
+            query = query,
+            run_as_test = True,
+            name = query_input["name"]
+        )
+        
+        swissdox.get_data(query_input["name"])
+
 
 
     query_inputs = [
