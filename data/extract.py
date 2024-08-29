@@ -10,8 +10,7 @@ class swissdox:
     headers = {"X-API-Key": credentials.swissdox.key, "X-API-Secret": credentials.swissdox.secret}
     query_template = {
         "query": {
-            "dates": None,
-            "languages": None
+            "dates": None
         },
         "result": {
             "format": None,
@@ -113,19 +112,30 @@ class swissdox:
         query = swissdox.build_query(
             dates_from = query_input[0]["from"],
             dates_to = query_input[0]["to"],
-            content = query_input[0]["content"] 
+            content = query_input[0]["content"]
         )
 
+        validate_query = swissdox.submit_query(
+            query = query,
+            run_as_test = True,
+            name = query_input[0]["query_name"],
+            expiration_date = "2025-01-03"
+        )
+
+        if validate_query["result"] == "failed":
+            print("Invalid query, see message:")
+            print(validate_query)
+            return query
+        
         swissdox.submit_query(
             query = query,
             run_as_test = False,
-            name = query_input[0]["query_name"]
+            name = query_input[0]["query_name"],
+            expiration_date = "2025-01-03"
         )
-
         
-
-
-        swissdox.get_data(query_input[0]["query_name"])
+        # todo: check if query is ready to download, else sys sleep?
+        # swissdox.get_data(query_input[0]["query_name"])
 
 
 
