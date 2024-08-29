@@ -108,8 +108,7 @@ class swissdox:
 
     def extract(ric):
 
-        # somehow get query_inputs entry where ric==ric
-        query_input = swissdox.query_inputs[0]
+        query_input = [i for i in swissdox.query_inputs if i.get("ric") == ric]
 
         query = swissdox.build_query(
             dates_from = query_input["from"],
@@ -122,7 +121,7 @@ class swissdox:
             run_as_test = True,
             name = query_input["name"]
         )
-        
+
         swissdox.get_data(query_input["name"])
 
 
