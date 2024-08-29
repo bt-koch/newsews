@@ -22,6 +22,8 @@ class swissdox:
     }
     default_format = "TSV"
     default_max_results = 100
+    default_date_from = "2022-01-01"
+    default_date_to = "2023-06-30"
     default_columns = ["id", "pubtime", "medium_code", "medium_name", "rubric", "regional", "doctype",
                        "doctype_description", "language", "char_count", "dateline", "head", "subhead",
                        "content_id", "content"]
@@ -101,7 +103,340 @@ class swissdox:
         else:
             print(request.text)
 
-
-
+    query_inputs = [
+        {
+            "query_name": "test_query",
+            "content": {
+                "AND": [
+                    {"OR": ["COVID", "Corona"]},
+                    {"NOT": "China"},
+                    {"NOT": "chin*"}
+                ]
+            },
+            "from": "2022-12-01",
+            "to": "2022-12-15",
+            "languages": ["de", "fr"],
+            "sources": ["ZWA", "ZWAS"]
+        },
+        {
+            "query_name": "credit_suisse",
+            "content": {
+                "AND": [
+                    {"Credit Suisse"}
+                ]
+            },
+            "from": default_date_from,
+            "to": default_date_to,
+            "ric": "CSGN.S^F23"
+        },
+        {
+            "query_name": "ubs",
+            "content": {
+                "AND": [
+                    {"ubs"}
+                ]
+            },
+            "from": default_date_from,
+            "to": default_date_to,
+            "ric": "UBSG.S"
+        },
+        {
+            "query_name": "arundel",
+            "content": {
+                "AND": [
+                    {"arundel"}
+                ]
+            },
+            "from": default_date_from,
+            "to": default_date_to,
+            "ric": "ARONL.S"
+        },
+        {
+            "query_name": "baloise",
+            "content": {
+                "AND": [
+                    {"Baloise"}
+                ]
+            },
+            "from": default_date_from,
+            "to": default_date_to,
+            "ric": "BALN.S"
+        },
+        {
+            "query_name": "kantonalbank_genf",
+            "content": {
+                "AND": [
+                    {"Banque Cantonale de Geneve"}
+                ]
+            },
+            "from": default_date_from,
+            "to": default_date_to,
+            "ric": "BCGE.S"
+        },
+        {
+            "query_name": "kantonalbank_jura",
+            "content": {
+                "AND": [
+                    {"Banque Cantonale du Jura"}
+                ]
+            },
+            "from": default_date_from,
+            "to": default_date_to,
+            "ric": "BCJ.S"
+        },
+        {
+            "query_name": "kantonalbank_wallis",
+            "content": {
+                "AND": [
+                    {"Banque Cantonale du Valais"}
+                ]
+            },
+            "from": default_date_from,
+            "to": default_date_to,
+            "ric": "WKB.S"
+        },
+        {
+            "query_name": "kantonalbank_waadt",
+            "content": {
+                "AND": [
+                    {"Banque Cantonale Vaudoise"}
+                ]
+            },
+            "from": default_date_from,
+            "to": default_date_to,
+            "ric": "BCVN.S"
+        },
+        {
+            "query_name": "kantonalbank_baselland",
+            "content": {
+                "AND": [
+                    {"Basellandschaftliche Kantonalbank"}
+                ]
+            },
+            "from": default_date_from,
+            "to": default_date_to,
+            "ric": "BLKB.S"
+        },
+        {
+            "query_name": "kantonalbank_baselstadt",
+            "content": {
+                "AND": [
+                    {"Basler Kantonalbank"}
+                ]
+            },
+            "from": default_date_from,
+            "to": default_date_to,
+            "ric": "BSKP.S"
+        },
+        {
+            "query_name": "kantonalbank_bern",
+            "content": {
+                "AND": [
+                    {"Berner Kantonalbank"}
+                ]
+            },
+            "from": default_date_from,
+            "to": default_date_to,
+            "ric": "BEKN.S"
+        },
+        {
+            "query_name": "cembra_money_bank",
+            "content": {
+                "AND": [
+                    {"Cembra Money Bank"}
+                ]
+            },
+            "from": default_date_from,
+            "to": default_date_to,
+            "ric": "CMBN.S"
+        },
+        {
+            "query_name": "efg_international",
+            "content": {
+                "AND": [
+                    {"EFG International"}
+                ]
+            },
+            "from": default_date_from,
+            "to": default_date_to,
+            "ric": "EFGN.S"
+        },
+        {
+            "query_name": "efg_international",
+            "content": {
+                "AND": [
+                    {"EFG International"}
+                ]
+            },
+            "from": default_date_from,
+            "to": default_date_to,
+            "ric": "EFGN.S"
+        },
+        {
+            "query_name": "kantonalbank_glarus",
+            "content": {
+                "AND": [
+                    {"Glarner Kantonalbank"}
+                ]
+            },
+            "from": default_date_from,
+            "to": default_date_to,
+            "ric": "GLKBN.S"
+        },
+        {
+            "query_name": "kantonalbank_graubuenden",
+            "content": {
+                "AND": [
+                    {"Graubuendner Kantonalbank"}
+                ]
+            },
+            "from": default_date_from,
+            "to": default_date_to,
+            "ric": "GRKP.S"
+        },
+        {
+            "query_name": "hypothekarbank_lenzburg",
+            "content": {
+                "AND": [
+                    {"Hypothekarbank Lenzburg"}
+                ]
+            },
+            "from": default_date_from,
+            "to": default_date_to,
+            "ric": "HBLN.S"
+        },
+        {
+            "query_name": "julius_baer",
+            "content": {
+                "AND": [
+                    {"Julius Baer"}
+                ]
+            },
+            "from": default_date_from,
+            "to": default_date_to,
+            "ric": "BAER.S"
+        },
+        {
+            "query_name": "lichtensteinische_landesbank",
+            "content": {
+                "AND": [
+                    {"Liechtensteinische Landesbank"}
+                ]
+            },
+            "from": default_date_from,
+            "to": default_date_to,
+            "ric": "LLBN.S"
+        },
+        {
+            "query_name": "kantonalbank_luzern",
+            "content": {
+                "AND": [
+                    {"Luzerner Kantonalbank"}
+                ]
+            },
+            "from": default_date_from,
+            "to": default_date_to,
+            "ric": "LUKN.S"
+        },
+        {
+            "query_name": "kantonalbank_stgallen",
+            "content": {
+                "AND": [
+                    {"St Galler Kantonalbank"}
+                ]
+            },
+            "from": default_date_from,
+            "to": default_date_to,
+            "ric": "SGKN.S"
+        },
+        {
+            "query_name": "swissquote",
+            "content": {
+                "AND": [
+                    {"Swissquote"}
+                ]
+            },
+            "from": default_date_from,
+            "to": default_date_to,
+            "ric": "SQN.S"
+        },
+        {
+            "query_name": "swissquote",
+            "content": {
+                "AND": [
+                    {"Swissquote"}
+                ]
+            },
+            "from": default_date_from,
+            "to": default_date_to,
+            "ric": "SQN.S"
+        },
+        {
+            "query_name": "kantonalbank_thurgau",
+            "content": {
+                "AND": [
+                    {"Thurgauer Kantonalbank"}
+                ]
+            },
+            "from": default_date_from,
+            "to": default_date_to,
+            "ric": "TKBP.S"
+        },
+        {
+            "query_name": "valartis",
+            "content": {
+                "AND": [
+                    {"Valartis"}
+                ]
+            },
+            "from": default_date_from,
+            "to": default_date_to,
+            "ric": "VLRT.S"
+        },
+        {
+            "query_name": "valiant",
+            "content": {
+                "AND": [
+                    {"Valiant"}
+                ]
+            },
+            "from": default_date_from,
+            "to": default_date_to,
+            "ric": "VATN.S"
+        },
+        {
+            "query_name": "vontobel",
+            "content": {
+                "AND": [
+                    {"Vontobel"}
+                ]
+            },
+            "from": default_date_from,
+            "to": default_date_to,
+            "ric": "VONN.S"
+        },
+        {
+            "query_name": "vp_bank",
+            "content": {
+                "AND": [
+                    {"VP Bank"}
+                ]
+            },
+            "from": default_date_from,
+            "to": default_date_to,
+            "ric": "VPBN.S"
+        },
+        {
+            "query_name": "kantonalbank_zug",
+            "content": {
+                "AND": [
+                    {"Zuger Kantonalbank"}
+                ]
+            },
+            "from": default_date_from,
+            "to": default_date_to,
+            "ric": "ZUGER.S"
+        }
+    ]
 
 
