@@ -101,7 +101,7 @@ class swissdox:
             fp = open(environvars.paths.path_swissdox + query_name + ".tsv.xz", "wb")
             fp.write(request.content)
             fp.close()
-            print("data for " + ric + " successfully extracted")
+            print("data for " + query_name + " successfully extracted")
         else:
             print(request.text)
 
