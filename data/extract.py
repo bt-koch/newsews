@@ -105,7 +105,7 @@ class swissdox:
         else:
             print(request.text)
 
-    def prepare_and_submit_query(ric):
+    def prepare_and_submit_query(ric, test = False):
 
         query_input = [i for i in swissdox.query_inputs if i.get("ric") == ric]
 
@@ -130,6 +130,9 @@ class swissdox:
             print("Invalid query, see message:")
             print(validate_query)
             return query
+        
+        if test:
+            return
         
         swissdox.submit_query(
             query = query,
