@@ -105,9 +105,13 @@ class swissdox:
         else:
             print(request.text)
 
-    def extract(ric):
+    def prepare_and_submit_query(ric):
 
         query_input = [i for i in swissdox.query_inputs if i.get("ric") == ric]
+
+        if query_input[0]["query_name"] in [x["name"] for x in swissdox.get_queries()]:
+            print("Query for " + ric + " already exists.")
+            return None
 
         query = swissdox.build_query(
             dates_from = query_input[0]["from"],
@@ -158,7 +162,7 @@ class swissdox:
             "query_name": "credit_suisse",
             "content": {
                 "AND": [
-                    {"Credit Suisse"}
+                    {"OR": ["Credit Suisse", "CS", "CSGN", "CSGN:SWX", "SWX:CSGN"]}
                 ]
             },
             "from": default_date_from,
@@ -169,7 +173,7 @@ class swissdox:
             "query_name": "ubs",
             "content": {
                 "AND": [
-                    {"ubs"}
+                    {"OR": ["UBS", "UBSG", "UBSG:SWX", "SWX:UBSG"]}
                 ]
             },
             "from": default_date_from,
@@ -180,7 +184,7 @@ class swissdox:
             "query_name": "arundel",
             "content": {
                 "AND": [
-                    {"arundel"}
+                    {"OR": ["Arundel", "ARON", "SWX:ARON", "ARON:SWX"]}
                 ]
             },
             "from": default_date_from,
@@ -191,7 +195,7 @@ class swissdox:
             "query_name": "baloise",
             "content": {
                 "AND": [
-                    {"Baloise"}
+                    {"OR": ["B*loise", "BALN", "BALN:SWX", "SWX:BALN"]}
                 ]
             },
             "from": default_date_from,
@@ -202,7 +206,7 @@ class swissdox:
             "query_name": "kantonalbank_genf",
             "content": {
                 "AND": [
-                    {"Banque Cantonale de Geneve"}
+                    {"OR": ["*anque *antonale de Gen*ve", "BCGE", "BCGE:SWX", "SWX:BCGE", "Kantonalbank Genf", "*enfer* Kantonalbank"]}
                 ]
             },
             "from": default_date_from,
@@ -213,7 +217,7 @@ class swissdox:
             "query_name": "kantonalbank_jura",
             "content": {
                 "AND": [
-                    {"Banque Cantonale du Jura"}
+                    {"OR": ["*anque *antonale du Jura", "BCJ", "BCJ:SWX", "SWX:BCJ", "Kantonalbank Jura", "*urassische* Kantonalbank"]}
                 ]
             },
             "from": default_date_from,
@@ -224,7 +228,7 @@ class swissdox:
             "query_name": "kantonalbank_wallis",
             "content": {
                 "AND": [
-                    {"Banque Cantonale du Valais"}
+                    {"OR": ["*anque *antonale du Valais", "WKBN", "WKBN:SWX", "SWX:WKBN", "Kantonalbank Wallis", "*alliser* Kantonalbank"]}
                 ]
             },
             "from": default_date_from,
@@ -235,7 +239,7 @@ class swissdox:
             "query_name": "kantonalbank_waadt",
             "content": {
                 "AND": [
-                    {"Banque Cantonale Vaudoise"}
+                    {"OR": ["*anque *antonale du Vaudoise", "BCVN", "BCVN:SWX", "SWX:BCVN", "Kantonalbank Waadt", "*aadtländer* Kantonalbank"]}
                 ]
             },
             "from": default_date_from,
@@ -246,7 +250,7 @@ class swissdox:
             "query_name": "kantonalbank_baselland",
             "content": {
                 "AND": [
-                    {"Basellandschaftliche Kantonalbank"}
+                    {"OR": ["*aselland* Kantonalbank", "BLKB", "BLKB:SWX", "SWX:BLKB", "*anque *antonale de *le-*ampagne"]}
                 ]
             },
             "from": default_date_from,
@@ -257,7 +261,7 @@ class swissdox:
             "query_name": "kantonalbank_baselstadt",
             "content": {
                 "AND": [
-                    {"Basler Kantonalbank"}
+                    {"OR": ["*asler* Kantonalbank", "BKB", "BSKP", "BSKP:SWX", "SWX:BSKP", "*anque *antonale de *le"]}
                 ]
             },
             "from": default_date_from,
@@ -268,7 +272,7 @@ class swissdox:
             "query_name": "kantonalbank_bern",
             "content": {
                 "AND": [
-                    {"Berner Kantonalbank"}
+                    {"OR": ["*erner* Kantonalbank", "BEKB", "BCBE", "BEKN", "BEKN:SWX", "SWX:BEKN", "*anque *antonale *ernoise"]}
                 ]
             },
             "from": default_date_from,
@@ -279,7 +283,7 @@ class swissdox:
             "query_name": "cembra_money_bank",
             "content": {
                 "AND": [
-                    {"Cembra Money Bank"}
+                    {"OR": ["Cembra Money Bank", "Cembra", "CMBN", "CMBN:SWX", "SWX:CMBN"]}
                 ]
             },
             "from": default_date_from,
@@ -290,18 +294,7 @@ class swissdox:
             "query_name": "efg_international",
             "content": {
                 "AND": [
-                    {"EFG International"}
-                ]
-            },
-            "from": default_date_from,
-            "to": default_date_to,
-            "ric": "EFGN.S"
-        },
-        {
-            "query_name": "efg_international",
-            "content": {
-                "AND": [
-                    {"EFG International"}
+                    {"OR": ["EFG International", "EFGN", "EFGN:SWX", "SWX:EFGN", "EFG"]}
                 ]
             },
             "from": default_date_from,
@@ -312,7 +305,7 @@ class swissdox:
             "query_name": "kantonalbank_glarus",
             "content": {
                 "AND": [
-                    {"Glarner Kantonalbank"}
+                    {"OR": ["*larner* Kantonalbank", "GLKB", "GLKBN", "GLKBN:SWX", "SWX:GLKBN", "*anque *antonale de *laris"]}
                 ]
             },
             "from": default_date_from,
@@ -323,7 +316,7 @@ class swissdox:
             "query_name": "kantonalbank_graubuenden",
             "content": {
                 "AND": [
-                    {"Graubuendner Kantonalbank"}
+                    {"OR": ["*raub*ndner* Kantonalbank", "GKB", "GRKP", "GRKP:SWX", "SWX:GRKP", "*anque *antonale des *risons"]}
                 ]
             },
             "from": default_date_from,
@@ -334,7 +327,7 @@ class swissdox:
             "query_name": "hypothekarbank_lenzburg",
             "content": {
                 "AND": [
-                    {"Hypothekarbank Lenzburg"}
+                    {"OR": ["*ypothekarbank Lenzburg", "HBLN", "HBLN:SWX", "SWX:HBLN", "*anque *antonale des *risons"]}
                 ]
             },
             "from": default_date_from,
@@ -345,7 +338,7 @@ class swissdox:
             "query_name": "julius_baer",
             "content": {
                 "AND": [
-                    {"Julius Baer"}
+                    {"OR": ["Julius B*r", "BAER", "BAER:SWX", "SWX:BAER"]}
                 ]
             },
             "from": default_date_from,
@@ -356,7 +349,7 @@ class swissdox:
             "query_name": "lichtensteinische_landesbank",
             "content": {
                 "AND": [
-                    {"Liechtensteinische Landesbank"}
+                    {"OR": ["*ichtensteinisch* Landesbank", "LLBN", "LLBN:SWX", "SWX:LLBN", "*anque centrale du *iechtenstein"]}
                 ]
             },
             "from": default_date_from,
@@ -367,7 +360,7 @@ class swissdox:
             "query_name": "kantonalbank_luzern",
             "content": {
                 "AND": [
-                    {"Luzerner Kantonalbank"}
+                    {"OR": ["*uzerner* Kantonalbank", "LUKB", "LUKN", "LUKN:SWX", "SWX:LUKN", "*anque *antonale de *ucerne"]}
                 ]
             },
             "from": default_date_from,
@@ -378,7 +371,7 @@ class swissdox:
             "query_name": "kantonalbank_stgallen",
             "content": {
                 "AND": [
-                    {"St Galler Kantonalbank"}
+                    {"OR": ["S* Galler* Kantonalbank", "SGKB", "SGKN", "SGKN:SWX", "SWX:SGKN", "*anque *antonale de *aint* *all"]}
                 ]
             },
             "from": default_date_from,
@@ -389,18 +382,7 @@ class swissdox:
             "query_name": "swissquote",
             "content": {
                 "AND": [
-                    {"Swissquote"}
-                ]
-            },
-            "from": default_date_from,
-            "to": default_date_to,
-            "ric": "SQN.S"
-        },
-        {
-            "query_name": "swissquote",
-            "content": {
-                "AND": [
-                    {"Swissquote"}
+                    {"OR": ["*wissquote", "SQN", "SQN:SWX", "SWX:SQN"]}
                 ]
             },
             "from": default_date_from,
@@ -411,7 +393,7 @@ class swissdox:
             "query_name": "kantonalbank_thurgau",
             "content": {
                 "AND": [
-                    {"Thurgauer Kantonalbank"}
+                    {"OR": ["*hurgauer* Kantonalbank", "TKB", "TKBP", "TKBP:SWX", "SWX:TKBP", "*anque *antonale de *hurgovie"]}
                 ]
             },
             "from": default_date_from,
@@ -422,7 +404,7 @@ class swissdox:
             "query_name": "valartis",
             "content": {
                 "AND": [
-                    {"Valartis"}
+                    {"OR": ["Valartis", "VLRT", "VLRT:SWX", "SWX:VLRT"]}
                 ]
             },
             "from": default_date_from,
@@ -433,7 +415,7 @@ class swissdox:
             "query_name": "valiant",
             "content": {
                 "AND": [
-                    {"Valiant"}
+                    {"OR": ["Valiant", "VATN", "VATN:SWX", "SWX:VATN"]}
                 ]
             },
             "from": default_date_from,
@@ -444,7 +426,7 @@ class swissdox:
             "query_name": "vontobel",
             "content": {
                 "AND": [
-                    {"Vontobel"}
+                    {"OR": ["Vontobel", "VONN", "VONN:SWX", "SWX:VONN"]}
                 ]
             },
             "from": default_date_from,
@@ -455,7 +437,7 @@ class swissdox:
             "query_name": "vp_bank",
             "content": {
                 "AND": [
-                    {"VP Bank"}
+                    {"OR": ["VP Bank", "VPBN", "VPBN:SWX", "SWX:VPBN"]}
                 ]
             },
             "from": default_date_from,
@@ -466,7 +448,7 @@ class swissdox:
             "query_name": "kantonalbank_zug",
             "content": {
                 "AND": [
-                    {"Zuger Kantonalbank"}
+                    {"OR": ["*uger* Kantonalbank", "ZugerKB", "ZUGER", "ZUGER:SWX", "SWX:ZUGER", "*anque *antonale de *oug"]}
                 ]
             },
             "from": default_date_from,
