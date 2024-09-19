@@ -20,7 +20,7 @@ class swissdox:
         "version": "None"
     }
     default_format = "TSV"
-    default_max_results = 100
+    default_max_results = 10**7
     default_date_from = "2022-01-01"
     default_date_to = "2023-06-30"
     default_columns = ["id", "pubtime", "medium_code", "medium_name", "rubric", "regional", "doctype",
@@ -140,6 +140,8 @@ class swissdox:
             name = query_input[0]["query_name"],
             expiration_date = "2025-01-03"
         )
+
+        return validate_query
         
         # todo: check if query is ready to download, else sys sleep?
         # swissdox.get_data(query_input[0]["query_name"])
