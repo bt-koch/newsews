@@ -2,7 +2,8 @@ import pandas as pd
 import config.environvars as environvars
 import re
 import nltk
-import spacy
+# import spacy
+from HanTa import HanoverTagger as ht
 
 class swissdox:
     
@@ -29,7 +30,14 @@ class preprocess:
         punctuation = set('!"#$%&\'()*+,-./:;<=>?@[\\]^_`{|}~«»–')
         return [word for word in tokens if word.lower() not in punctuation]
     
+    # def remove_numbers(tokens):
+
+    
+    # def lemmatize(tokens):
+    #     nlp = spacy.load("de_core_news_md")
+    #     doc = nlp(" ".join(tokens))
+    #     return [token.lemma_ for token in doc]
+    
     def lemmatize(tokens):
-        nlp = spacy.load("de_core_news_md")
-        doc = nlp(" ".join(tokens))
-        return [token.lemma_ for token in doc]
+        tagger = ht.HanoverTagger('morphmodel_ger.pgz')
+        return tagger.tag_sent(tokens)
