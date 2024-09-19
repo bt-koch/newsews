@@ -26,7 +26,7 @@ class preprocess:
         return [word for word in tokens if word.lower() not in stop_words]
     
     def remove_punctuation(tokens):
-        punctuation = set('!"#$%&\'()*+,-./:;<=>?@[\\]^_`{|}~«»')
+        punctuation = set('!"#$%&\'()*+,-./:;<=>?@[\\]^_`{|}~«»–')
         return [word for word in tokens if word.lower() not in punctuation]
     
     def lemmatize(tokens):
