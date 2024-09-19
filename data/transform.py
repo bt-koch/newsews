@@ -11,6 +11,11 @@ class swissdox:
         df = pd.read_csv(environvars.paths.path_swissdox + query_name + ".tsv.xz", sep = "\t")
         return df
     
+    # def remove_duplicates(tsv):
+    #     # todo: remove duplicates: according to content_id?
+    #     # or is duplication sign of more reach/relevancy? they appeared in different sources...
+    #     return
+    
 
 class preprocess:
 
