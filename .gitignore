@@ -1,7 +1,7 @@
 .DS_Store
 __pycache__
 .vscode
-test.py
+test*.py
 literature/pdf
 tex/
 config/credentials.py
