@@ -2,6 +2,7 @@ import pandas as pd
 import config.environvars as environvars
 import re
 import nltk
+import spacy
 
 class swissdox:
     
@@ -27,3 +28,8 @@ class preprocess:
     def remove_punctuation(tokens):
         punctuation = set('!"#$%&\'()*+,-./:;<=>?@[\\]^_`{|}~«»')
         return [word for word in tokens if word.lower() not in punctuation]
+    
+    def lemmatize(tokens):
+        nlp = spacy.load("de_core_news_md")
+        doc = nlp(" ".join(tokens))
+        return [token.lemma_ for token in doc]
