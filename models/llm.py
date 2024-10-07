@@ -1,5 +1,6 @@
 import ollama
 from transformers import AutoTokenizer, AutoModelForSequenceClassification, pipeline
+import torch
 
 def define_topic(text):
     instruction = """
@@ -28,3 +29,10 @@ def finbert_sentiment(text, device):
     result_map = {"Positiv": 1, "Neutral": 0, "Negativ": -1}
     return(result_map.get(response[0]["label"]))
 
+def select_device():
+    if torch.backends.mps.is_available():
+        print("Apple Silicon GPU available.")
+        device = torch.device("mps")
+    else:
+        device = torch.device("cpu")
+    return(device)
