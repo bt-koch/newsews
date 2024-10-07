@@ -19,8 +19,6 @@ def define_topic(text):
     ])
     return(response["message"]["content"])
 
-
-
 def finbert_german_sentiment(text, device):
     tokenizer = AutoTokenizer.from_pretrained("scherrmann/GermanFinBert_SC_Sentiment")
     model = AutoModelForSequenceClassification.from_pretrained("scherrmann/GermanFinBert_SC_Sentiment")
