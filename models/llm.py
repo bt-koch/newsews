@@ -1,4 +1,5 @@
 import ollama
+from transformers import AutoTokenizer, AutoModelForSequenceClassification, pipeline
 
 def define_topic(text):
     instruction = """
@@ -17,4 +18,13 @@ def define_topic(text):
     ])
     return(response["message"]["content"])
 
+
+
+def finbert_sentiment(text, device):
+    tokenizer = AutoTokenizer.from_pretrained("scherrmann/GermanFinBert_SC_Sentiment")
+    model = AutoModelForSequenceClassification.from_pretrained("scherrmann/GermanFinBert_SC_Sentiment")
+    pipe = pipeline("text-classification", model=model, tokenizer=tokenizer, device=device)
+    response = pipe(text)
+    result_map = {"Positiv": 1, "Neutral": 0, "Negativ": -1}
+    return(result_map.get(response[0]["label"]))
 
