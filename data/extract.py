@@ -172,6 +172,7 @@ class swissdox:
             },
             "from": default_date_from,
             "to": default_date_to,
+            "regex": "credit suisse|\\scs\\s|csgn",
             "ric": "CSGN.S^F23"
         },
         {
@@ -260,6 +261,7 @@ class swissdox:
             },
             "from": default_date_from,
             "to": default_date_to,
+            "regex": "baselland[a-z]* kantonalbank|blkb",
             "ric": "BLKB.S"
         },
         {
@@ -271,6 +273,7 @@ class swissdox:
             },
             "from": default_date_from,
             "to": default_date_to,
+            "regex": "basler[a-z]* kantonalbank|bkb",
             "ric": "BSKP.S"
         },
         {
