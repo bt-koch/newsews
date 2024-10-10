@@ -1,6 +1,10 @@
+import config.environvars as environvars
+
 import ollama
 from transformers import AutoTokenizer, AutoModelForSequenceClassification, pipeline
 import torch
+import numpy as np
+
 class llama:
 
     def define_topic(text):
@@ -32,14 +36,25 @@ class llama:
         ])
         return(response["message"]["content"])
 
+class finbert_german:
 
-def finbert_german_sentiment(text, device):
-    tokenizer = AutoTokenizer.from_pretrained("scherrmann/GermanFinBert_SC_Sentiment")
-    model = AutoModelForSequenceClassification.from_pretrained("scherrmann/GermanFinBert_SC_Sentiment")
+    def model_initialise():
+        tokenizer = AutoTokenizer.from_pretrained(environvars.paths.path_huggingface+"GermanFinBert_SC_Sentiment")
+        model = AutoModelForSequenceClassification.from_pretrained(environvars.paths.path_huggingface+"GermanFinBert_SC_Sentiment")
+        return tokenizer, model
+
+
+def finbert_german_sentiment(text, tokenizer, model, device):
     pipe = pipeline("text-classification", model=model, tokenizer=tokenizer, device=device)
-    response = pipe(text)
-    result_map = {"Positiv": 1, "Neutral": 0, "Negativ": -1}
-    return(result_map.get(response[0]["label"]))
+    try:
+        response = pipe(text)
+        result_map = {"Positiv": 1, "Neutral": 0, "Negativ": -1}
+        return(result_map.get(response[0]["label"]))
+    except:
+        print("to do")
+        return(np.nan)
+
+    
 
 def select_device():
     if torch.backends.mps.is_available():
