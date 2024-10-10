@@ -19,6 +19,19 @@ class llama:
             }
         ])
         return(response["message"]["content"])
+    
+    def translate(text):
+        instruction = """
+        Translate the following text into german. Only provide the translated text:'
+        """
+        response = ollama.chat("llama3.1", messages=[
+            {
+                "role": "user",
+                "content": instruction+text
+            }
+        ])
+        return(response["message"]["content"])
+
 
 def finbert_german_sentiment(text, device):
     tokenizer = AutoTokenizer.from_pretrained("scherrmann/GermanFinBert_SC_Sentiment")
