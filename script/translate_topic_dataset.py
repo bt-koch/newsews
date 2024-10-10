@@ -8,6 +8,7 @@ import models.llm
 import config.environvars as environvars
 
 import pandas as pd
+import numpy as np
 from tqdm import tqdm
 
 print("Prepare data...")
@@ -17,11 +18,14 @@ df = pd.concat([
     ])
 tqdm.pandas()
 
-print("Begin with translation...")
-df['translated_text'] = df['text'].progress_apply(models.llm.llama.translate)
-print("Translation finished!")
+dfs = np.array_split(df, 200)
 
-print("Save file...")
-df.to_csv(environvars.paths.path_huggingface+"twitter-financial-news-topic/topic_translated.csv", index=False, sep=";")
+for i in range(0, len(dfs)):
+    print("Translate chunk "+str(i+1)+" of "+str(len(dfs))+"...")
+    temp = dfs[i]
+    temp["translated_text"] = temp["text"].progress_apply(models.llm.llama.translate)
+    print("Translation of chunk "+str(i+1)+" finished, save file...")
+    temp.to_csv(environvars.paths.path_huggingface+"twitter-financial-news-topic/translation/chunk_"+str(i+1)+".csv",
+                index=False, sep=";")
 
 print("Script finished!")
