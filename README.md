@@ -23,4 +23,6 @@ class deepl:
 class paths:
     path_data = "<your-base-path-to-store-data>"
     path_swissdox = f"{path_data}/swissdox/"
+    path_huggingface = f"{path_data}/huggingface/"
+    path_preprocessed = f"{path_data}/preprocessed_data/"
 ```
