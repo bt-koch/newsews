@@ -158,7 +158,7 @@ class swissdox:
             },
             "from": default_date_from,
             "to": default_date_to,
-            "regex": "credit suisse|\\scs\\s|csgn",
+            "regex": "credit\\s*suisse|\\bcs\\b|\\b(swx:)?csgn(:swx)?\\b",
             "ric": "CSGN.S^F23"
         },
         {
@@ -170,19 +170,20 @@ class swissdox:
             },
             "from": default_date_from,
             "to": default_date_to,
+            "regex": "\\bubs\\b|\\b(swx:)?ubsg(:swx)?\\b",
             "ric": "UBSG.S"
         },
-        {
-            "query_name": "arundel",
-            "content": {
-                "AND": [
-                    {"OR": ["Arundel", "ARON", "SWX:ARON", "ARON:SWX"]}
-                ]
-            },
-            "from": default_date_from,
-            "to": default_date_to,
-            "ric": "ARONL.S"
-        },
+        # {
+        #     "query_name": "arundel",
+        #     "content": {
+        #         "AND": [
+        #             {"OR": ["Arundel", "ARON", "SWX:ARON", "ARON:SWX"]}
+        #         ]
+        #     },
+        #     "from": default_date_from,
+        #     "to": default_date_to,
+        #     "ric": "ARONL.S"
+        # },
         {
             "query_name": "baloise",
             "content": {
@@ -192,6 +193,7 @@ class swissdox:
             },
             "from": default_date_from,
             "to": default_date_to,
+            "regex": "\\bb(a|â)loise\\b|\\b(swx:)?baln(:swx)?\\b",
             "ric": "BALN.S"
         },
         {
@@ -203,6 +205,7 @@ class swissdox:
             },
             "from": default_date_from,
             "to": default_date_to,
+            "regex": "\\bbanque\\bcantonale\\b\\de\\genev(e|è)ve\\b|\\b(swx:)?bcge(:swx)?\\b|\\bkantonalbank\\bgenf\\b|\\bgenfer[a-z]*\\bkantonalbank",
             "ric": "BCGE.S"
         },
         {
