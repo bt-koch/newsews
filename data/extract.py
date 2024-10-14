@@ -150,20 +150,6 @@ class swissdox:
 
     query_inputs = [
         {
-            "query_name": "test_query",
-            "content": {
-                "AND": [
-                    {"OR": ["COVID", "Corona"]},
-                    {"NOT": "China"},
-                    {"NOT": "chin*"}
-                ]
-            },
-            "from": "2022-12-01",
-            "to": "2022-12-15",
-            "languages": ["de", "fr"],
-            "sources": ["ZWA", "ZWAS"]
-        },
-        {
             "query_name": "credit_suisse",
             "content": {
                 "AND": [
