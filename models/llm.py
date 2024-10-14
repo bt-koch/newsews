@@ -4,6 +4,7 @@ import ollama
 from transformers import AutoTokenizer, AutoModelForSequenceClassification, pipeline
 import torch
 import numpy as np
+import pandas as pd
 
 class llama:
 
