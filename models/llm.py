@@ -26,8 +26,12 @@ class llama:
     
     def translate(text):
         instruction = """
-        Translate the following text into german. Only provide the translated text:'
+        Translate the following text into english. Only provide the translated text:'
         """
+
+        if pd.isnull(text):
+            return ""
+
         response = ollama.chat("llama3.1", messages=[
             {
                 "role": "user",
