@@ -40,7 +40,7 @@ class llama:
         ])
         return(response["message"]["content"])
 
-class finbert_german:
+class finbert_german_sentiment:
 
     def model_initialise():
         tokenizer = AutoTokenizer.from_pretrained(environvars.paths.path_huggingface+"GermanFinBert_SC_Sentiment")
@@ -48,16 +48,33 @@ class finbert_german:
         return tokenizer, model
 
 
-def finbert_german_sentiment(text, tokenizer, model, device):
-    pipe = pipeline("text-classification", model=model, tokenizer=tokenizer, device=device)
-    try:
-        response = pipe(text)
-        result_map = {"Positiv": 1, "Neutral": 0, "Negativ": -1}
-        return(result_map.get(response[0]["label"]))
-    except:
-        print("to do")
-        return(np.nan)
+    def finbert_german_sentiment(text, tokenizer, model, device):
+        pipe = pipeline("text-classification", model=model, tokenizer=tokenizer, device=device)
+        try:
+            response = pipe(text)
+            result_map = {"Positiv": 1, "Neutral": 0, "Negativ": -1}
+            return(result_map.get(response[0]["label"]))
+        except:
+            print("to do")
+            return(np.nan)
 
+class finbert_english_topic:
+
+    def model_initialise():
+        pipe = pipeline(
+            "text-classification",
+            model=environvars.paths.path_huggingface+"finbert-tone-finetuned-finance-topic-classification",
+            device=select_device()
+        )
+        return pipe
+    
+    def finbert_english_topic(pipe, text):
+        try:
+            response = pipe(text)
+            return(response[0]["label"])
+        except:
+            print("to do")
+            return(np.nan)
     
 
 def select_device():
