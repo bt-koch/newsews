@@ -11,10 +11,10 @@ import config.environvars as environvars
 
 import pandas as pd
 import numpy as np
-import pickle
+# import pickle
 from tqdm import tqdm
 import re
-import gensim
+# import gensim
 
 print("Prepare data...")
 df = pd.read_csv(environvars.paths.path_swissdox+"swissdox.csv")

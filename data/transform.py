@@ -2,7 +2,6 @@ import pandas as pd
 import config.environvars as environvars
 import re
 import nltk
-# import spacy
 from HanTa import HanoverTagger as ht
 
 class swissdox:

@@ -7,11 +7,10 @@ sys.path.append(os.getcwd())
 import data.extract
 import models.llm
 import models.apply_models
-import config.environvars as environvars
+# import config.environvars as environvars
 
 import pandas as pd
 import numpy as np
-import pickle
 from tqdm import tqdm
 
 print("Prepare data...")
