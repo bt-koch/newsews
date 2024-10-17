@@ -153,20 +153,11 @@ def topic_keywords(article, num_topics=2, num_top_words=20):
         text = data.transform.preprocess.remove_stopwords(text, language="german")
         text = data.transform.preprocess.remove_punctuation(text)
         text = data.transform.preprocess.lemmatize(text)
-        text = [t[1] for t in text if t[2] in ["NN", "NE"]]
+        text = [t[1].lower() for t in text if t[2] in ["NN", "NE"]]
 
         if len(text) == 0:
             return "not about "+article["query_bank"]
         
-        # perform LDA
-        dictionary = gensim.corpora.Dictionary([text])
-        corpus = [dictionary.doc2bow(text)]
-        lda_model = gensim.models.ldamodel.LdaModel(corpus, num_topics=num_topics, id2word=dictionary)
-
-        keywords = []
-        for topic_id in range(num_topics):
-            keywords.extend([k[0].lower() for k in lda_model.show_topic(topic_id, num_top_words)])
-
         # check if match with keywords
         pattern = ["wirtschaft", "finan(z|ce)", "bank", "geld", "m(?:a|ae|[ä])rkt", "market", "b(?:[ö]|oe)rse",
                 "aktie", "aktionär", "zins", "obligation", "hypothek", "company", "unternehmen", "invest", "inflation",
@@ -174,13 +165,13 @@ def topic_keywords(article, num_topics=2, num_top_words=20):
                 "\\bubs(-[a-z]*)?\\b", "\\bsnb(-[a-z]*)?\\b", "index", "\\bsmi(-[a-z]*)?\\b", "(ö|oe)konom",
                 "rezession", "yield", "swap", "coupon", "emissionspreis", "spread", "basispunkt", "venture",
                 "kunde", "business"]
-        pattern = "|".join(keywords_wirtschaft)
+        pattern = "|".join(pattern)
         pattern = re.compile(pattern, re.IGNORECASE)
 
         # TODO: maybe instead of checking for any, count matches and check if certain ratio exceeded?
         #       -> since there might still be "unwanted" matches now
         #       -> but what would be good ratio? or good decision rule?
-        if any(pattern.search(item) for item in keywords):
+        if any(pattern.search(item) for item in text):
             return "wirtschaft"
         else:
             return "drop"
