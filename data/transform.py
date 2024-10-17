@@ -28,7 +28,7 @@ class preprocess:
     
     def remove_stopwords(tokens, language):
         stop_words = set(nltk.corpus.stopwords.words(language))
-        print("I probably want to extend stop word list later on")
+        # print("I probably want to extend stop word list later on")
         return [word for word in tokens if word.lower() not in stop_words]
     
     def remove_punctuation(tokens):
