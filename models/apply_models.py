@@ -4,8 +4,9 @@ import models.llm
 import re
 import numpy as np
 
-def calculate_sentiment(article, query_input, device, model):
-    print("Calculate sentiment for article "+article["content_id"])
+def calculate_sentiment(article, query_input, device, model, silent=True):
+    if not silent:
+        print("Calculate sentiment for article "+article["content_id"])
     pattern = [i for i in query_input if i["query_name"] == article["query_bank"]][0]
     pattern = re.compile(pattern["regex"])
 
