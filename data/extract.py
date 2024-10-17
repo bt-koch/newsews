@@ -158,7 +158,7 @@ class swissdox:
             },
             "from": default_date_from,
             "to": default_date_to,
-            "regex": "credit\\s*suisse|\\bcs\\b|\\b(swx:)?csgn(:swx)?\\b",
+            "regex": "credit\\s+suisse|\\bcs(-[a-z]+)?\\b|\\b(swx:)?csgn(:swx)?\\b",
             "ric": "CSGN.S^F23"
         },
         {
@@ -170,7 +170,7 @@ class swissdox:
             },
             "from": default_date_from,
             "to": default_date_to,
-            "regex": "\\bubs\\b|\\b(swx:)?ubsg(:swx)?\\b",
+            "regex": "\\bubs(-[a-z]+)?\\b|\\b(swx:)?ubsg(:swx)?\\b",
             "ric": "UBSG.S"
         },
         # {
@@ -193,7 +193,7 @@ class swissdox:
             },
             "from": default_date_from,
             "to": default_date_to,
-            "regex": "\\bb(a|â)loise\\b|\\b(swx:)?baln(:swx)?\\b",
+            "regex": "b(a|â)loise|\\b(swx:)?baln(:swx)?\\b",
             "ric": "BALN.S"
         },
         {
@@ -205,7 +205,7 @@ class swissdox:
             },
             "from": default_date_from,
             "to": default_date_to,
-            "regex": "\\bbanque\\bcantonale\\b\\de\\genev(e|è)ve\\b|\\b(swx:)?bcge(:swx)?\\b|\\bkantonalbank\\bgenf\\b|\\bgenfer[a-z]*\\bkantonalbank",
+            "regex": "banque\\s+cantonale\\s+\\s+de\\s+genev(e|è)ve|\\b(swx:)?bcge(-[a-z]+|:swx)?\\b|kantonalbank\\s+genf|genfer[a-z]*\\s+kantonalbank",
             "ric": "BCGE.S"
         },
         {
@@ -217,6 +217,7 @@ class swissdox:
             },
             "from": default_date_from,
             "to": default_date_to,
+            "regex": "banque\\s+cantobale\\s+du\\s+jura|\\b(swx:)?bcj(-[a-z]+|:swx)?\\b|kantonalbank\\s+jura|jurassische[a-z]*\\s+kantonalbank",
             "ric": "BCJ.S"
         },
         {
@@ -228,6 +229,7 @@ class swissdox:
             },
             "from": default_date_from,
             "to": default_date_to,
+            "regex": "banque\\s+cantonale\\s+du\\s+valais|\\b(swx:)?wkbn(-[a-z]+|:swx)?\\b|kantonalbank\\s+wallis|walliser[a-z]*\\s+kantonalbank",
             "ric": "WKB.S"
         },
         {
@@ -239,6 +241,7 @@ class swissdox:
             },
             "from": default_date_from,
             "to": default_date_to,
+            "regex": "banque\\s+cantonale\\s+du\\s+vaudoise|\\b(swx:)?bcvn(-[a-z]+|:swx)?\\b|kantonalbank\\s+waadt|waadtl(ä|ae)nder[a-z]*\\s+kantonalbank",
             "ric": "BCVN.S"
         },
         {
@@ -250,7 +253,7 @@ class swissdox:
             },
             "from": default_date_from,
             "to": default_date_to,
-            "regex": "baselland[a-z]* kantonalbank|blkb",
+            "regex": "baselland[a-z]*\\s+kantonalbank|\\b(swx:)?blkb(-[a-z]+|:swx)?\\b|banque\\s+cantonale\\s+de\\s+b(â|a)le(-|\\s)campagne",
             "ric": "BLKB.S"
         },
         {
@@ -262,7 +265,7 @@ class swissdox:
             },
             "from": default_date_from,
             "to": default_date_to,
-            "regex": "basler[a-z]* kantonalbank|bkb",
+            "regex": "basler[a-z]*\\s+kantonalbank|\\bbkb(-[a-z])?\\b|\\b(swx:)?bskp(:swx)?\\b|banque\\s+cantonale\\s+de\\s+b(â|a)le",
             "ric": "BSKP.S"
         },
         {
@@ -274,6 +277,7 @@ class swissdox:
             },
             "from": default_date_from,
             "to": default_date_to,
+            "regex": "berner[a-z]*\\s+kantonalbank|\\bbekb(-[a-z]*)?\\b|\\bbcbe(-[a-z]*)?\\b|\\b(swx:)?bekn(-[a-z]*|:swx)?\\b|banque\\s+cantonale\\s+bernoise",
             "ric": "BEKN.S"
         },
         {
@@ -285,6 +289,7 @@ class swissdox:
             },
             "from": default_date_from,
             "to": default_date_to,
+            "regex": "cembra\\s+money\\s+bank|\\bcembra(-[a-z]*)\\b|\\b(swx:)?cmbn(-[a-z]*|:swx)?\\b",
             "ric": "CMBN.S"
         },
         {
@@ -296,6 +301,7 @@ class swissdox:
             },
             "from": default_date_from,
             "to": default_date_to,
+            "regex": "\\befg\\s+international|\\befg(-[a-z]*)\\b|\\b(swx:)?efgn(-[a-z]*|:swx)?\\b",
             "ric": "EFGN.S"
         },
         {
@@ -307,6 +313,7 @@ class swissdox:
             },
             "from": default_date_from,
             "to": default_date_to,
+            "regex": "glarner[a-z]*\\s+kantonalbank|\\bglkb(-[a-z]*)?\\b|\\b(swx:)?glkbn(-[a-z]*|:swx)?\\b|banque\\s+cantonale\\s+de\\s+glaris",
             "ric": "GLKBN.S"
         },
         {
@@ -318,17 +325,19 @@ class swissdox:
             },
             "from": default_date_from,
             "to": default_date_to,
+            "regex": "graub(ü|ue)ndner[a-z]*\\s+kantonalbank|\\bgkb(-[a-z]*)\\b|\\b(swx:)?grkp(-[a-z]*|:swx)?|banque\\s+cantonale\\s+des\\s+grisons",
             "ric": "GRKP.S"
         },
         {
             "query_name": "hypothekarbank_lenzburg",
             "content": {
                 "AND": [
-                    {"OR": ["*ypothekarbank Lenzburg", "HBLN", "HBLN:SWX", "SWX:HBLN", "*anque *antonale des *risons"]}
+                    {"OR": ["*ypothekarbank Lenzburg", "HBLN", "HBLN:SWX", "SWX:HBLN"]}
                 ]
             },
             "from": default_date_from,
             "to": default_date_to,
+            "regex": "hypothekarbank\\s+lenzburg|\\b(swx:)?hbln(-[a-z]*|:swx)?\\b",
             "ric": "HBLN.S"
         },
         {
@@ -340,17 +349,19 @@ class swissdox:
             },
             "from": default_date_from,
             "to": default_date_to,
+            "regex": "julius\\s+b(ä|ae)r|\\b(swx:)?baer(-[a-z]*|:swx)?\\b",
             "ric": "BAER.S"
         },
         {
-            "query_name": "lichtensteinische_landesbank",
+            "query_name": "liechtensteinische_landesbank",
             "content": {
                 "AND": [
-                    {"OR": ["*ichtensteinisch* Landesbank", "LLBN", "LLBN:SWX", "SWX:LLBN", "*anque centrale du *iechtenstein"]}
+                    {"OR": ["*iechtensteinisch* Landesbank", "LLBN", "LLBN:SWX", "SWX:LLBN", "*anque centrale du *iechtenstein"]}
                 ]
             },
             "from": default_date_from,
             "to": default_date_to,
+            "regex": "liechtensteinisch[a-z]*\\s+landesbank|\\b(swx:)?llbn(-[a-z]*|:swx)?\\b|banque\\s+centrale\\s+du\\s+liechtenstein",
             "ric": "LLBN.S"
         },
         {
@@ -362,6 +373,7 @@ class swissdox:
             },
             "from": default_date_from,
             "to": default_date_to,
+            "regex": "luzerner[a-z]*\\s+kantonalbank|\\blukb(-[a-z]*)?\\b|\\b(swx:)?lukn(-[a-z]*|:swx)?|banque\\s+cantonale\\s+de\\s+lucerne",
             "ric": "LUKN.S"
         },
         {
@@ -373,6 +385,7 @@ class swissdox:
             },
             "from": default_date_from,
             "to": default_date_to,
+            "regex": "(st\\.|sankt)\\s+galler[a-z]*\\s+kantonalbank|\\bsgkb(-[a-z]*)?\\b|\\b(swx:)?sgkn(-[a-z]*|:swx)?\\b|banque\\s+cantonale\\s+de\\s+saint(-|\\s+)gall",
             "ric": "SGKN.S"
         },
         {
@@ -384,6 +397,7 @@ class swissdox:
             },
             "from": default_date_from,
             "to": default_date_to,
+            "regex": "swissquote|\\b(swx:)?sqn(-[a-z]*|:swx)?\\b",
             "ric": "SQN.S"
         },
         {
@@ -395,6 +409,7 @@ class swissdox:
             },
             "from": default_date_from,
             "to": default_date_to,
+            "regex": "thurgauer[a-z]*\\s+kantonalbank|\\btkb(-[a-z]*)?\\b|\\b(swx:)?tkbp(-[a-z]*|:swx)?\\b|banque\\s+cantonale\\s+de\\s+thurgovie",
             "ric": "TKBP.S"
         },
         {
@@ -406,6 +421,7 @@ class swissdox:
             },
             "from": default_date_from,
             "to": default_date_to,
+            "regex": "valartis|\\b(swx:)?vlrt(-[a-z]*|:swx)?\\b",
             "ric": "VLRT.S"
         },
         {
@@ -417,6 +433,7 @@ class swissdox:
             },
             "from": default_date_from,
             "to": default_date_to,
+            "regex": "valiant|\\b(swx:)?vatn(-[a-z]*|:swx)?\\b",
             "ric": "VATN.S"
         },
         {
@@ -428,6 +445,7 @@ class swissdox:
             },
             "from": default_date_from,
             "to": default_date_to,
+            "regex": "vontobel|\\b(swx:)?vonn(-[a-z]*|:swx)?\\b",
             "ric": "VONN.S"
         },
         {
@@ -439,6 +457,7 @@ class swissdox:
             },
             "from": default_date_from,
             "to": default_date_to,
+            "regex": "\\bvp\\s+bank|\\b(swx:)?vpbn(-[a-z]*|:swx)?\\b",
             "ric": "VPBN.S"
         },
         {
@@ -450,6 +469,8 @@ class swissdox:
             },
             "from": default_date_from,
             "to": default_date_to,
+            # here stock ticker might match a lot of unwanted substrings...
+            "regex": "zuger[a-z]*\\s+kantonalbank|zugerkb(-[a-z]*)?|\\b(swx:)?zuger(-[a-z]*|:swx)?\\b|banque\\s+cantonale\\s+de\\s+zoug",
             "ric": "ZUGER.S"
         }
     ]
