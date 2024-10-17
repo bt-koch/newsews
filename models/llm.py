@@ -8,7 +8,7 @@ import pandas as pd
 
 class llama:
 
-    def define_topic(text):
+    def define_topic(text, model="llama3.1"):
         instruction = """
         I will provide you with the content of a media article.
         Can you classify the topic of the article?
@@ -17,7 +17,7 @@ class llama:
         The text might be in german, english or french.
         Here the article:
         """
-        response = ollama.chat(model="llama3.1", messages=[
+        response = ollama.chat(model=model, messages=[
             {
                 "role": "user",
                 "content": instruction+"\n"+text
@@ -25,7 +25,7 @@ class llama:
         ])
         return(response["message"]["content"])
     
-    def translate(text):
+    def translate(text, model="llama3.1"):
         instruction = """
         Translate the following text into english. Only provide the translated text:'
         """
@@ -33,7 +33,7 @@ class llama:
         if pd.isnull(text):
             return ""
 
-        response = ollama.chat("llama3.1", messages=[
+        response = ollama.chat(model, messages=[
             {
                 "role": "user",
                 "content": instruction+text
