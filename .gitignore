@@ -8,3 +8,4 @@ tex/*
 !tex/sec[0-9]*.tex
 config/credentials.py
 config/environvars.py
+notebooks/
