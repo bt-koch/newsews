@@ -14,6 +14,8 @@ def calculate_sentiment(article, query_input, device, model, silent=True):
     text = [preprocess.remove_tags(item) for item in text]
     text = [item for item in text if bool(search(pattern, item.lower()))]
 
+    text = [sentence.strip() for t in text for sentence in t.split('.') if len(sentence) > 0]
+
     if (model == "finbert_german_sentiment"):
         model_initialise = finbert_german_sentiment.model_initialise()
         result = [finbert_german_sentiment.finbert_german_sentiment(
