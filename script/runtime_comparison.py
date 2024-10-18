@@ -14,7 +14,7 @@ import pandas as pd
 from pandarallel import pandarallel
 pandarallel.initialize(progress_bar=True)
 
-num_articles = 3
+num_articles = 1000
 
 print("Prepare data...")
 df = pd.read_csv(environvars.paths.path_swissdox+"swissdox.csv")
