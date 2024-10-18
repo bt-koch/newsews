@@ -50,7 +50,7 @@ class finbert_german_sentiment:
 
 
     def finbert_german_sentiment(text, tokenizer, model, device):
-        pipe = pipeline("text-classification", model=model, tokenizer=tokenizer, device=device)
+        pipe = pipeline("text-classification", model=model, tokenizer=tokenizer, device=device) #note: for pandarallel, do not select device other than cpu
         try:
             response = pipe(text)
             result_map = {"Positiv": 1, "Neutral": 0, "Negativ": -1}
