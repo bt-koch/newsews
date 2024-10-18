@@ -25,8 +25,9 @@ device = select_device()
 
 # Method 1: Utilize parallel computation
 print("\nUtilize parallel computation...")
+temp = df.copy()
 start = time.time()
-df["sentiment_score"] = df.parallel_apply(lambda x: calculate_sentiment(
+temp["sentiment_score"] = temp.parallel_apply(lambda x: calculate_sentiment(
         x,
         query_input=query_input,
         device=-1,
@@ -34,11 +35,14 @@ df["sentiment_score"] = df.parallel_apply(lambda x: calculate_sentiment(
     ), axis=1)
 end = time.time()
 runtime_pandarallel = end-start
+temp.to_csv(environvars.paths.path_preprocessed+"runtime_comparison/pandarallel.csv", sep=";", index=False)
+del temp
 
 # Method 2:  leverage the GPU on MacOS device
 print("\n\nUtilize MPS/GPU...")
 from tqdm import tqdm
 tqdm.pandas()
+temp = df.copy()
 start = time.time()
 df["sentiment_score"] = df.progress_apply(lambda x: calculate_sentiment(
         x,
@@ -48,6 +52,8 @@ df["sentiment_score"] = df.progress_apply(lambda x: calculate_sentiment(
     ), axis=1)
 end = time.time()
 runtime_mps = end-start
+temp.to_csv(environvars.paths.path_preprocessed+"runtime_comparison/mps.csv", sep=";", index=False)
+del temp
 
 # save results
 print("\nSave results...")
@@ -57,4 +63,4 @@ results = pd.DataFrame({
     "num_articles": num_articles
 })
 
-results.to_csv(environvars.paths.path_preprocessed+"runtime_comparison.csv", sep=";", index=False)
+results.to_csv(environvars.paths.path_preprocessed+"runtime_comparison/results.csv", sep=";", index=False)
