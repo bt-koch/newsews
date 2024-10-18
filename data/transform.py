@@ -19,7 +19,7 @@ class swissdox:
 class preprocess:
 
     def remove_tags(text):
-        pattern = r"</?tx>|</?p>|</?zt>|<au>.*?</au>|</?a[^>]*>|<ld>.*?</ld>|</?lg>|<nt>.*?</nt>"
+        pattern = r"</?tx>|</?p>|</?zt>|<au>.*?</au>|</?a[^>]*>|</?ld>|</?lg>|<nt>.*?</nt>"
         return re.sub(pattern, " ", text)
 
     def tokenize(text):
