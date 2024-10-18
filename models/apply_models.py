@@ -11,9 +11,8 @@ def calculate_sentiment(article, query_input, device, model, silent=True):
 
     text = article["content"]
     text = text.split("</p>")
-    text = [data.transform.preprocess.remove_tags(item) for item in text]
-    text = [item.lower() for item in text]
-    text = [item for item in text if bool(re.search(pattern, item))]
+    text = [preprocess.remove_tags(item) for item in text]
+    text = [item for item in text if bool(search(pattern, item.lower()))]
 
     if (model == "finbert_german_sentiment"):
         model_initialise = finbert_german_sentiment.model_initialise()
