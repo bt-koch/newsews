@@ -13,7 +13,7 @@ from pandarallel import pandarallel
 pandarallel.initialize(progress_bar=True)
 
 print("Prepare data...")
-df = pd.read_csv(environvars.paths.path_swissdox+"swissdox.csv")
+df = pd.read_csv(environvars.paths.path_preprocessed+"dataset_raw.csv")
 df = df[df["language"] == "de"]
 query_input = ingest.extract.swissdox.query_inputs
 
@@ -29,4 +29,4 @@ print("I keep "+str(round(rubric.iloc[0]["count"] / (rubric.iloc[0]["count"]+rub
 df = df[df["assigned_rubric"] == "wirtschaft"]
 df = df[["content", "query_bank"]]
 df = df.drop_duplicates()
-df.to_csv(environvars.paths.path_preprocessed+"estim_dataset.csv", sep=";", index=False)
+df.to_csv(environvars.paths.path_preprocessed+"dataset_clean.csv", sep=";", index=False)
