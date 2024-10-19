@@ -5,7 +5,7 @@ if os.path.basename(os.getcwd()) == "script":
 sys.path.append(os.getcwd())
 
 import config.environvars as environvars
-import data.extract
+import ingest.extract
 import models.llm
 from models.apply_models import calculate_sentiment
 
@@ -18,7 +18,7 @@ pandarallel.initialize(progress_bar=True)
 print("Prepare data...")
 df = pd.read_csv(environvars.paths.path_preprocessed+"estim_dataset.csv", sep=";")
 device = -1 # to utilize parallelized computation, using "mps" this does not work
-query_input = data.extract.swissdox.query_inputs
+query_input = ingest.extract.swissdox.query_inputs
 
 num_splits = int(np.ceil(df.shape[0] / 500))
 dfs = np.array_split(df, num_splits)

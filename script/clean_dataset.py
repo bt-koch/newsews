@@ -5,7 +5,7 @@ if os.path.basename(os.getcwd()) == "script":
 sys.path.append(os.getcwd())
 
 import config.environvars as environvars
-import data.extract
+import ingest.extract
 import models.rule_based_models
 
 import pandas as pd
@@ -15,7 +15,7 @@ pandarallel.initialize(progress_bar=True)
 print("Prepare data...")
 df = pd.read_csv(environvars.paths.path_swissdox+"swissdox.csv")
 df = df[df["language"] == "de"]
-query_input = data.extract.swissdox.query_inputs
+query_input = ingest.extract.swissdox.query_inputs
 
 print("start with topic assignment...")
 df["assigned_topic"] = df.parallel_apply(lambda x: models.rule_based_models.topic_keywords(x), axis=1)

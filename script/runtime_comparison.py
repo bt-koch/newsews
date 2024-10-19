@@ -5,7 +5,7 @@ if os.path.basename(os.getcwd()) == "script":
 sys.path.append(os.getcwd())
 
 import config.environvars as environvars
-import data.extract
+import ingest.extract
 from models.apply_models import calculate_sentiment
 from models.llm import select_device
 
@@ -20,7 +20,7 @@ print("Prepare data...")
 df = pd.read_csv(environvars.paths.path_swissdox+"swissdox.csv")
 df = df.sample(num_articles, random_state=2024)
 
-query_input = data.extract.swissdox.query_inputs
+query_input = ingest.extract.swissdox.query_inputs
 device = select_device()
 
 # Method 1: Utilize parallel computation

@@ -1,4 +1,4 @@
-from data.transform import preprocess
+from ingest.transform import preprocess
 from models.llm import finbert_german_sentiment
 from re import compile, search
 from numpy import nanmean

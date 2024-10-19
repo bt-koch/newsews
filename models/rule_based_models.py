@@ -1,4 +1,4 @@
-import data.transform
+import ingest.transform
 import re
 
 class topic_modelling:
@@ -12,17 +12,17 @@ class topic_modelling:
             pattern = re.compile(pattern["regex"])
             text = article["content"]
             text = text.split("</p>")
-            text = [data.transform.preprocess.remove_tags(item) for item in text]
+            text = [ingest.transform.preprocess.remove_tags(item) for item in text]
             text = [item.lower() for item in text]
             text = [item for item in text if bool(re.search(pattern, item))]
 
             # preprocess relevant text from article
             text = " ".join(text)
-            text = data.transform.preprocess.remove_tags(text)
-            text = data.transform.preprocess.tokenize(text)
-            text = data.transform.preprocess.remove_stopwords(text, language="german")
-            text = data.transform.preprocess.remove_punctuation(text)
-            text = data.transform.preprocess.lemmatize(text)
+            text = ingest.transform.preprocess.remove_tags(text)
+            text = ingest.transform.preprocess.tokenize(text)
+            text = ingest.transform.preprocess.remove_stopwords(text, language="german")
+            text = ingest.transform.preprocess.remove_punctuation(text)
+            text = ingest.transform.preprocess.lemmatize(text)
             text = [t[1].lower() for t in text if t[2] in ["NN", "NE"]]
 
             if len(text) == 0:
