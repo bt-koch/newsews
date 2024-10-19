@@ -28,9 +28,9 @@ for i in range(0, len(dfs)):
     print("Translate chunk "+str(i+1)+" of "+str(len(dfs))+"...")
     temp = dfs[i]
     print("...translate lead...")
-    temp["translated_lead"] = temp["lead"].progess_apply(models.llm.llama.translate)
+    temp["translated_lead"] = temp["lead"].progress_apply(models.llm.llama.translate)
     print("\n...translate head...")
-    temp["translated_head"] = temp["head"].progess_apply(models.llm.llama.translate)
+    temp["translated_head"] = temp["head"].progress_apply(models.llm.llama.translate)
     print("Translation of chunk "+str(i+1)+" finished, save file...")
     temp.to_csv(environvars.paths.path_preprocessed+"/translation/chunk_"+str(i+1)+".csv", index=False, sep=";")
 
