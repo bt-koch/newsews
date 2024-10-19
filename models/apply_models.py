@@ -24,6 +24,8 @@ def calculate_sentiment(article, query_input, device, model, silent=True):
             model=model_initialise[1],
             device=device
         ) for item in text]
+        # with warnings.catch_warnings():
+        #     warnings.simplefilter("ignore", category=RuntimeWarning)
         result = nanmean(result)
     else:
         print("No model called "+model+" available. Return None.")
