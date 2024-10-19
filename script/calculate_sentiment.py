@@ -16,8 +16,8 @@ from pandarallel import pandarallel
 pandarallel.initialize(progress_bar=True)
 
 print("Prepare data...")
-df = pd.read_csv(environvars.paths.path_preprocessed+"estim_dataset.csv", sep=";")
-# TODO: here use dataset_clean instead, and i can remove all cols other than the identifier and the content
+df = pd.read_csv(environvars.paths.path_preprocessed+"dataset_clean.csv", sep=";")
+df = df[["identifier", "query_bank", "content"]]
 device = -1 # to utilize parallelized computation, using "mps" this does not work
 query_input = ingest.extract.swissdox.query_inputs
 
