@@ -1,9 +1,9 @@
 import ingest.transform
 import re
 
-class topic_modelling:
+class pattern_matching:
 
-    def topic_keywords(article, query_input):
+    def assign_rubric(article, query_input):
 
         try:
 
