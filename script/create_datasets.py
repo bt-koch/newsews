@@ -19,3 +19,4 @@ path = environvars.paths.path_preprocessed+"sentiment_scores"
 files = [f for f in os.listdir(path) if re.match(r"^chunk_\d{1,3}.csv$", f)]
 df = [pd.read_csv(os.path.join(path, f), sep=";") for f in files]
 df = pd.concat(df)
+df.to_csv(environvars.paths.path_preprocessed+"first_result_sentiment.csv", index=False, sep=";")
