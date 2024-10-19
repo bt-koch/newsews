@@ -20,5 +20,4 @@ while len(identifiers) < df.shape[0]:
 identifiers = pd.DataFrame(identifiers, columns=["identifiers"])
 df["identifier"] = identifiers["identifiers"]
 
-
-
+df.to_csv(environvars.paths.path_meta+"mapping.csv")
