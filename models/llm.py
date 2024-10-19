@@ -6,6 +6,14 @@ import torch
 import numpy as np
 import pandas as pd
 
+def select_device():
+    if torch.backends.mps.is_available():
+        print("Apple Silicon GPU available.")
+        device = torch.device("mps")
+    else:
+        device = torch.device("cpu")
+    return(device)
+
 class llama:
 
     def define_topic(text, model="llama3.1"):
@@ -61,11 +69,11 @@ class finbert_german_sentiment:
 
 class finbert_english_topic:
 
-    def model_initialise():
+    def model_initialise(device=select_device()):
         pipe = pipeline(
             "text-classification",
             model=environvars.paths.path_huggingface+"finbert-tone-finetuned-finance-topic-classification",
-            device=select_device()
+            device=device
         )
         return pipe
     
@@ -77,11 +85,3 @@ class finbert_english_topic:
             print("to do")
             return(np.nan)
     
-
-def select_device():
-    if torch.backends.mps.is_available():
-        print("Apple Silicon GPU available.")
-        device = torch.device("mps")
-    else:
-        device = torch.device("cpu")
-    return(device)
