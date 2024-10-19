@@ -16,7 +16,7 @@ from pandarallel import pandarallel
 pandarallel.initialize(progress_bar=True)
 
 print("Prepare data...")
-df = pd.read_csv(environvars.paths.path_swissdox+"swissdox.csv")
+df = pd.read_csv(environvars.paths.path_preprocessed+"estim_dataset.csv", sep=";")
 device = -1 # to utilize parallelized computation, using "mps" this does not work
 query_input = data.extract.swissdox.query_inputs
 
@@ -32,5 +32,5 @@ for i in range(0, len(dfs)):
         device=device,
         model="finbert_german_sentiment"
     ), axis=1)
-    print("Sentiment estimation of chunk "+str(i+1)+" finished, save file...")
+    print("\nSentiment estimation of chunk "+str(i+1)+" finished, save file...")
     temp.to_csv(environvars.paths.path_preprocessed+"sentiment_scores/chunk_"+str(i+1)+".csv", index=False, sep=";")
