@@ -40,7 +40,7 @@ path = environvars.paths.path_huggingface+"twitter-financial-news-topic/translat
 files = [f for f in os.listdir(path) if re.match(r"^chunk_\d{1,3}.csv$", f)]
 df = [pd.read_csv(os.path.join(path, f), sep=";") for f in files]
 df = pd.concat(df)
-df.to_csv(environvars.paths.path_preprocessed+"translated_leads.csv", index=False, sep=";")
+df.to_csv(environvars.paths.path_preprocessed+"translated_leads_and_heads.csv", index=False, sep=";")
 
 
 # sentiment scores
