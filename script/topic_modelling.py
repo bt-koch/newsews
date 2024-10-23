@@ -17,7 +17,7 @@ df = pd.read_csv(environvars.paths.path_preprocessed+"dataset_clean.csv", sep=";
 translated_leads = pd.read_csv(environvars.paths.path_preprocessed+"translated_leads_and_heads.csv", sep=";")
 translated_leads = translated_leads[["identifier", "translated_lead", "translated_head"]]
 
-df = pd.merge(df, translated_leads, on="identifier", how="left")
+df = pd.merge(df, translated_leads, on="identifier", how="left").reset_index()
 df = df[["identifier", "translated_lead", "translated_head"]]
 
 num_splits = int(np.ceil(df.shape[0] / 500))
@@ -31,6 +31,6 @@ for i in range(0, len(dfs)):
     print("...estimate lead...")
     temp["topic_lead"] = temp["translated_lead"].parallel_apply(lambda x: models.llm.finbert_english_topic.finbert_english_topic(pipe, x) if isinstance(x, str) else x)
     print("\n...estimate head...")
-    temp["topic_lead"] = temp["translated_head"].parallel_apply(lambda x: models.llm.finbert_english_topic.finbert_english_topic(pipe, x) if isinstance(x, str) else x)
+    temp["topic_head"] = temp["translated_head"].parallel_apply(lambda x: models.llm.finbert_english_topic.finbert_english_topic(pipe, x) if isinstance(x, str) else x)
     print("\nTopic estimation of chunk "+str(i+1)+" finished, save file...")
     temp.to_csv(environvars.paths.path_preprocessed+"topics/chunk_"+str(i+1)+".csv", index=False, sep=";")
