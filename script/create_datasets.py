@@ -36,7 +36,7 @@ df.to_csv(environvars.paths.path_preprocessed+"dataset_raw.csv", sep=";")
 
 
 # translated leads
-path = environvars.paths.path_huggingface+"twitter-financial-news-topic/translation"
+path = environvars.paths.path_preprocessed+"translation"
 files = [f for f in os.listdir(path) if re.match(r"^chunk_\d{1,3}.csv$", f)]
 df = [pd.read_csv(os.path.join(path, f), sep=";") for f in files]
 df = pd.concat(df)
