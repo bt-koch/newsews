@@ -1,8 +1,9 @@
 import plotly.graph_objects as go
+import random
 
 class interactive:
 
-    def linechart(dataframe):
+    def linechart(dataframe, x_value="date", y_value="sentiment_score"):
 
         bank = dataframe["bank"].unique()
 
@@ -12,21 +13,23 @@ class interactive:
 
         fig = go.Figure()
 
-        fig.add_trace(go.Scatter(
-            x=dataframe["date"],
-            y=dataframe["sentiment_score"],
-            mode="lines",
-            name="Sentiment Score",
-            line=dict(color="lightgrey")
-        ))
-
-        fig.add_trace(go.Scatter(
-            x=dataframe["date"],
-            y=dataframe["moving_average"],
-            mode="lines",
-            name="Rolling MA",
-            line=dict(color="red")
-        ))
+        if type(y_value) is str:
+            fig.add_trace(go.Scatter(
+                x=dataframe[x_value],
+                y=dataframe[y_value],
+                mode="lines",
+                name=y_value,
+                line=dict(color="lightgrey")
+            ))
+        elif type(y_value) is list:
+            for y_dim in y_value:
+                fig.add_trace(go.Scatter(
+                    x=dataframe[x_value],
+                    y=dataframe[y_dim],
+                    mode="lines",
+                    name=y_dim,
+                    line=dict(color="#{:06x}".format(random.randint(0, 0xFFFFFF)))
+                ))
 
         fig.update_layout(
             title="Sentiment Scores of "+bank[0]+" Articles (red: rolling MA)",
