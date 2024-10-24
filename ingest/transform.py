@@ -38,3 +38,17 @@ class preprocess:
         def lemmatize(tokens):
             tagger = ht.HanoverTagger('morphmodel_ger.pgz')
             return tagger.tag_sent(tokens)
+        
+    class sentiment:
+
+        def aggregate(dataframe):
+            df = dataframe.groupby(["date", "bank"]).mean(numeric_only=True).reset_index()
+            df["date"] = pd.to_datetime(df["date"], utc=True)
+            df = df.sort_values(by=["bank", "date"]).reset_index()
+            return df
+        
+        def add_moving_average(dataframe, window_length=5):
+            df = dataframe.sort_values(by=["bank", "date"]).reset_index()
+            df["moving_average"] = df["sentiment_score"].rolling(window=window_length, min_periods=window_length).mean()
+            return df
+
