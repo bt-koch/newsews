@@ -50,3 +50,12 @@ df = [pd.read_csv(os.path.join(path, f), sep=";") for f in files]
 df = pd.concat(df)
 df = df[["identifier", "query_bank", "sentiment_score"]]
 df.to_csv(environvars.paths.path_results+"sentiment_scores.csv", index=False, sep=";")
+
+
+# sentiment scores
+path = environvars.paths.path_preprocessed+"topics"
+files = [f for f in os.listdir(path) if re.match(r"^chunk_\d{1,3}.csv$", f)]
+df = [pd.read_csv(os.path.join(path, f), sep=";") for f in files]
+df = pd.concat(df)
+df = df[["identifier", "topic_lead", "topic_head"]]
+df.to_csv(environvars.paths.path_results+"topics.csv", index=False, sep=";")
