@@ -49,13 +49,13 @@ files = [f for f in os.listdir(path) if re.match(r"^chunk_\d{1,3}.csv$", f)]
 df = [pd.read_csv(os.path.join(path, f), sep=";") for f in files]
 df = pd.concat(df)
 df = df[["identifier", "query_bank", "sentiment_score"]]
-df = df.drop_duplicates()
 
 meta = pd.read_csv(environvars.paths.path_preprocessed+"dataset_clean.csv", sep=";")
 meta = meta[["identifier", "pubtime"]]
 df = pd.merge(df, meta, how="left", on="identifier")
 
 df = df.rename(columns={"query_bank": "bank", "pubtime": "date"})
+df = df.drop_duplicates()
 df.to_csv(environvars.paths.path_results+"sentiment_scores.csv", index=False, sep=";")
 
 
