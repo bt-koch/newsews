@@ -42,8 +42,8 @@ class preprocess:
     class sentiment:
 
         def aggregate(dataframe):
+            dataframe["date"] = pd.to_datetime(dataframe["date"], utc=True).dt.normalize()
             df = dataframe.groupby(["date", "bank"]).mean(numeric_only=True).reset_index()
-            df["date"] = pd.to_datetime(df["date"], utc=True)
             df = df.sort_values(by=["bank", "date"]).reset_index()
             return df
         
