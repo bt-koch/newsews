@@ -17,7 +17,7 @@ print("Prepare data...")
 df = pd.read_csv(environvars.paths.path_preprocessed+"dataset_clean.csv", sep=";")
 
 df["lead"] = df["content"].str.extract(r"<ld>(.*?)</ld>")
-df["lead"] = df["lead"].apply(lambda x: ingest.transform.preprocess.remove_tags(x) if isinstance(x, str) else x)
+df["lead"] = df["lead"].apply(lambda x: ingest.transform.preprocess.text.remove_tags(x) if isinstance(x, str) else x)
 
 df = df[["identifier", "lead", "head"]]
 df = df.drop_duplicates()

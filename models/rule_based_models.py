@@ -12,17 +12,17 @@ class pattern_matching:
             pattern = re.compile(pattern["regex"])
             text = article["content"]
             text = text.split("</p>")
-            text = [ingest.transform.preprocess.remove_tags(item) for item in text]
+            text = [ingest.transform.preprocess.text.remove_tags(item) for item in text]
             text = [item.lower() for item in text]
             text = [item for item in text if bool(re.search(pattern, item))]
 
             # preprocess relevant text from article
             text = " ".join(text)
-            text = ingest.transform.preprocess.remove_tags(text)
-            text = ingest.transform.preprocess.tokenize(text)
-            text = ingest.transform.preprocess.remove_stopwords(text, language="german")
-            text = ingest.transform.preprocess.remove_punctuation(text)
-            text = ingest.transform.preprocess.lemmatize(text)
+            text = ingest.transform.preprocess.text.remove_tags(text)
+            text = ingest.transform.preprocess.text.tokenize(text)
+            text = ingest.transform.preprocess.text.remove_stopwords(text, language="german")
+            text = ingest.transform.preprocess.text.remove_punctuation(text)
+            text = ingest.transform.preprocess.text.lemmatize(text)
             text = [t[1].lower() for t in text if t[2] in ["NN", "NE"]]
 
             if len(text) == 0:

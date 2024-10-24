@@ -11,7 +11,7 @@ def calculate_sentiment(article, query_input, device, model, silent=True):
 
     text = article["content"]
     text = text.split("</p>")
-    text = [preprocess.remove_tags(item) for item in text]
+    text = [preprocess.text.remove_tags(item) for item in text]
     text = [item for item in text if bool(search(pattern, item.lower()))]
 
     text = [sentence.strip() for t in text for sentence in t.split('.') if len(sentence) > 0]
