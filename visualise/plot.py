@@ -42,3 +42,23 @@ class interactive:
         )
 
         fig.show()
+
+    def barchart(dataframe, x_value="date", y_value="count", title=""):
+
+        fig = go.Figure()
+
+        fig.add_trace(go.Bar(
+            x=dataframe[x_value],
+            y=dataframe[y_value],
+            marker_color="blue"
+        ))
+
+        fig.update_layout(
+            title=title,
+            xaxis_title=x_value,
+            yaxis_title=y_value,
+            xaxis=dict(tickformat="%Y-%m-%d"),
+            yaxis=dict(showgrid=True),
+        )
+
+        fig.show()
