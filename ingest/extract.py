@@ -530,4 +530,6 @@ def get_stockprice(ric_equity, start="2021-01-01", end="2024-06-30"):
     df = df.replace("NaN", pd.NA)
     return df
 
+    # use this to get news headlines
+    # test = ek.get_news_headlines("UBSG.S")
 
