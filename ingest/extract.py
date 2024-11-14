@@ -521,14 +521,14 @@ class refinitiv:
         df = df.replace("NaN", pd.NA)
         return df
 
-def get_stockprice(ric_equity, start="2021-01-01", end="2024-06-30"):
-    df = ek.get_data(ric_equity,
-                     ["TR.CLOSEPRICE.Date", "TR.CLOSEPRICE"],
-                     {"SDate": start, "EDate": end})
-    df = pd.DataFrame(df[0])
-    df.columns = ["ric_equity", "date", "value"]
-    df = df.replace("NaN", pd.NA)
-    return df
+    def get_stockprice(ric_equity, start="2021-01-01", end="2024-06-30"):
+        df = ek.get_data(ric_equity,
+                        ["TR.CLOSEPRICE.Date", "TR.CLOSEPRICE"],
+                        {"SDate": start, "EDate": end})
+        df = pd.DataFrame(df[0])
+        df.columns = ["ric_equity", "date", "value"]
+        df = df.replace("NaN", pd.NA)
+        return df
 
     # use this to get news headlines
     # test = ek.get_news_headlines("UBSG.S")
