@@ -84,4 +84,21 @@ class finbert_english_topic:
         except:
             print("to do")
             return(np.nan)
+        
+class finbert_english_sentiment:
+
+    def model_initialise():
+        tokenizer = AutoTokenizer.from_pretrained(environvars.paths.path_huggingface+"finbert")
+        model = AutoModelForSequenceClassification.from_pretrained(environvars.paths.path_huggingface+"finbert")
+        return tokenizer, model
+    
+    def finbert_english_sentiment(text, tokenizer, model, device):
+        pipe = pipeline("text-classification", model=model, tokenizer=tokenizer, device=device)
+        try:
+            response = pipe(text)
+            result_map = {"positive": 1, "neutral": 0, "negative": -1}
+            return(result_map.get(response[0]["label"]))
+        except:
+            print("to do")
+            return(np.nan)
     
