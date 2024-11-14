@@ -4,6 +4,8 @@ import yaml
 import requests
 import eikon as ek
 import pandas as pd
+from pynytimes import NYTAPI
+import datetime
 
 class swissdox:
     url_base = "https://swissdox.linguistik.uzh.ch/api"
