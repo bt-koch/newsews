@@ -569,7 +569,7 @@ class refinitiv:
         ric_cds = ric_cds.rename(columns={"Instrument": "ric_equity", "Primary CDS RIC": "ric_cds"})
         return ric_cds
 
-    def get_cds(ric_cds, start="2012-01-01", end="2023-06-30"):
+    def get_cds(ric_cds, start="2012-01-01", end="2024-10-31"):
         data = []
         for cds in ric_cds.itertuples():
             try:
@@ -603,7 +603,7 @@ class refinitiv:
         df = df.replace("NaN", pd.NA)
         return df
 
-    def get_stockprice(ric_equity, start="2021-01-01", end="2024-06-30"):
+    def get_stockprice(ric_equity, start="2021-01-01", end="2024-10-31"):
         df = ek.get_data(ric_equity,
                         ["TR.CLOSEPRICE.Date", "TR.CLOSEPRICE"],
                         {"SDate": start, "EDate": end})
