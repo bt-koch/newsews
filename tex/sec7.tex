@@ -1,16 +1,142 @@
-\chapter{Conclusion}\label{sec7}
+\chapter{notes}\label{sec7}
 \thispagestyle{empty}
 
-\textit{conclusion}: \\
-summarize motivation, model(s) and their results including the limitations \\
+%\textbf{NOTES:}\\
+%FIRST, MAKE A MODEL LIKE THE ONES WHICH ANALYZE THE DETERMINANTS OF CDS SPREADS BUT WITH NEWS SENTIMENT. FOR THIS, I NEED MORE DATA FOR OTHER BANKS WHICH HAVE CDS. USE REFINITIV API AND NEW YORK TIMES API TO GET ARTICLES FOR OTHER GSIB BANKS. MAYBE FOCUS ON EURO AREA? \\
+%
+%THEN, BUILD ONTOP OF THIS EXAMPLES A PREDICTIVE MODEL?\\
+%% https://www.tandfonline.com/doi/pdf/10.1080/14697688.2010.531041?casa_token=66f-k31rE0AAAAAA:tYdwBxoXBbsrXB_63dZFiPT9FFjEbGmMFgrq3HObO5aRU2ypRoItzBwGLfa1VUIPFoQDJmI5HSEt
+%
+%APPLY THIS PREDICTIVE MODEL TO SWISS BANKS AND COMPARE SWISS NEWS VS INTERNATIONAL NEWS SOURCES? DOES LOCAL NEWS BETTER PREDICT?\\
+%
+%In general, focus on time series models. First, check for statistical significance of overall sentiment score and different sentiment scores by topics. Afterwards, if significant, look at impulse response functions, maybe granger causality and robustness.
+%
+%Adjust \cite{cathcart2020} to banks instead of countries
+
+\section{Sentiment Scores and CDS}
+
+\subsection{Are sentiment sores a determinant of CDS spreads?}
+
+Problem: in Switzerland only CS and UBS have traded CDS. Additionally, the paper I want to use to answer this question (\cite{annaert2013}) focuses on banks in the euro area. Therefore, extent sample to euro banks on which there are traded CDS.\\
+For this analysis, use news sentiment scores from refinitiv in english. \\
+
+Panel regression. \\
 
 \noindent
-\textit{extensions}:
-\begin{itemize}
-	\item fine tune LLM fine tune an llm to classify whether a text is relevant for a specific context
-	\item ...
-\end{itemize}
+Control variables: \\
+\textbf{Risk free rate:} weekly change in the Datastream benchmark 2 year government redemption yield measured in percentage points \\
+\textbf{Leverage:} weekly bank stock return (in percentage points) \\
+\textbf{Equity volatility:} changes in the weekly historical standard deviation computed using the daily stock returns of the underlying bank (in percentage points) \\
+\textbf{Bid-ask spread:} weekly change in the difference between the ask and the bid CDS spread quote measured in basis points \\
+\textbf{Term structure slope:} weekly change in the difference (in percentage points) between the 10 year and 5 year government redemption yields of the Datastream benchmark series \\
+\textbf{Corporate bond spread:} weekly change of the difference between the Merrill Lynch 5 year BBB and AAA corporate redemption yield series (measured in percentage points) \\
+\textbf{Market return:} proxied by the Datastream euro area stock market index return (in percentage points) \\
+\textbf{Market volatility:} weekly change of the VSTOXX index
 
+%See following papers:
+%
+%\begin{itemize}
+%	\item \cite{annaert2013}
+%	\item \cite{chiaramonte2016}
+%	\item \cite{samaniego2016}
+%\end{itemize}
+%
+%\subsubsection*{\cite{annaert2013}}
+%
+%\textbf{dependent variable:}\\
+%5 year cds quotes for senior debt issues, weekly \\
+%weekly frequency with the last-observation-carried-forward principle of interpolation \\
+%
+%\noindent
+%\textbf{independent variables:}
+%\begin{itemize}
+%	\item risk free rate
+%	\item leverage
+%	\item equity volatility
+%	\item bid-ask spread
+%	\item term structure slope
+%	\item swap spread
+%	\item corporate bond spread
+%	\item market return
+%	\item market volatility
+%\end{itemize}
+%
+%In short: the paper analyzes the determinants of CDS spreads (goal is not prediction) and defines three groups of determinants: credit risk, liquidity and general economic environment. My research question could now be to include a fourth group of "perceived" risk by investors using the sentiment scores?
+%
+%\subsubsection*{\cite{chiaramonte2016}}
+%
+%\textbf{dependent variable:}\\
+%quarterly \\
+%
+%\noindent
+%\textbf{independent variables:}
+%\begin{itemize}
+%	\item Loan Loss Reserve/Gross Loans (asset quality)
+%	\item Unreserved Impaired Loans/Equity (asset quality)
+%	\item TIER 1 Ratio (capital)
+%	\item Leverage: Equity/Total Assets (capital)
+%	\item ROA (Return On average Assets) (operations)
+%	\item ROE (Return On average Equity) (operations)
+%	\item Net Loans/Deposits and Short Term Funding (liquidity)
+%	\item Liquid Assets/Deposits and Short Term Funding (liquidity)
+%\end{itemize}
+%
+%\subsubsection*{\cite{samaniego2016}}
+%
+%\textbf{dependent variable:}\\
+%yearly \\
+%
+%\noindent
+%\textbf{independent variables:}
+%\begin{itemize}
+%	\item Impaired loan/gross loans
+%	\item Equity/total assets
+%	\item Net income/average total assets
+%	\item Cost-to-income ratio
+%	\item Interbank ratio
+%	\item Net loans/total assets
+%	\item Natural log of total assets
+%	\item Equity return
+%	\item Equity volatility
+%	\item Absolute CDS bid-ask spread
+%	\item 10-year Treasury bond
+%	\item Market return
+%	\item Market volatility
+%	\item rating assigned by Fitch
+%\end{itemize}
+
+\subsection{Improve sentiment scores predictive power when forecasting CDS?}
+
+Use a forecasting method which was used in literature, for example "Predicting credit default swap prices with financial and pure data-driven approaches" by Yalin Gunduz and Marliese Uhrig-Homburg or "Nonparametric machine learning models for predicting the credit default swaps: An empirical study" or "Forecasting and trading credit default swap indices using a deep learning model integrating Merton and LSTMs". Apply and evaluate the prediction models to all banks of the euro area, run once with and once without sentiment scores as feature.
+
+
+\subsection{Is there a difference between local and international news?}
+
+Compare prediction models with news sentiment based on refinitiv and based on swissdox and look if swissdox performs better?
+
+\section{Sentiment Scores and Volatility}
+
+\cite{audrino2020}
+
+%\noindent
+%Hence, look for other models/risk indicators, maybe...
+%
+%\section{Sentiment indicator in predicting Credit Spreads}
+%
+%Extend \cite{collin2001} with sentiment indicator to forecast credit spreads
+%
+%
+%\section{Sentiment in predicting volatility}
+%
+%Extend a GARCH-M with sentiment score and compare to benchmark GARCH-M to forecast volatility $\rightarrow$ benchmark? i.e. what controls?
+%
+%\section{maybe: Sentiment indicator in Risk Weighted Assets/Tier 1 Capital}
+%
+%Is there a "benchmark paper"?
+%
+%\section{Notes}
+%
+%Maybe if I see that first CDS model performs the best and second that news headlines using refinitiv yield similar sentiment scores and are easy to include in my model pipeline, look at euro banks cds (GSIBS for euro area)? as extension since sample is relatively small with only ubs and cs
 
 
 
