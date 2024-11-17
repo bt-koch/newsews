@@ -20,7 +20,7 @@ class preprocess:
     class text:
 
         def remove_tags(text):
-            pattern = r"</?tx>|</?p>|</?zt>|<au>.*?</au>|</?a[^>]*>|</?ld>|</?lg>|<nt>.*?</nt>"
+            pattern = r"</?tx>|</?p>|</?zt>|<au>.*?</au>|</?a[^>]*>|</?ld>|</?lg>|<nt>.*?</nt>|</?span>|<?/strong>|<?/h\\d+>"
             return re.sub(pattern, " ", text)
 
         def tokenize(text):
