@@ -80,6 +80,7 @@ for file in files:
 df = pd.concat(df, axis=0, ignore_index=True)
 
 meta = pd.DataFrame([{"ric": i["ric"], "query_bank": i["query_name"]} for i in ingest.extract.swissdox.query_inputs])
+meta.to_csv(environvars.paths.path_meta+"mapping_ric.csv", sep=";")
 df = pd.merge(df, meta, on="ric", how="left")
 
 map = df[["content_id", "query_bank"]]
