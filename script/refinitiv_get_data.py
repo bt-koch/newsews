@@ -38,9 +38,22 @@ df = ek.get_data(
 df[0].to_csv(environvars.paths.path_refinitiv+"govbonds.csv", sep=";")
 
 # corporate bond spread
+# df = ek.get_data(
+#     instruments=[".MERER10", ".MERER40"],
+#     fields=["TR.CLOSEPRICE.date", "TR.CLOSEPRICE"],
+#     parameters={"SDate":start, "EDate":end, "Frq":"D"}
+# )
+# df[0].to_csv(environvars.paths.path_refinitiv+"corpbonds.csv", sep=";")
+
+# test = ek.get_data(
+#     instruments=[".MERER10", ".MERER40"],
+#     fields=["TR.YIELDTOMATURITY.date", "TR.YIELDTOMATURITY"],
+#     parameters={"SDate":start, "EDate":end, "Frq":"D"}
+# )
+
 df = ek.get_data(
     instruments=[".MERER10", ".MERER40"],
-    fields=["TR.CLOSEPRICE.date", "TR.CLOSEPRICE"],
+    fields=["TR.YIELD.date", "TR.YIELD"],
     parameters={"SDate":start, "EDate":end, "Frq":"D"}
 )
 df[0].to_csv(environvars.paths.path_refinitiv+"corpbonds.csv", sep=";")
