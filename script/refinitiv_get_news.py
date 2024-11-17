@@ -18,11 +18,15 @@ banks = [b["ric"] for b in ingest.extract.swissdox.query_inputs if "gsib_europe"
 df = []
 calls = 0
 
+banks = ["UBSG.S", "HSBA.L", "BARC.L"]
+banks = ["BNPP.PA", "DBKGn.DE", "CAGR.PA"]
+banks = ["INGA.AS", "SAN.MC", "SOGN.PA", "STAN.L"]
+
 for bank in banks:
     print("\nGet news articles for "+bank)
     if bank == "CSGN.S^F23":
         continue
-    for day in days.strftime('%Y-%m-%d'):
+    for day in days.strftime("%Y-%m-%d"):
         try:
             calls = calls+1
             articles = ek.get_news_headlines(
