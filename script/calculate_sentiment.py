@@ -15,8 +15,22 @@ import numpy as np
 from pandarallel import pandarallel
 pandarallel.initialize(progress_bar=True)
 
+datasource = "refinitiv" # either "swissdox" or "refinitiv"
+
+if datasource == "swissdox":
+    file_news = "dataset_clean.csv"
+    model = "finbert_german_sentiment"
+    folder = "sentiment_scores/"
+elif datasource == "refinitiv":
+    file_news = "dataset_refinitiv_clean.csv"
+    model = "finbert_english_sentiment"
+    folder = "sentiment_scores_refinitiv/"
+else:
+    sys.exit("datasource = "+datasource+" is not accepted input.")
+
+
 print("Prepare data...")
-df = pd.read_csv(environvars.paths.path_preprocessed+"dataset_clean.csv", sep=";")
+df = pd.read_csv(environvars.paths.path_preprocessed+file_news, sep=";")
 df = df[["identifier", "query_bank", "content"]]
 device = -1 # to utilize parallelized computation, using "mps" this does not work
 query_input = ingest.extract.swissdox.query_inputs
@@ -31,7 +45,7 @@ for i in range(0, len(dfs)):
         x,
         query_input=query_input,
         device=device,
-        model="finbert_german_sentiment"
+        model=model
     ), axis=1)
     print("\nSentiment estimation of chunk "+str(i+1)+" finished, save file...")
-    temp.to_csv(environvars.paths.path_preprocessed+"sentiment_scores/chunk_"+str(i+1)+".csv", index=False, sep=";")
+    temp.to_csv(environvars.paths.path_preprocessed+folder+"chunk_"+str(i+1)+".csv", index=False, sep=";")
