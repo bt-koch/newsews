@@ -523,13 +523,13 @@ class swissdox:
         },
         {
             "query_name": "deutsche_bank",
-            "regex": "\\bdeutsche\\bbank\\b|\\bdb(k)?\\b",
+            "regex": "deutsche\W+bank|\\bdb(k)?\\b",
             "ric": "DBKGn.DE",
             "group": "gsib_europe"
         },
         {
             "query_name": "groupe_credit_agricole",
-            "regex": "\\bcr[eé]dit\\W+agricole\\b|\\bla\\W+banque\\W+verte\\b|\\baca\\b",
+            "regex": "cr[eé]dit\\W+agricole|\\bla\\W+banque\\W+verte\\b|\\baca\\b",
             "ric": "CAGR.PA",
             "group": "gsib_europe"
         },
@@ -541,19 +541,19 @@ class swissdox:
         },
         {
             "query_name": "santander",
-            "regex": "\\bsan(tander)?\\b",
+            "regex": "santander|\\bsan\\b",
             "ric": "SAN.MC",
             "group": "gsib_europe"
         },
         {
             "query_name": "societe_generale",
-            "regex": "\\bsociet[eé]\\W+g[eé]n[eé]rale\\b|\\bgle\\b",
+            "regex": "societ[eé]\\W+g[eé]n[eé]rale|\\bgle\\b",
             "ric": "SOGN.PA",
             "group": "gsib_europe"
         },
         {
             "query_name": "standard_chartered",
-            "regex": "\\bstandard\\W+chartered\\b|\\bstan\\b",
+            "regex": "standard\\W+chartered|\\bstan\\b",
             "ric": "STAN.L",
             "group": "gsib_europe"
         }
