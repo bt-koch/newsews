@@ -1,7 +1,7 @@
 \chapter{Experimental Analysis}\label{sec5}
 \thispagestyle{empty}
 
-\section{Raw data}
+\section{Data}
 
 \section{Experimental design and hypotheses}
 
@@ -9,38 +9,68 @@
 \cite{annaert2013} \\
 
 \begin{figure}[h]
-\includegraphics[width=\textwidth]{images/replication_annaert_preliminary_results.png}
+\includegraphics[width=0.9\textwidth]{images/replication_annaert_preliminary_results.png}
 \end{figure}
 
 \newpage
 
 \noindent
 \textbf{Hypothesis 2: sentiment improves prediction performance of CDS spreads}
-\cite{gunduz2011} \\
-Here I guess I better use \cite{cathcart2020}.
+\cite{cathcart2020} \\
 
-Here some preliminary results of var just cds on sentiment
+\noindent
+First, some preliminary results of simle VAR of just CDS on sentiment: \\
 
-Using refinitiv sample:
+\noindent
+Using refinitiv sample:\\
+Significant and as expected positive coefficient for sentiment.
 
 \begin{figure}[h]
-\includegraphics[width=\textwidth]{images/var_refinitiv_preliminary_results.png}
+\includegraphics[width=0.75\textwidth]{images/var_refinitiv_preliminary_results.png}
 \end{figure}
 
 \newpage
+\noindent
+Using swissdox sample:\\
+Significant but negative coefficient for sentiment?
+\begin{figure}[h]
+\includegraphics[width=0.75\textwidth]{images/var_swissdox_preliminary_results.png}
+\end{figure}
 
-Using swissdox sample:
+\newpage
+\noindent
+Panel OLS as in \cite{cathcart2020}
 
 \begin{figure}[h]
-\includegraphics[width=\textwidth]{images/var_swissdox_preliminary_results.png}
+\includegraphics[width=0.75\textwidth]{images/cathcart_panel_ols.png}
 \end{figure}
+
+\newpage
+\noindent
+Panel VAR as in \cite{cathcart2020}\\
+Similar to panel OLS except coefficient for termpremium.
+
+\begin{figure}[h]
+\includegraphics[width=0.65\textwidth]{images/cathcart_panel_var.png}
+\end{figure}
+
+Next, use VAR for prediction
+
+\newpage
 
 \noindent
 \textbf{Hypothesis 3: sentiment has impact on stock market volatility}
+\cite{audrino2020} \\
+
+\noindent
+\textbf{Hypothesis x: sentiment has predictive power for maximum drawdown e.g. in next $x$ days}
 \cite{audrino2020}
 
 
+
 \section{Results}
+
+Show regression outputs here, impulse response functions for time series models, metrics for prediction performance, robustness checks etc.
 
 \section{Discussion}
 
