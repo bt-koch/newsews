@@ -74,7 +74,7 @@ equivol <- stocks |>
     ) |> 
     group_by(Instrument) |> 
     mutate(
-        return = (Close.Price-lag(Close.Price))/lag(Close.Price)
+        return = (Close.Price-lag(Close.Price))/lag(Close.Price) * 100
     ) |> 
     # page 449 -> weekly historical sd
     group_by(Instrument, week) |>
@@ -291,3 +291,24 @@ tseries::adf.test(data_var$cds)
 
 var_model <- vars::VAR(data_var, ic = "AIC")
 summary(var_model)
+
+n = 3
+sentiment <- read.csv(file.path(paths$path_results, "sentiment_scores.csv"), sep = ";") |> 
+    filter(bank %in% c("ubs")) |> 
+    mutate(
+        date = as.Date(date),
+        week = cut.Date(date, breaks = "1 week", labels = FALSE)
+    ) |> 
+    group_by(bank, week) |> 
+    reframe(sentiment = mean(sentiment_score, na.rm = TRUE)) |> 
+    group_by(bank) |> 
+    mutate(
+        sentiment_sma = as.numeric(stats::filter(sentiment, rep(1/n,n), sides = 1)),
+        sentiment_wma = as.numeric(stats::filter(sentiment, (n:1)/sum(n:1), sides = 1)),
+        sentiment = lag(sentiment_wma)
+    ) |> 
+    right_join(y = map_date, by = "week") |> 
+    mutate(
+        date = date - 2
+    )
+
