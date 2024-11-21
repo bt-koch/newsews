@@ -31,7 +31,7 @@ df.to_csv(environvars.paths.path_refinitiv+"cds.csv", sep=";")
 
 # benchmark government bonds
 df = ek.get_data(
-    instruments=["EU2YT=RR", "EU5YT=RR", "EU10YT=RR"],
+    instruments=["EU1YT=RR", "EU2YT=RR", "EU5YT=RR", "EU10YT=RR"],
     fields=["TR.MIDYIELD.date", "TR.MIDYIELD"],
     parameters={"SDate":start, "EDate":end, "Frq":"D"}
 )
@@ -52,7 +52,7 @@ df[0].to_csv(environvars.paths.path_refinitiv+"govbonds.csv", sep=";")
 # )
 
 df = ek.get_data(
-    instruments=[".MERER10", ".MERER40"],
+    instruments=[".MERER10", ".MERER40", ".MERHE10"],
     fields=["TR.YIELD.date", "TR.YIELD"],
     parameters={"SDate":start, "EDate":end, "Frq":"D"}
 )
@@ -73,6 +73,15 @@ df = ek.get_data(
     parameters={"SDate":start, "EDate":end, "Frq":"D"}
 )
 df[0].to_csv(environvars.paths.path_refinitiv+"indices.csv", sep=";")
+
+# interest rates
+df = ek.get_data(
+    instruments=["EURAB6E10Y="],
+    fields=["TR.MIDPRICE.Date", "TR.MIDPRICE"],
+    parameters={"SDate":start, "EDate":end, "Frq":"D"}
+)
+df[0].to_csv(environvars.paths.path_refinitiv+"interest.csv", sep=";")
+
 
 # ================================================================================
 # data necessary for cathcart2020
