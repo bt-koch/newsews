@@ -2,6 +2,7 @@
 __pycache__
 venv_newsews
 .vscode
+.Rhistory
 test*.py
 literature/pdf
 tex/*
