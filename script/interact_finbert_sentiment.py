@@ -83,3 +83,9 @@ models.llm.finbert_german_sentiment.finbert_german_sentiment(
             model=model_initialise[1],
             device=device
         )
+
+
+
+import models.llm
+device = models.llm.select_device()
+model_initialise = models.llm.finbert_english_sentiment.model_initialise()
