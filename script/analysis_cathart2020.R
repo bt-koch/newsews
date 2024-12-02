@@ -1,6 +1,8 @@
 rm(list = ls()); gc()
 library(dplyr)
 
+source("visualise/create_table.R")
+
 # =================================================================================
 # 1. Load and prepare data 
 # =================================================================================
@@ -440,7 +442,10 @@ models[["swissdox_lag5"]]["obsperiod"] <- paste(min(as.Date(data$date)), "to", m
 
 
 
-create_table(models, "Panel VAR sentiment", "cdspvar")
+create_table(models, "Panel VAR sentiment", "cdspvar", small_font = T)
+
+create_table(models[1:2], "Panel VAR sentiment, European Bank Sample", "cdspvar_euro")
+create_table(models[3:4], "Panel VAR sentiment, Swiss Bank Sample", "cdspvar_swiss")
 
 
 
