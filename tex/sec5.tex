@@ -3,20 +3,86 @@
 
 \section{Data}
 
-\section{Experimental design and hypotheses}
+\begin{itemize}
+	\item sample schweiz beschreiben
+	\item datenquelle schweiz swissdox
+	\item warum eurobanken erklären
+	\item sample eurobanken beschreiben
+	\item datenquelle eu banken refinitiv
+	\item datenquelle financial data refinitiv
+\end{itemize}
 
-\textbf{Hypothesis 1: sentiment is a determinant of CDS spreads}
-\cite{annaert2013} \\
+RUN REGRESSIONS ALWAYS ON BOTH SAMPLES
 
-\begin{figure}[h]
-\includegraphics[width=0.9\textwidth]{images/replication_annaert_preliminary_results.png}
-\end{figure}
+\section{Experimental Design and Hypotheses}
 
-\newpage
+%Describe and state hypothesis. Describe model setup. \\
 
-\noindent
-\textbf{Hypothesis 2: sentiment improves prediction performance of CDS spreads}
-\cite{cathcart2020} \\
+First, we analyze whether the sentiment indicator is a determinant of changes in CDS spreads. This analysis is based on the work of \cite{annaert2013}, which will be extended by the inclusion of the sentiment indicator as a potential determinant. \cite{annaert2013} try to explain and not to predict changes in CDS spreads, for which they use contemporaneous explanatory variables which can be categorized as credit risk variables, marketability indicators and market wide factors. When analyzing weekly data of 32 listed euro area banks in the period 2004-2010, they DESCRIBE THEIR FINDING HERE IN TERMS OF R SQUARED ETC. Now, we introduce the sentiment indicator as described in equation \ref{eq:sentind} as a new explanatory variable in the model of \cite{annaert2013}. Due to data availability the explanatory variable \textit{bid ask spread} from \cite{annaert2013} is excluded from our analysis. The regression model is then given as follows:
+
+\begin{equation}
+	y_{it} = \alpha_b + \sum_{k=1}^K\beta_{bk}x_{bkt} + \beta_{K+1}sentiment_{bt} + \sum_{g=1}^G\gamma_gz_{gt}+e_{jt}
+\end{equation}
+
+whereby $b$ identifies the bank and $t$ the time period. Note that we use the time-varying bank-specific explanatory variables ($x_{bkt}$) and time-varying common explanatory variables ($z_{gt}$) but extend the model by the time-varying bank-specific sentiment indicator $sentiment_{bt}$. Using this regression model, we test following hypothesis:
+
+\begin{hyp}
+	The sentiment indicator is a determinant of CDS spreads.
+\end{hyp}
+
+We will run the regression with and without the sentiment indicator and assess the significance and the change in the adjusted $R^2$ to test this hypothesis. Since CDS are only traded on UBS and Credit Suisse, we extend our sample to include all European banks which are classified as global systemically important (G-SIB). Additionally, the source for the corresponding news articles are only available for the past 15 months, which is why the observation period is limited from September 2023 to October 2024.\\
+
+However, to use the sentiment indicator as an early warning indicator, we need to assess its predictive power. We follow \cite{cathcart2020}, which find that news sentiment explains and predict CDS returns on countries. Additionally, \cite{cathcart2020} show that the sentiment indicator is a mixture of noise and information. We adjust the panel vector autoregression proposed by \cite{cathcart2020} to be suitable for estimating the model for banks instead of for sovereign credit risk:
+
+\begin{equation}
+	y_{it} = \alpha_i + \beta_{ik}X_{kt-1} + \sum^5_{l=1} \delta_{il}Y_{it-l} + \sum^5_{l=1}\gamma_{il}sentiment_{t-l} + e_{it}
+\end{equation}
+
+whereby HERE DESCRIBE THE VARIABLES IN THE REGRESSION MODEL. 
+
+\begin{hyp}
+	The sentiment indicator predicts CDS returns.
+\end{hyp}
+
+do this with significance and this f test for all lags. run following regressions:
+
+\begin{itemize}
+	\item pvar only sentiment
+	\item pvar lagged sentiment
+	\item pvar sentiment and stock returns
+	\item pvar lagged sentiment and stock returns
+\end{itemize}
+
+%\begin{hyp}
+%	The sentiment indicator supports the theory of over- and underreaction.
+%\end{hyp}
+%
+%do this by analyzing IRFs. \\
+
+Until now, the focus of this analysis was on CDS which are at the moment of this study only traded on UBS as the only Swiss bank. Hence, to assess whether the news sentiment indicator could be used in Swiss banking supervision, we need to use a risk proxy other than CDS. Since this study focuses on publicly traded banks, in the following it is analyzed whether the sentiment indicator has predictive power for stock price volatility and maximum drawdown. Following \cite{audrino2020} .... write that not all explainable vars used.
+
+\begin{equation}
+	audrino model
+\end{equation}
+
+whereby BLABLABLA. Hence hypo:
+
+\begin{hyp}
+	The sentiment indicator predicts stock price volatility.
+\end{hyp} 
+
+Using the same explanatory variables, we assess whether the sentiment indicator is able to predict the maximum drawdown of the corresponding bank. BLABLA
+
+\begin{equation}
+	mdd model
+\end{equation}
+
+Again variable descr. Hence hypo:
+
+\begin{hyp}
+	The sentiment indicator predicts the maximum drawdown of a banks stock price.
+\end{hyp}
+
 
 \noindent
 First, some preliminary results of simle VAR of just CDS on sentiment: \\
@@ -58,23 +124,47 @@ Next, use VAR for prediction
 
 \newpage
 
-\noindent
-\textbf{Hypothesis 3: sentiment has impact on stock market volatility}
-\cite{audrino2020} \\
-
-\noindent
-\textbf{Hypothesis x: sentiment has predictive power for maximum drawdown e.g. in next $x$ days}
-\cite{audrino2020}
 
 
 
 \section{Results}
 
-Show regression outputs here, impulse response functions for time series models, metrics for prediction performance, robustness checks etc.
+Show regression outputs here, impulse response functions for time series models, metrics for prediction performance, robustness checks etc. \\
+
+paragraph 1: hypo 1 \\
+
+\input{tables/cdsdet.tex}
+
+see table \ref{tab:cdsdet} wow it works :-) \\
+
+
+
+
+paragraph 2: hypo 2 \\
+
+%\input{tables/cdspvar.tex}
+
+\input{tables/cdspvar_euro.tex}
+
+\input{tables/cdspvar_swiss.tex}
+
+paragraph 3: hypo 3 \\
+
+paragraph 4: hypo 4 \\
+
+paragraph 5: hypo 5
 
 \section{Discussion}
 
+paragraph 1: result 1 \\
 
+paragraph 2: result 2 \\
+
+paragraph 3: result 3 \\
+
+paragraph 4: result 4 \\
+
+paragraph 5: result 5
 
 
 
