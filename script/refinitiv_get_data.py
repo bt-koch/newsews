@@ -15,6 +15,7 @@ ingest.extract.refinitiv.connect()
 start = "2019-01-01"
 end = "2024-10-31"
 banks = [b["ric"] for b in ingest.extract.swissdox.query_inputs if "gsib_europe" in b["group"]]
+all_banks = [b["ric"] for b in ingest.extract.swissdox.query_inputs]
 
 # Credit Default Swaps
 # note: no permission for bid/ask data, no further proxies for liquidity available
@@ -56,7 +57,7 @@ df[0].to_csv(environvars.paths.path_refinitiv+"corpbonds.csv", sep=";")
 
 # stock price
 df = ek.get_data(
-    instruments=banks,
+    instruments=all_banks,
     fields=["TR.CLOSEPRICE.Date", "TR.CLOSEPRICE"],
     parameters={"SDate":start, "EDate":end, "Frq":"D"}
 )
