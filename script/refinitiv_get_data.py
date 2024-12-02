@@ -16,10 +16,6 @@ start = "2019-01-01"
 end = "2024-10-31"
 banks = [b["ric"] for b in ingest.extract.swissdox.query_inputs if "gsib_europe" in b["group"]]
 
-# ================================================================================
-# data necessary for annaert2013
-# ================================================================================
-
 # Credit Default Swaps
 # note: no permission for bid/ask data, no further proxies for liquidity available
 input_cds = []
@@ -82,9 +78,19 @@ df = ek.get_data(
 )
 df[0].to_csv(environvars.paths.path_refinitiv+"interest.csv", sep=";")
 
+# Tier 1 Capital Ratio
+df = ek.get_data(
+    instruments=banks,
+    fields=["TR.Tier1CapitalRatioMean.Date", "TR.Tier1CapitalRatioMean"],
+    parameters={"SDate":start, "EDate":end, "Frq":"D"}
+)
+df[0].to_csv(environvars.paths.path_refinitiv+"tier1capital.csv", sep=";")
 
-# ================================================================================
-# data necessary for cathcart2020
-# ================================================================================
-
+# Return on Equity
+df = ek.get_data(
+    instruments=banks,
+    fields=["TR.ROEMean.Date", "TR.ROEMean"],
+    parameters={"SDate":start, "EDate":end, "Frq":"D"}
+)
+df[0].to_csv(environvars.paths.path_refinitiv+"roe.csv", sep=";")
 
