@@ -1,6 +1,8 @@
 rm(list = ls()); gc()
 library(dplyr)
 
+source("visualise/create_table.R")
+
 # =================================================================================
 # 1. Load and prepare data 
 # =================================================================================
@@ -19,6 +21,8 @@ indices <- read.csv(file.path(paths$path_refinitiv, "indices.csv"), sep = ";") |
 stocks <- read.csv(file.path(paths$path_refinitiv, "stocks.csv"), sep = ";") |> 
     select(Instrument, Date, Close.Price) |> 
     unique()
+
+sentiment_swiss <- read.csv(file.path(paths$path_results, "sentiment_scores.csv"), sep = ";")
 
 # credit default swaps
 cds <- cds |> 
@@ -173,44 +177,7 @@ map_date <- read.csv(file.path(paths$path_results, "sentiment_scores_refinitiv.c
 
 meta_ric <- read.csv(file.path(paths$path_meta, "mapping_ric.csv"), sep = ";")
 
-pvals <- c()
-for (n in 1:20) {
-    sentiment <- read.csv(file.path(paths$path_results, "sentiment_scores_refinitiv.csv"), sep = ";") |> 
-        mutate(
-            date = as.Date(date),
-            week = cut.Date(date, breaks = "1 week", labels = FALSE)
-        ) |> 
-        group_by(bank, week) |> 
-        reframe(sentiment = mean(sentiment_score, na.rm = TRUE)) |> 
-        group_by(bank) |> 
-        mutate(
-            sentiment_sma = as.numeric(stats::filter(sentiment, rep(1/n,n), sides = 1)),
-            sentiment_wma = as.numeric(stats::filter(sentiment, (n:1)/sum(n:1), sides = 1)),
-            sentiment = lag(sentiment_wma)
-        ) |> 
-        right_join(y = map_date, by = "week") |> 
-        mutate(
-            date = date - 2
-        )
-
-    # create dataset
-    df <- sentiment |> 
-        left_join(y = meta_ric, by = c("bank" = "query_bank")) |> 
-        left_join(y = cds, by = c("date", "ric" = "bank")) |> 
-        left_join(y = riskfree, by = "date") |> 
-        left_join(y = leverage, by = c("date", "ric" = "bank")) |> 
-        left_join(y = equivol, by = c("date", "ric" = "bank")) |> 
-        left_join(y = termstructure, by = "date") |> 
-        left_join(y = corpbondspread, by = "date") |> 
-        left_join(y = marketreturn, by = "date") |> 
-        left_join(y = marketvola, by = "date")
-
-    result <- plm::plm(cds ~ riskfree + leverage + equivol + termstructure + corpbondspread + marketreturn + marketvola + sentiment, data = df, index = c("bank", "date"))
-    pval <- summary(result)$coefficients[names(result$coefficients) == "sentiment", 4]
-    pvals <- c(pvals, pval)
-}
-
-n = 6
+# n = 4
 sentiment <- read.csv(file.path(paths$path_results, "sentiment_scores_refinitiv.csv"), sep = ";") |> 
     mutate(
         date = as.Date(date),
@@ -218,16 +185,52 @@ sentiment <- read.csv(file.path(paths$path_results, "sentiment_scores_refinitiv.
     ) |> 
     group_by(bank, week) |> 
     reframe(sentiment = mean(sentiment_score, na.rm = TRUE)) |> 
-    group_by(bank) |> 
-    mutate(
-        sentiment_sma = as.numeric(stats::filter(sentiment, rep(1/n,n), sides = 1)),
-        sentiment_wma = as.numeric(stats::filter(sentiment, (n:1)/sum(n:1), sides = 1)),
-        sentiment = lag(sentiment_wma)
-    ) |> 
+    # group_by(bank) |> 
+    # mutate(
+    #     sentiment_sma = as.numeric(stats::filter(sentiment, rep(1/n,n), sides = 1)),
+    #     sentiment_wma = as.numeric(stats::filter(sentiment, (n:1)/sum(n:1), sides = 1))#,
+    #     # sentiment = sentiment+1,
+    #     # sentiment = (sentiment-lag(sentiment))/lag(sentiment)
+    #     # , sentiment_l1 = lag(sentiment)
+    # ) |> 
     right_join(y = map_date, by = "week") |> 
     mutate(
         date = date - 2
     )
+
+
+map_date_swiss <- read.csv(file.path(paths$path_results, "sentiment_scores.csv"), sep = ";") |> 
+  mutate(
+    date = as.Date(date),
+    week = cut.Date(date, breaks = "1 week", labels = FALSE)
+  ) |> 
+  group_by(week) |> 
+  slice_max(order_by = date, n = 1) |> 
+  ungroup() |> 
+  select(week, date) |> 
+  unique()
+# n = 3
+sentiment_swiss <- read.csv(file.path(paths$path_results, "sentiment_scores.csv"), sep = ";") |> 
+  filter(bank %in% c("credit_suisse", "ubs")) |> 
+  mutate(
+    date = as.Date(date),
+    week = cut.Date(date, breaks = "1 week", labels = FALSE)
+  ) |> 
+  group_by(bank, week) |> 
+  reframe(sentiment = mean(sentiment_score, na.rm = TRUE)) |> 
+  # group_by(bank) |> 
+  # mutate(
+  #   sentiment_sma = as.numeric(stats::filter(sentiment, rep(1/n,n), sides = 1)),
+  #   sentiment_wma = as.numeric(stats::filter(sentiment, (n:1)/sum(n:1), sides = 1))#,
+  #   # sentiment = sentiment+1,
+  #   # sentiment = (sentiment-lag(sentiment))/lag(sentiment)
+  #   # ,sentiment=lag(sentiment)
+  # ) |> 
+  right_join(y = map_date_swiss, by = "week") |> 
+  mutate(
+    date = date - 2
+  )
+
 
 # create dataset
 df <- sentiment |> 
@@ -240,75 +243,43 @@ df <- sentiment |>
     left_join(y = corpbondspread, by = "date") |> 
     left_join(y = marketreturn, by = "date") |> 
     left_join(y = marketvola, by = "date")
-
-result <- plm::plm(cds ~ riskfree + leverage + equivol + termstructure + corpbondspread + marketreturn + marketvola + sentiment_wma, data = df, index = c("bank", "date"))
-summary(result)
-
-n = 3
-sentiment <- read.csv(file.path(paths$path_results, "sentiment_scores_refinitiv.csv"), sep = ";") |> 
-    mutate(
-        date = as.Date(date),
-        week = cut.Date(date, breaks = "1 week", labels = FALSE)
-    ) |> 
-    group_by(bank, week) |> 
-    reframe(sentiment = mean(sentiment_score, na.rm = TRUE)) |> 
-    group_by(bank) |> 
-    mutate(
-        sentiment_sma = as.numeric(stats::filter(sentiment, rep(1/n,n), sides = 1)),
-        sentiment_wma = as.numeric(stats::filter(sentiment, (n:1)/sum(n:1), sides = 1)),
-        sentiment = lag(sentiment_wma)
-    ) |> 
-    right_join(y = map_date, by = "week") |> 
-    mutate(
-        date = date - 2
-    )
-
-# create dataset
-df <- sentiment |> 
-    left_join(y = meta_ric, by = c("bank" = "query_bank")) |> 
-    left_join(y = cds, by = c("date", "ric" = "bank")) |> 
-    left_join(y = riskfree, by = "date") |> 
-    left_join(y = leverage, by = c("date", "ric" = "bank")) |> 
-    left_join(y = equivol, by = c("date", "ric" = "bank")) |> 
-    left_join(y = termstructure, by = "date") |> 
-    left_join(y = corpbondspread, by = "date") |> 
-    left_join(y = marketreturn, by = "date") |> 
-    left_join(y = marketvola, by = "date")
-
+df <- df[complete.cases(df),]
 result <- plm::plm(cds ~ riskfree + leverage + equivol + termstructure + corpbondspread + marketreturn + marketvola + sentiment, data = df, index = c("bank", "date"))
 summary(result)
+models <- list()
+models[["refinitiv"]] <- summary(result)
+models[["refinitiv"]]["sample"] <- "European Banks"
+models[["refinitiv"]]["groups"] <- df$bank |> unique() |> length()
+models[["refinitiv"]]["nobs"] <- nrow(df)
+models[["refinitiv"]]["obsperiod"] <- paste(min(df$date), "to", max(df$date))
+
+# result <- lm(cds ~ riskfree + leverage + equivol + termstructure + corpbondspread + marketreturn + marketvola + sentiment, data = df, index = c("bank", "date"))
+# summary(result)
+
+df_swiss <- sentiment_swiss |> 
+  left_join(y = meta_ric, by = c("bank" = "query_bank")) |> 
+  left_join(y = cds, by = c("date", "ric" = "bank")) |> 
+  left_join(y = riskfree, by = "date") |> 
+  left_join(y = leverage, by = c("date", "ric" = "bank")) |> 
+  left_join(y = equivol, by = c("date", "ric" = "bank")) |> 
+  left_join(y = termstructure, by = "date") |> 
+  left_join(y = corpbondspread, by = "date") |> 
+  left_join(y = marketreturn, by = "date") |> 
+  left_join(y = marketvola, by = "date")
+df_swiss <- df_swiss[complete.cases(df_swiss),]
+result <- plm::plm(cds ~ riskfree + leverage + equivol + termstructure + corpbondspread + marketreturn + marketvola + sentiment, data = df_swiss, index = c("bank", "date"))
+summary(result)
+
+models[["swissdox"]] <- summary(result)
+models[["swissdox"]]["sample"] <- "Swiss Banks"
+models[["swissdox"]]["groups"] <- df_swiss$bank |> unique() |> length()
+models[["swissdox"]]["nobs"] <- nrow(df_swiss)
+models[["swissdox"]]["obsperiod"] <- paste(min(df_swiss$date), "to", max(df_swiss$date))
 
 
-# just to test run simple(st) VAR
-data <- df |> 
-    dplyr::select(bank, date, sentiment, cds)
+# result <- lm(cds ~ riskfree + leverage + equivol + termstructure + corpbondspread + marketreturn + marketvola + sentiment, data = df_swiss, index = c("bank", "date"))
+# summary(result)
 
-data$bank <- as.factor(data$bank)
-data_var <- data[, c("sentiment", "cds")]
+create_table(models, "Determinant of CDS spread", "cdsdet")
 
-tseries::adf.test(data_var$sentiment)
-tseries::adf.test(data_var$cds)
-
-var_model <- vars::VAR(data_var, ic = "AIC")
-summary(var_model)
-
-n = 3
-sentiment <- read.csv(file.path(paths$path_results, "sentiment_scores.csv"), sep = ";") |> 
-    filter(bank %in% c("ubs")) |> 
-    mutate(
-        date = as.Date(date),
-        week = cut.Date(date, breaks = "1 week", labels = FALSE)
-    ) |> 
-    group_by(bank, week) |> 
-    reframe(sentiment = mean(sentiment_score, na.rm = TRUE)) |> 
-    group_by(bank) |> 
-    mutate(
-        sentiment_sma = as.numeric(stats::filter(sentiment, rep(1/n,n), sides = 1)),
-        sentiment_wma = as.numeric(stats::filter(sentiment, (n:1)/sum(n:1), sides = 1)),
-        sentiment = lag(sentiment_wma)
-    ) |> 
-    right_join(y = map_date, by = "week") |> 
-    mutate(
-        date = date - 2
-    )
 
