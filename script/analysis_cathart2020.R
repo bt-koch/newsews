@@ -311,6 +311,7 @@ data <- df |>
         stockreturn
     )
 data <- data[complete.cases(data),]
+
 data_swiss <- df_swiss |>
   dplyr::select(
     bank, date, sentiment, cds, stockmarket, volatilitypremium,
@@ -391,6 +392,24 @@ summary(pvar2)
 models[["refinitiv_lag5"]] <- summary(pvar2)
 models[["refinitiv_lag5"]]["sample"] <- "European Banks"
 models[["refinitiv_lag5"]]["obsperiod"] <- paste(min(as.Date(data$date)), "to", max(as.Date(data$date)))
+
+
+pvar2 <- panelvar::pvargmm(
+  dependent_vars = c("cds"),
+  lags = 5, # Number of lags of dependent variables
+  exog_vars = c("sentiment", "sentiment_l1", "sentiment_l2", "sentiment_l3", "sentiment_l4", "sentiment_l5", "stockmarket", "volatilitypremium", "termpremium", "treasurymarket", "investgradespread", "highyieldspread", "stockreturn"),
+  # transformation = "fd",  # First-difference "fd" or forward orthogonal deviations "fod"
+  data = data,
+  panel_identifier = c("bank", "date"),  # Vector of panel identifiers
+  steps = c("onestep")#,   # "onestep", "twostep" or "mstep" estimation
+  # system_instruments = FALSE,  #    System GMM estimator
+  # max_instr_dependent_vars = 99, #  Maximum number of instruments for dependent variables
+  # min_instr_dependent_vars = 2L, # Minimum number of instruments for dependent variables
+  # collapse = FALSE
+)
+summary(pvar2)
+
+
 
 pvar2 <- panelvar::pvargmm(
   dependent_vars = c("cds"),
