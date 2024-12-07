@@ -4,9 +4,15 @@ create_table <- function(models, caption, label, small_font = F) {
     content <- create_table_plm(models)
   } else if ("summary.pvargmm" %in% class(models[[1]])) {
     content <- create_table_pvar(models)
+  } else if ("garchx" %in% class(models[[1]])) {
+    content <- create_table_garchx(models)
+  } else if ("HARmodel" %in% class(models[[1]])) {
+    content <- create_table_har(models)
   } else {
     stop("Not specified for this class of model.")
   }
+  
+  footnote <- "Notes: *** p\\textless{}0.01, ** p\\textless{}0.05, * p\\textless{}0.1. Standard errors reported in parantheses."
   
   textable <- c(
     "\\begin{table}[h!]",
@@ -16,7 +22,9 @@ create_table <- function(models, caption, label, small_font = F) {
     paste(paste(names(content), collapse = "&"), "\\\\ \\hline"),
     paste(apply(content, 1, paste, collapse = "&"), "\\\\"),
     "\\hline",
+    paste0("\\multicolumn{", ncol(content), "}{l}{", footnote, "}"),
     "\\end{tabular}",
+    "",
     paste0("\\caption{", caption, "}"),
     paste0("\\label{tab:", label, "}"),
     "\\end{table}"
@@ -144,4 +152,86 @@ create_table_pvar <- function(models) {
   output[is.na(output)] <- ""
   
   return(output)
+}
+
+create_table_garchx <- function(models) {
+  
+  output <- data.frame()
+  
+  for (i in 1:length(models)) {
+    
+    ttest <- models[[i]] |> 
+      garchx::ttest0()
+    
+    temp <- rbind(
+      c(ttest[1,1], ttest[1,2], ttest[1,4]),
+      c(ttest[2,1], ttest[2,2], ttest[2,4]),
+      c(ttest[3,1], ttest[3,2], ttest[3,4])
+    ) |> 
+      as.data.frame() |> 
+      rename(coeff = 1, se = 2, pval = 3) |> 
+      mutate(
+        significance = if_else(pval < 0.1, "*", ""),
+        significance = if_else(pval < 0.05, "**", significance),
+        significance = if_else(pval < 0.01, "***", significance),
+        summary =  paste0(round(coeff, 3), significance, " (", round(se, 2), ")")
+      ) |> 
+      add_row(summary = as.character(models[[i]]$y.n)) |> 
+      add_row(summary = models[[i]]$obsperiod) |> 
+      cbind(dimension = c("alpha", "beta", "lambda", "Number of Obs.", "Obs. Period")) |> 
+      select(dimension, summary)
+    
+    if (ncol(output) == 0) {
+      output <- temp
+    } else {
+      output <- merge(output, temp, by = "dimension")
+    }
+    
+    output <- output |> 
+      rename(!!models[[i]]$sample := summary)
+  }
+  
+  names(output)[names(output) == "dimension"] <- ""
+  
+  return(output)
+  
+}
+
+create_table_har <- function(models) {
+  
+  output <- data.frame()
+  
+  for (i in 1:length(models)) {
+    
+    summary <- summary(models[[i]])
+    
+    temp <- summary$coefficients |> 
+      as.data.frame() |>
+      mutate(
+        significance = if_else(`Pr(>|t|)` < 0.1, "*", ""),
+        significance = if_else(`Pr(>|t|)` < 0.05, "**", significance),
+        significance = if_else(`Pr(>|t|)` < 0.01, "***", significance),
+        summary = paste0(round(Estimate, 3), significance, " (", round(`Std. Error`, 2), ")")
+      ) |> 
+      cbind(variable = rownames(summary$coefficients)) |> 
+      select(variable, summary) |> 
+      add_row(variable = "sample", summary = models[[i]]$sample) |> 
+      add_row(variable = "Number of Obs.", summary = models[[i]]$nobs |> as.character()) |> 
+      add_row(variable = "Obs. Period", summary = models[[i]]$obsperiod)
+    
+    if (ncol(output) == 0) {
+      output <- temp
+    } else {
+      output <- merge(output, temp, by = "variable")
+    }
+    
+    output <- output |> 
+      rename(!!models[[i]]$sample := summary)
+    
+  }
+  
+  names(output)[names(output) == "dimension"] <- ""
+  
+  return(output)
+  
 }
