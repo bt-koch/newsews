@@ -12,7 +12,7 @@ For the articles in our sample, depending on the underlying data source, it is n
 
 Hence, to avoid introducing noise through irrelevant articles, first a rule-based model is applied to identify relevant articles. First, the article is split into its paragraphs. Using pattern matching and predefined identifying patterns for the corresponding bank, we check for each paragraph if the bank is mentioned in it and remove paragraphs with no occurrence of the banks identifying pattern. Afterwards, again using pattern matching now with a predefined list of economic and financial keywords, we check whether the content of the article is relevant for our analysis by checking for the occurrence of a keyword in the paragraphs. Before we construct the sentiment indicator as described in step 2, we only consider articles which were classified as relevant as described before and feed only paragraphs in the construction workflow in which again the bank identifying pattern occurs.
 
-\section{Step 2: Estimate Sentiment of Text}
+\section{Step 2: Estimate Sentiment of Text} \label{sentim-classification}
 
 Once Step 1 is finished, we have a list of paragraphs extracted from a specific article which we assume contain relevant information about the corresponding bank $b$ at time $t$. Next, for each paragraph, we want to assess whether the sentiment is positive, neutral or negative. For this classification, we use Bidirectional Encoder Representation from Transaction (BERT) models based on \cite{devlin2019}. \cite{devlin2019} use a masked language model (MLM) and next sentence prediction (NSP) as two unsupervised tasks to pre-train the BERT model. The MLM randomly masks 15\% of tokens in a sentence and predicts the  masked tokens using the remaining tokens in the sentence to obtain a bidirectional pre-trained model, respectively to understand the relationship between word in a sentence. To further understand sentence relationships, \cite{devlin2019} pre-train the BERT model with a next sentence prediction task. Hence, the main advantage of using a BERT model in this analysis compared to traditional methods such as lexicon-based models is the ability of the BERT model to understand context. Additionally, fine-tuning a pre-trained BERT model to perform a specific task does not require substantial task-specific modifications of the architecture and is hence relatively easy \citep{devlin2019}. To classify both german and english text, this analysis utilizes a BERT model which was fine-tuned for financial sentiment classification on the corresponding language.\footnote{Both models are available on \url{https://huggingface.co}. The english model is described in \cite{araci2019} and available on \url{https://huggingface.co/ProsusAI/finbert}. The german model is described in \cite{scherrmann2023} and available on \url{https://huggingface.co/scherrmann/GermanFinBert_SC_Sentiment}} Table \ref{tab:bert-examples} demonstrates the ability of the german BERT model to correctly classify the sentiment of the text given the context.
 
@@ -30,7 +30,7 @@ input & classification \\ \hline
 }
 \end{table}
 
-The sentiment $s$ of each paragraph $p$ in the article $a$ in this list is classified by the pre-trained BERT-model as follows:
+The sentiment $s$ towards bank $b$ at time $t$ of each paragraph $p$ in the article $a$ in this list is classified by the pre-trained BERT model as follows:
 
 \begin{equation}
 s_{b,t,a,p} = \begin{cases}
@@ -43,18 +43,16 @@ s_{b,t,a,p} = \begin{cases}
 
 \section{Step 3: Construction of Sentiment Indicator}
 
-To define the overall sentiment score of a bank at time $t$ as the arithmetic mean of the sentiment scores estimated as described in step 2 of all articles $A$ published about bank $b$ at time $t$, whereby the sentiment score of an article $a$ itself is defined as the arithmetic mean of the sentiment score of all paragraphs $P$:
+After the sentiment of all paragraphs $p \in P$ in article $a$ about bank $b$ at time $t$ is classified as described in section \ref{sentim-classification}, the overall sentiment of article $a$ ($s_{b,t,a}$) is calculated as the arithmetic mean of all corresponding paragraphs $p$. To define the overall sentiment towards bank $b$ at time $t$, the sentiment is further aggregated by the arithmetic mean of the sentiment $s_{b,t,a}$ for all articles $a \in A$ about bank $b$ at time $t$:
 
  \begin{equation} \label{eq:sentind}
  	s_{b,t} = \frac{1}{A} \sum^A_{a=1} s_{b,t,a} \quad\text{whereby}\quad s_{b,t,a} = \frac{1}{P} \sum^P_{p=1} s_{b,t,a,p}
  \end{equation}
  
-Hier eher erwähnen dass für weekly data erwartet wird dass noice durch aggregation durch mean pro week reduziert wird. bei daily aber dann machen wir das mit wma. \\
+ As the literature shows, sentiment scores tend to be noisy, which is why smoothing techniques or aggregation on higher frequency are applied to reduce the noise observed. In this analysis, when working in weekly frequency, we assume that the noise is adequately reduced. We assume that information contained in articles before $t$ remain relevant at time $t$, whereby the relevancy is decreasing over time. When working in weekly frequency, we incorporate this assumption into our models by including lagged values of the sentiment indicator $s_{b,t}$ into our models. However, when working in daily frequency, we construct the sentiment indicator $s\_wma_{b,t}$ as a $N$-period backward-looking weighted moving average:
  
-Depending on the model specification, we assume that the information contained in previous articles is still relevant at time $t$, whereby the relevancy is decreasing over time. Hence, we construct the sentiment indicator $SI_{b,t}$ as a $N$-period backward-looking weighted moving average as follows:
- 
-\begin{equation} \label{eq:sentind}
-	SI_{b,t} = \frac{1}{\sum^N_{n=1}n} * \sum^{N-1}_{n=0}(N-n)*s_{b,t-n}
+\begin{equation} \label{eq:sentind_wma}
+	s\_wma_{b,t} = \frac{1}{\sum^N_{n=1}n} * \sum^{N-1}_{n=0}(N-n)*s_{b,t-n}
 \end{equation}
 
 
