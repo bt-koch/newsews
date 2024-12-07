@@ -3,18 +3,14 @@
 
 \section{Data}
 
-\begin{itemize}
-	\item sample schweiz beschreiben
-	\item datenquelle schweiz swissdox
-	\item warum eurobanken erklären
-	\item sample eurobanken beschreiben
-	\item datenquelle eu banken refinitiv
-	\item datenquelle financial data refinitiv
-\end{itemize}
+For this analysis, news media articles were retrieved from either the Swissdox@LiRI database or from the Eikon Data application programming interface (API). Depending on the queried bank, one of those providers were used. \\
 
-hier sicher noch die methode zum bezug von news daten von refinitiv erwähnen mit dem random sampling. zudem noch code schreiben um zu sehen wieviel ich filtere mit diesem random 5
+Swissdox@LiRI is a database which includes about 23 million media articles from Swiss media sources, mainly from the German and French speaking parts of Switzerland. It provides an interface specifically designed for big data applications and hence allows to query the whole database with the option to filter for language, time interval, keywords, sources and document types and returns all matching news articles in a machine-readable format. The whole content of the article is available. For this analysis, a query for each publicly traded Swiss bank was submitted to the database, whereby the database was filtered using the banks name, stock ticker or a common abbreviation of the bank name as keywords for a time interval starting in January 2022 until June 2023. Only German-language articles were used for the analysis however. \\
 
-RUN REGRESSIONS ALWAYS ON BOTH SAMPLES
+The sample of publicly traded Swiss banks was extended to all European Globally Systematically Important Banks (G-SIBs) from the 2023 list, which were identified by the Financial Stability Board in consultation with the Basel Committe on Banking Supervision and national authorities. To retrieve news articles about the European G-SIBs, the Eikon Data API as a second provider for news media articles was used, which provided the option to request news articles from their news feed. This provider also offers the whole content of news articles in a machine-readable format. However, since the interface is not specifically designed for big data applications, the procurement of each item requires a separate API request. Therefore, corresponding API limits are quickly reached, which is why only english articles which were labeled as significant news by an algorithm by Eikon were requested. Furthermore, if there were more than 5 articles correspondent to a specific bank on a given day, only five articles were queried which were chosen randomly. HIER SCHREIBEN WIE HÄUFIG DAS MIT MEH ALS FÜF DER FALL WAR.
+
+
+
 
 \section{Experimental Design and Hypotheses}
 
@@ -183,11 +179,17 @@ hier dann erwähnen dass daily data hence wma verwendet wurde. erwähnen dass auch
 
 here i guess i will just focus on champion model \\
 
-then also look at credit suisse at crisis
+then also look at credit suisse at crisis \\
+
+visualize pred vs actual for cs and ubs \\
 
 \newpage
 
 \section{Discussion}
+
+hier auch noch hinweisen auf unterschied zwischen refinitiv vs swissdox. \\
+
+klar ist sample period anderst. aber eventuell auch unterschiede zwischen den quellen? im sinne von enthalten dedicated financial news articles andere informationen als main stream media? im sinn von eventuell ist relevanz von information in mainstream höher da "reguläre entwicklungen" grosse population ncith interessiert.
 
 paragraph 1: result 1 \\
 

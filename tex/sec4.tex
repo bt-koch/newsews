@@ -3,29 +3,7 @@
 
 \section{Overview}
 
-
-TO DO
-
-
-
-
-%Short introduction to LLMS in general and Bidirectional Encoder Representations from Transformers (BERT)
-%
-%description of LLM and BERT models and what their advantages are compared to "traditional" approaches
-%
-%Short overview of different Methods for leveraging LLMs
-%
-%Definition, pros and cons for:
-%
-%\begin{itemize}
-%	\item Prompt Engineering
-%	\item Retrieval-Augmented Generation (RAG)
-%	\item Fine-tuning
-%\end{itemize}
-%
-%How to use LLMs for Classification
-%
-%Short overview on how it works and how it can be done. Write about Deterministic vs Non-Deterministic Behavior
+As shown in previous literature, the sentiment in news articles can be a leading indicator for reactions in the stock market. Goal of this analysis is to construct the sentiment indicator from news media articles using a large language model (LLM) respectively a Bidirectional Encoder Representation from Transaction (BERT) model to estimate the sentiment from a given text. It is expected that a BERT model performs better than traditional methods such as bag-of-word algorithms in correctly classifying the sentiment of text due to its ability to understand context in text. Using news articles from different sources a sentiment indicator in daily and weekly frequency will be constructed. The goal of this indicator will be to deliver early warning for increased risk of a specific bank.
 
 
 \section{Step 1: Preprocessing of News Articles}
@@ -36,7 +14,7 @@ Hence, to avoid introducing noise through irrelevant articles, first a rule-base
 
 \section{Step 2: Estimate Sentiment of Text}
 
-Once Step 1 is finished, we have a list of paragraphs extracted from a specific article which we assume contain relevant information about the corresponding bank $b$ at time $t$. Next, for each paragraph, we want to assess whether the sentiment is positive, neutral or negative. For this classification, we use models Bidirectional Encoder Representation from Transaction (BERT) models based on \cite{devlin2019}. The main advantage of using a BERT model in this analysis compared to traditional methods such as lexicon-based models is the ability of the BERT model to understand context. Additionally, fine-tuning a pre-trained BERT model to perform a specific task does not require substantial task-specific modifications of the architecture and is hence relatively easy \citep{devlin2019}. To classify both german and english text, this analysis utilizes a BERT model which was fine-tuned for financial sentiment classification on the corresponding language.\footnote{Both models are available on \url{https://huggingface.co}. The english model is described in \cite{araci2019} and available on \url{https://huggingface.co/ProsusAI/finbert}. The german model is described in \cite{scherrmann2023} and available on \url{https://huggingface.co/scherrmann/GermanFinBert_SC_Sentiment}} Table \ref{tab:bert-examples} demonstrates the ability of the german BERT model to correctly classify the sentiment of the text given the context.
+Once Step 1 is finished, we have a list of paragraphs extracted from a specific article which we assume contain relevant information about the corresponding bank $b$ at time $t$. Next, for each paragraph, we want to assess whether the sentiment is positive, neutral or negative. For this classification, we use Bidirectional Encoder Representation from Transaction (BERT) models based on \cite{devlin2019}. \cite{devlin2019} use a masked language model (MLM) and next sentence prediction (NSP) as two unsupervised tasks to pre-train the BERT model. The MLM randomly masks 15\% of tokens in a sentence and predicts the  masked tokens using the remaining tokens in the sentence to obtain a bidirectional pre-trained model, respectively to understand the relationship between word in a sentence. To further understand sentence relationships, \cite{devlin2019} pre-train the BERT model with a next sentence prediction task. Hence, the main advantage of using a BERT model in this analysis compared to traditional methods such as lexicon-based models is the ability of the BERT model to understand context. Additionally, fine-tuning a pre-trained BERT model to perform a specific task does not require substantial task-specific modifications of the architecture and is hence relatively easy \citep{devlin2019}. To classify both german and english text, this analysis utilizes a BERT model which was fine-tuned for financial sentiment classification on the corresponding language.\footnote{Both models are available on \url{https://huggingface.co}. The english model is described in \cite{araci2019} and available on \url{https://huggingface.co/ProsusAI/finbert}. The german model is described in \cite{scherrmann2023} and available on \url{https://huggingface.co/scherrmann/GermanFinBert_SC_Sentiment}} Table \ref{tab:bert-examples} demonstrates the ability of the german BERT model to correctly classify the sentiment of the text given the context.
 
 \begin{table}[H]
 \caption{Examples of Sentiment Classification}
