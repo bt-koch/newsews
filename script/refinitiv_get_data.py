@@ -95,3 +95,11 @@ df = ek.get_data(
 )
 df[0].to_csv(environvars.paths.path_refinitiv+"roe.csv", sep=";")
 
+# msci switzerland financials index
+df = ek.get_data(
+    instruments=[".dMICH0FN00PUS"],
+    fields=["TR.CLOSEPRICE.Date", "TR.CLOSEPRICE"],
+    parameters={"SDate":start, "EDate":end, "Frq":"D"}
+)
+df[0].to_csv(environvars.paths.path_refinitiv+"msci_switzerland_financials.csv", sep=";")
+
