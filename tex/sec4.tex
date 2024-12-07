@@ -4,7 +4,7 @@
 \section{Overview}
 
 
-
+TO DO
 
 
 
@@ -71,11 +71,13 @@ To define the overall sentiment score of a bank at time $t$ as the arithmetic me
  	s_{b,t} = \frac{1}{A} \sum^A_{a=1} s_{b,t,a} \quad\text{whereby}\quad s_{b,t,a} = \frac{1}{P} \sum^P_{p=1} s_{b,t,a,p}
  \end{equation}
  
-% We assume that the information in past articles is still relevant at time $t$, whereby the relevancy is decreasing over time. Hence, we construct the sentiment indicator $SI_{b,t}$ as a $N$-period backward-looking weighted moving average as follows:
-% 
-%\begin{equation} \label{eq:sentind}
-%	SI_{b,t} = \frac{1}{\sum^N_{n=1}n} * \sum^{N-1}_{n=0}(N-n)*s_{b,t-n}
-%\end{equation}
+Hier eher erwähnen dass für weekly data erwartet wird dass noice durch aggregation durch mean pro week reduziert wird. bei daily aber dann machen wir das mit wma. \\
+ 
+Depending on the model specification, we assume that the information contained in previous articles is still relevant at time $t$, whereby the relevancy is decreasing over time. Hence, we construct the sentiment indicator $SI_{b,t}$ as a $N$-period backward-looking weighted moving average as follows:
+ 
+\begin{equation} \label{eq:sentind}
+	SI_{b,t} = \frac{1}{\sum^N_{n=1}n} * \sum^{N-1}_{n=0}(N-n)*s_{b,t-n}
+\end{equation}
 
 
 

@@ -12,6 +12,8 @@
 	\item datenquelle financial data refinitiv
 \end{itemize}
 
+hier sicher noch die methode zum bezug von news daten von refinitiv erwähnen mit dem random sampling. zudem noch code schreiben um zu sehen wieviel ich filtere mit diesem random 5
+
 RUN REGRESSIONS ALWAYS ON BOTH SAMPLES
 
 \section{Experimental Design and Hypotheses}
@@ -59,17 +61,7 @@ do this with significance and this f test for all lags. run following regression
 %
 %do this by analyzing IRFs. \\
 
-Until now, the focus of this analysis was on CDS which are at the moment of this study only traded on UBS as the only Swiss bank. Hence, to assess whether the news sentiment indicator could be used in Swiss banking supervision, we need to use a risk proxy other than CDS. Since this study focuses on publicly traded banks, in the following it is analyzed whether the sentiment indicator has predictive power for stock price volatility and maximum drawdown. Following \cite{audrino2020} .... write that not all explainable vars used.
-
-\begin{equation}
-	audrino model
-\end{equation}
-
-whereby BLABLABLA. Hence hypo:
-
-\begin{hyp}
-	The sentiment indicator predicts stock price volatility.
-\end{hyp} 
+Until now, the focus of this analysis was on CDS which are at the moment of this study only traded on UBS as the only Swiss bank. Hence, to assess whether the news sentiment indicator could be used in Swiss banking supervision, we need to use a risk proxy other than CDS. Since this study focuses on publicly traded banks, in the following it is analyzed whether the sentiment indicator has predictive power for the maximum drawdown and stock price volatility. 
 
 Using the same explanatory variables, we assess whether the sentiment indicator is able to predict the maximum drawdown of the corresponding bank. BLABLA
 
@@ -84,63 +76,84 @@ Again variable descr. Hence hypo:
 \end{hyp}
 
 
-\noindent
-First, some preliminary results of simle VAR of just CDS on sentiment: \\
 
-\noindent
-Using refinitiv sample:\\
-Significant and as expected positive coefficient for sentiment.
+ stock price volatility and maximum drawdown. Following \cite{audrino2020} .... write that not all explainable vars used.
 
-\begin{figure}[h]
-\includegraphics[width=0.75\textwidth]{images/var_refinitiv_preliminary_results.png}
-\end{figure}
+HAR \cite{boudt2022}
 
-\newpage
-\noindent
-Using swissdox sample:\\
-Significant but negative coefficient for sentiment?
-\begin{figure}[h]
-\includegraphics[width=0.75\textwidth]{images/var_swissdox_preliminary_results.png}
-\end{figure}
+\begin{equation}
+	RV_{t+1} = \beta_0 + \beta_1RV_t + \beta_2RV_{t-4:t} + \beta_3RV_{t-21:t} + \beta_4sentiment_{t} + \epsilon_{t+1}
+\end{equation}
 
-\newpage
-\noindent
-Panel OLS as in \cite{cathcart2020}
+whereby BLABLABLA. Hence hypo:
 
-\begin{figure}[h]
-\includegraphics[width=0.75\textwidth]{images/cathcart_panel_ols.png}
-\end{figure}
+GARCHX: \cite{sucarrat2021}
 
-\newpage
-\noindent
-Panel VAR as in \cite{cathcart2020}\\
-Similar to panel OLS except coefficient for termpremium.
 
-\begin{figure}[h]
-\includegraphics[width=0.65\textwidth]{images/cathcart_panel_var.png}
-\end{figure}
+\begin{equation}
+	\sigma^2_t = \omega + \alpha_1\epsilon^2_{t-1} + \beta_1\sigma^2_{t-1} + \lambda_1x_{1,t-1}
+\end{equation}
 
-Next, use VAR for prediction
-
-\newpage
+\begin{hyp}
+	The sentiment indicator predicts stock price volatility.
+\end{hyp} 
 
 
 
+%\noindent
+%First, some preliminary results of simle VAR of just CDS on sentiment: \\
+%
+%\noindent
+%Using refinitiv sample:\\
+%Significant and as expected positive coefficient for sentiment.
+%
+%\begin{figure}[h]
+%\includegraphics[width=0.75\textwidth]{images/var_refinitiv_preliminary_results.png}
+%\end{figure}
+%
+%\newpage
+%\noindent
+%Using swissdox sample:\\
+%Significant but negative coefficient for sentiment?
+%\begin{figure}[h]
+%\includegraphics[width=0.75\textwidth]{images/var_swissdox_preliminary_results.png}
+%\end{figure}
+%
+%\newpage
+%\noindent
+%Panel OLS as in \cite{cathcart2020}
+%
+%\begin{figure}[h]
+%\includegraphics[width=0.75\textwidth]{images/cathcart_panel_ols.png}
+%\end{figure}
+%
+%\newpage
+%\noindent
+%Panel VAR as in \cite{cathcart2020}\\
+%Similar to panel OLS except coefficient for termpremium.
+%
+%\begin{figure}[h]
+%\includegraphics[width=0.65\textwidth]{images/cathcart_panel_var.png}
+%\end{figure}
+%
+%Next, use VAR for prediction
+%
+%\newpage
 
-\section{Results}
+\section{Evaluation of Hypotheses}
 
-Show regression outputs here, impulse response functions for time series models, metrics for prediction performance, robustness checks etc. \\
-
-paragraph 1: hypo 1 \\
+%Show regression outputs here, impulse response functions for time series models, metrics for prediction performance, robustness checks etc. \\
+%
+% paragraph 1: hypothesis 1 ----
+Table \ref{tab:cdsdet} shows the panel regression following \cite{annaert2013}, whereby the main interest is in the estimated coefficient of $sentiment$ in the regression on changes in CDS spreads. As we can see, the estimated coefficient is not statistically significantly different from zero. As expected, the coefficient is negative which means that negative sentiment increases risk associated with the bank. Noticeable is the difference in magnitude of the coefficient and its standard error.
 
 \input{tables/cdsdet.tex}
 
-see table \ref{tab:cdsdet} wow it works :-) \\
+Given the results of the panel regression following \cite{annaert2013} does not confirm our hypothesis that the current news sentiment of abank is a determinant of the corresponding CDS spread. \\
+
+% paragraph 2: hypothesis 2 ----
 
 
-
-
-paragraph 2: hypo 2 \\
 
 %\input{tables/cdspvar.tex}
 
@@ -148,11 +161,31 @@ paragraph 2: hypo 2 \\
 
 \input{tables/cdspvar_swiss.tex}
 
-paragraph 3: hypo 3 \\
+hier dann noch ausführen dass nur 2 groups in sample. hier dann auch regressionen von gruppen separat zeigen und unterschiede feststellen inkl. möglicher gründe. \\
 
-paragraph 4: hypo 4 \\
+hier wäre cool wenn ich IRFs zeigen könnte und eventuell auch die "behavioral story" sehen würde -> zuerst überreaktion, dann korrektur auf höherem niveau wäre schön zu sehen
 
-paragraph 5: hypo 5
+% paragraph 3: hypothesis 3 ----
+
+\input{tables/mddpvar.tex}
+
+hier dann erwähnen dass daily data hence wma verwendet wurde. erwähnen dass auch signifikant ohne cs in sample
+
+% paragraph 4: hypothesis 4 ----
+
+\input{tables/garchx.tex}
+
+\input{tables/har.tex}
+
+% paragraph 5: hypothesis 5 ----
+
+\section{Evaluation of Predictive Performance}
+
+here i guess i will just focus on champion model \\
+
+then also look at credit suisse at crisis
+
+\newpage
 
 \section{Discussion}
 
