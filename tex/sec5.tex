@@ -1,6 +1,8 @@
 \chapter{Experimental Analysis}\label{sec5}
 \thispagestyle{empty}
 
+Hier noch gemäss PQM Richtlinien: Ziel, Motivation (das habe ich ja eig. schon) und Aufbau des Kapitels (ein Satz je Abschnitt). muss dafür ein overview section gemacht werden?
+
 \section{Data}
 
 For this analysis, news media articles were retrieved from either the Swissdox@LiRI database or from the Eikon Data application programming interface (API). Depending on the queried bank, one of those providers were used. \\
@@ -11,12 +13,12 @@ The sample of publicly traded Swiss banks was extended to all European Globally 
 
 \section{Experimental Design and Hypotheses}
 
-First, the analysis focuses on Credit Default Swap (CDS) spreads as a proxy of the risk associated with a bank. We start by analyzing whether the sentiment indicator is a determinant of the changes in CDS spreads. This analysis is based on the work of \cite{annaert2013}, which will be extended by the inclusion of the sentiment indicator as a potential determinant. \cite{annaert2013} try to explain and not to predict changes in CDS spreads using contemporaneous explanatory variables. The explanatory variables include the risk free rate, leverage and the equity volatility as credit risk variables, the bid-ask spread as liquidity variable and the term structure slope, swap spread, corporate bond spread, market return and market volatility as business cycle and market wide variables. The definition of these explanatory variables can be found in the Online Appendix TODO!!!. \cite{annaert2013} run their analysis for 32 listed banks from the euro area in the period from 2004 to 2010. HIER NOCH MEHR ÜBER IHRE FINDINGS SCHREIBEN. \\		
+First, the analysis focuses on Credit Default Swap (CDS) spreads as a proxy of the risk associated with a bank. We start by analyzing whether the sentiment indicator is a determinant of the changes in CDS spreads. This analysis is based on the work of \cite{annaert2013}, which will be extended by the inclusion of the sentiment indicator as a potential determinant. \cite{annaert2013} try to explain and not to predict changes in CDS spreads using contemporaneous explanatory variables. The explanatory variables include the risk free rate, leverage and the equity volatility as credit risk variables, the bid-ask spread as liquidity variable and the term structure slope, swap spread, corporate bond spread, market return and market volatility as business cycle and market wide variables. The definition of these explanatory variables can be found in the Online Appendix TODO!!!. \cite{annaert2013} run their analysis for 32 listed banks from the euro area in the period from 2004 to 2010. HIER NOCH MEHR ÜBER IHRE FINDINGS SCHREIBEN. VORALLEM DASS DIE GESCHÄTZTEN KOEFFS ÜBER DIE ZEIT NICHT STABIL SIND. \\		
 
 Now, we introduce the sentiment indicator as described in equation \ref{eq:sentind} as a new explanatory variable in the model of \cite{annaert2013}. Due to data availability the explanatory variable bid-ask spread from \cite{annaert2013} is excluded from our analysis. The multivariate panel regression model is then given as follows:
 
 \begin{equation}
-	cdsspread_{b,t} = \alpha_b + \sum_{k=1}^K\beta_{b,k}x_{b,k,t} + \theta_bs_{b,t} + \sum_{g=1}^G\gamma_gz_{g,t}+e_{b,t}
+	cdsspread_{b,t} = \alpha_b + \sum_{k=1}^K\beta_{k}x_{b,k,t} + \theta s_{b,t} + \sum_{g=1}^G\gamma_gz_{g,t}+e_{b,t}
 \end{equation}
 
 whereby $b$ identifies the bank and $t$ the time period. Note that we use the time-varying bank-specific explanatory variables ($x_{b,k,t}$) and time-varying common explanatory variables ($z_{g,t}$) but extend the model by the time-varying bank-specific sentiment indicator $sentiment_{bt}$. Using this regression model, we test following hypothesis:
@@ -25,121 +27,86 @@ whereby $b$ identifies the bank and $t$ the time period. Note that we use the ti
 	The sentiment indicator is a determinant of CDS spreads.
 \end{hyp}
 
-Hence, we expect the coefficient for sentiment $\theta_b$ to be different from zero. More precisely, we expect $\theta_b<0$, meaning that negative sentiment $s_{b,t}<0$ is associated d with increased CDS spreads and hence higher risk of the corresponding bank $b$. Since CDS are traded solely on UBS and Credit Suisse in the sample of Swiss banks, we extend our sample to include all European G-SIBs. Due to the availability of data, the observation period spans from September 2023 to October 2024. The corresponding sentiment indicator is based on news obtained from the Eikon Data API. Additionally, the model is also evaluated for the sample Credit Suisse and UBS using the sentiment indicator derived from Swissdox@LiRI for the observation period from January 2022 until June 2023. \\
+Hence, we expect and test whether the coefficient for sentiment $\theta$ is different from zero. More precisely, we expect $\theta<0$, meaning that negative sentiment $s_{b,t}<0$ is associated d with increased CDS spreads and hence higher risk of the corresponding bank $b$. Since CDS are traded solely on UBS and Credit Suisse in the sample of Swiss banks, we extend our sample to include all European G-SIBs. Due to the availability of data, the observation period spans from September 2023 to October 2024. The corresponding sentiment indicator is based on news obtained from the Eikon Data API. Additionally, the model is also evaluated for the sample Credit Suisse and UBS using the sentiment indicator derived from Swissdox@LiRI for the observation period from January 2022 until June 2023. \\
 
+The main interest of this analysis is however, whether the indicator constructed from news articles could serve as an early warning signal for distressed banks. Hence, rather than evaluating whether the sentiment indicator determines the current CDS spread, we are interested whether the indicator can predict future changes in risk proxies such as the CDS spread, the maximum drawdown or the equity volatility of the banks in our samples. \\
 
-However, to use the sentiment indicator as an early warning indicator, we need to assess its predictive power. We follow \cite{cathcart2020}, which find that news sentiment explains and predict CDS returns on countries. Additionally, \cite{cathcart2020} show that the sentiment indicator is a mixture of noise and information. We adjust the panel vector autoregression proposed by \cite{cathcart2020} to be suitable for estimating the model for banks instead of for sovereign credit risk:
+First, we assess the predictive performance of the news sentiment indicator on CDS spread. We follow \cite{cathcart2020}, which find that their news sentiment indicator has predictive power for CDS spreads on sovereign debt. They construct a global news sentiment indicator using the Thomson Reuters News Analytics (TRNA) database and focus on 25 developed and less developed countries from various geographies from 2003 to 2014. Besides finding that their sentiment indicator is a determinant of CDS spreads using panel regression techniques, they \cite{cathcart2020} find that their news sentiment indicator can predict CDS spreads using panel vector autoregression methods. \\
 
-\begin{equation}
-	cdsspread_{b,t} = \alpha_b + \sum_{k=1}^K\beta_{b,k}x_{k,t-1} + \sum^5_{\tau=1} \delta_{b,\tau}Y_{b,t-\tau} + \sum^T_{\tau=1}\theta_{b,\tau}s_{b,t-\tau} + e_{b,t}
+Based on this results, we adjust the panel vector autoregressive model proposed by \cite{cathcart2020} to be suitable for estimating the relationship between the news sentiment of the banks in our sample on their corresponding CDS spreads. Note that our analysis has a bank specific independent variable $s_{b,t}$ for the news sentiment. Additionally, since high frequency bank-specific controls based on fundamentals or other data sources despite market data are difficult to include, we have no further bank specific controls in the regression model. Hence, the model is given as follows:
+
+\begin{equation} \label{eq:panelvar-cds-exogsenti}
+	cdsspread_{b,t} = \alpha_b + \sum_{k=1}^K\beta_{k}x_{k,t-1} + \sum^5_{\tau=1} \delta_{\tau}cdsspread_{b,t-\tau} + \sum^T_{\tau=1}\theta_{\tau}s_{b,t-\tau} + e_{b,t}
 \end{equation}
 
-whereby HERE DESCRIBE THE VARIABLES IN THE REGRESSION MODEL. 
+whereby $x_{k,t-1}$ are the explanatory variables stock market, volatility premium, term premium, treasury market, investment grade and high yield following \cite{cathcart2020}. The other explanatory variables from \cite{cathcart2020} are not included since they are only suitable when analysing sovereign debt and are not replaced again since bank specific controls in high frequency are difficult to obtain. Following \cite{cathcart2020}, we include the CDS spread lagged up to five periods in the model and the sentiment indicator $s_{b,t-\tau}$ where we fit one model with only one lag ($T=1$) and one model with five lags ($T=5$). Using these two specifications of the vector autoregressive model we test following hypothesis:
 
 \begin{hyp}
 	The sentiment indicator predicts CDS returns.
 \end{hyp}
 
-do this with significance and this f test for all lags. run following regressions:
+Hence, we expect and test whether the coefficient $\theta_1$ is non-zero or more specifically $\theta_1<0$ for the model with one lag ($T=1$), meaning that negative news sentiment increase CDS spreads in the next period and hence indicate increased perceived risk of the corresponding bank $b$ in the next period. For the model specification with five lags ($T=5$), we expect that the coefficients in total are non-zero and indicate that negative sentiment increases perceived risk. However, due to the in the literature already discussed over- and underreaction to news, we might expect different magnitudes and sign changes in the coefficient for sentiment, which would be explained by a overreaction to new news. \\
 
-\begin{itemize}
-	\item pvar only sentiment
-	\item pvar lagged sentiment
-	\item pvar sentiment and stock returns
-	\item pvar lagged sentiment and stock returns
-\end{itemize}
+In the model as described in equation \ref{eq:panelvar-cds-exogsenti}, the sentiment indicator is treated as an exogenous variable. However, there is high potential for reverse causality. News content might affect the behavior of market participants which might change CDS spreads. In the same way, changes in CDS spreads might affect the news reporting about the corresponding bank. Because of this potential bidirectional causality we also fit the model as described in equation \ref{eq:panelvar-cds-exogsenti} with the sentiment indicator as a second endogenous variable while the remaining controls remain exogenous. This further allows to analyze the relationship between the CDS spreads and the sentiment indicator as an impulse response function (IRF). We therefore further analyze following hypotheses:
 
-%\begin{hyp}
-%	The sentiment indicator supports the theory of over- and underreaction.
-%\end{hyp}
-%
-%do this by analyzing IRFs. \\
+\begin{hyp}
+	There is a bidirectional relationship between CDS spreads and the news sentiment indicator.
+\end{hyp}
 
-Until now, the focus of this analysis was on CDS which are at the moment of this study only traded on UBS as the only Swiss bank. Hence, to assess whether the news sentiment indicator could be used in Swiss banking supervision, we need to use a risk proxy other than CDS. Since this study focuses on publicly traded banks, in the following it is analyzed whether the sentiment indicator has predictive power for the maximum drawdown and stock price volatility. 
+\begin{hyp}
+	The sentiment indicator supports the theory of over- and underreaction.
+\end{hyp}
 
-Using the same explanatory variables, we assess whether the sentiment indicator is able to predict the maximum drawdown of the corresponding bank. BLABLA
+We test if there is a bidirectional hypothesis by conducting a Granger Causality test as well as looking at the IRF. To test the over- and underreaction hypothesis, we look at the effect of news sentiment on CDS spreads using the corresponding IRF. \\
+
+The main problem of the previous regression models is, that it requires CDS spreads on the banks to be analyzed. However, there are no traded CDS on the majority of Swiss banks. Hence, to include the remaining banks of our Swiss sample in the analysis, we need to use another proxy for the risk perceived in the financial markets about the corresponding banks. Since all banks are publicly traded, risk proxies constructed from the corresponding stock price allows to include all banks to be included in the analysis without high demands on data availability. Hence, the remaining models focus on risk proxies derived from the stock price and are fitted on the whole sample of Swiss banks and European G-SIBs. \\
+
+First, we assume that the sentiment of the news media is reflected in the stock price of the corresponding bank in the foreseeable future. As the literature has shown, the effect of news sentiment is most pronounced for media pessimism which is able to predict falling stock prices (for example as in \cite{tetlock2007}). Additionally, from the perspective of banking supervision, we care most about increased risk. Hence, we use the maximum drawdown over the next 14 days of the corresponding bank's stock price as a risk proxy. For this analysis, we analyse the data in daily frequency and hence use the weighted moving average of the news sentiment as described in equation \ref{eq:sentind_wma}. We therefore fit following panel autoregressive model: \\
+
+TO DO HERE CHECK WHETHER THE SENTIM INDIC COMES INTO MODEL AS IN T OR IN T-1 AS IT SHOULD (AS EXOG. VAR)!!
 
 \begin{equation}
-	mdd model
+	mdd_{b,t} = \alpha_b + \sum_{\tau=1}^5\delta_\tau mdd_{b,t-\tau} + \theta s\_wma_{b,t-1} + e_{b,t}
 \end{equation}
 
-Again variable descr. Hence hypo:
+whereby $mdd_{b,t}$ is the $t+14$ maximum drawdown of the stock price of bank $b$ at time $t$. Again, as in the model as described in equation \ref{eq:panelvar-cds-exogsenti}, the maximum drawdown as the independent variable is included as lagged control variables for up to five lags in the model. HERE SAY SOMETHING ABOUT MISSING CONTROL VARIABLES. Using this model, we check following hypothesis:
 
 \begin{hyp}
 	The sentiment indicator predicts the maximum drawdown of a banks stock price.
 \end{hyp}
 
+Again, we expect and test whether the coefficient to be non-zero or more specifically $\theta<0$, indicating that negative sentiment increases the maximum drawdown. \\
 
-
- stock price volatility and maximum drawdown. Following \cite{audrino2020} .... write that not all explainable vars used.
-
-HAR \cite{boudt2022}
+Another risk proxy which we can directly derive from the stock price is the corresponding volatility. We assume that negative news sentiment increases risk and uncertainty about the corresponding bank in following periods. Hence, we expect that negative news sentiment is associated with higher volatility in the following periods. To analyze this relationship, we fit both a generalised autoregressive conditional heteroscedasticity (GARCH) model with covariates, GARCH-X, as well as a heterogeneous autoregressive (HAR) model with covariates. Following the implementation of the GARCH-X model as in \cite{sucarrat2021} and the HAR model as in \cite{boudt2022}, only one covariate can be included in the model. Hence, we have following representation of the GARCH-X model: 
 
 \begin{equation}
-	RV_{t+1} = \beta_0 + \beta_1RV_t + \beta_2RV_{t-4:t} + \beta_3RV_{t-21:t} + \beta_4sentiment_{t} + \epsilon_{t+1}
+	\sigma^2_{b,t} = \alpha_b + \beta_{b,1}e^2_{t-1} + \beta_{b,2}\sigma^2_{t-1} + \theta_bs\_wma_{b,t-1}
 \end{equation}
 
-whereby BLABLABLA. Hence hypo:
+whereby $\sigma^2_{b,t}$ is the realised volatility, $e^2_{t-1}$ is the squared shock in $t-1$ and $s\_wma$ is the weighted moving average of the news sentiment indicator as described in equation \ref{eq:sentind_wma}.  \\
 
-GARCHX: \cite{sucarrat2021}
-
+Additionally, we have following representation of the HAR model as well:
 
 \begin{equation}
-	\sigma^2_t = \omega + \alpha_1\epsilon^2_{t-1} + \beta_1\sigma^2_{t-1} + \lambda_1x_{1,t-1}
+	\sigma^2_{b,t} = \alpha_b + \beta_{b,1}\sigma^2_{b,t-2:t} + \beta_{b,2}\sigma^2_{b,t-6:t} + \beta_{b,3}\sigma^2_{b,t-21:t} + \theta_b s_{b,t-1} + e_{b,t}
 \end{equation}
+
+whereby $\sigma^2_{b,t}$ is the realised volatility at $t$. DOES THIS MODEL EVEN MAKE SENSE WHEN ONLY WORKING WITH DAILY DATA??? \\
 
 \begin{hyp}
 	The sentiment indicator predicts stock price volatility.
 \end{hyp} 
 
+We expect blabla. .... Note that both the GARCH-X model and the HAR model can only be fitted for one bank at once. 
 
 
-%\noindent
-%First, some preliminary results of simle VAR of just CDS on sentiment: \\
-%
-%\noindent
-%Using refinitiv sample:\\
-%Significant and as expected positive coefficient for sentiment.
-%
-%\begin{figure}[h]
-%\includegraphics[width=0.75\textwidth]{images/var_refinitiv_preliminary_results.png}
-%\end{figure}
-%
-%\newpage
-%\noindent
-%Using swissdox sample:\\
-%Significant but negative coefficient for sentiment?
-%\begin{figure}[h]
-%\includegraphics[width=0.75\textwidth]{images/var_swissdox_preliminary_results.png}
-%\end{figure}
-%
-%\newpage
-%\noindent
-%Panel OLS as in \cite{cathcart2020}
-%
-%\begin{figure}[h]
-%\includegraphics[width=0.75\textwidth]{images/cathcart_panel_ols.png}
-%\end{figure}
-%
-%\newpage
-%\noindent
-%Panel VAR as in \cite{cathcart2020}\\
-%Similar to panel OLS except coefficient for termpremium.
-%
-%\begin{figure}[h]
-%\includegraphics[width=0.65\textwidth]{images/cathcart_panel_var.png}
-%\end{figure}
-%
-%Next, use VAR for prediction
-%
-%\newpage
 
 \section{Evaluation of Hypotheses}
 
 %Show regression outputs here, impulse response functions for time series models, metrics for prediction performance, robustness checks etc. \\
 %
 % paragraph 1: hypothesis 1 ----
-Table \ref{tab:cdsdet} shows the panel regression following \cite{annaert2013}, whereby the main interest is in the estimated coefficient of $sentiment$ in the regression on changes in CDS spreads. As we can see, the estimated coefficient is not statistically significantly different from zero. As expected, the coefficient is negative which means that negative sentiment increases risk associated with the bank. Noticeable is the difference in magnitude of the coefficient and its standard error.
+Table \ref{tab:cdsdet} shows the panel regression following \cite{annaert2013}, whereby the main interest is in the estimated coefficient of $sentiment$ in the regression on changes in CDS spreads. As we can see, the estimated coefficient is not statistically significantly different from zero. As expected, the coefficient is negative which means that negative sentiment increases risk associated with the bank. Noticeable is the difference in magnitude of the coefficient and its standard error. \\
 
 \input{tables/cdsdet.tex}
 

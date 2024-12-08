@@ -3,7 +3,9 @@
 
 \section{Overview}
 
-As shown in previous literature, the sentiment in news articles can be a leading indicator for reactions in the stock market. Goal of this analysis is to construct the sentiment indicator from news media articles using a large language model (LLM) respectively a Bidirectional Encoder Representation from Transaction (BERT) model to estimate the sentiment from a given text. It is expected that a BERT model performs better than traditional methods such as bag-of-word algorithms in correctly classifying the sentiment of text due to its ability to understand context in text. Using news articles from different sources a sentiment indicator in daily and weekly frequency will be constructed. The goal of this indicator will be to deliver early warning for increased risk of a specific bank.
+As shown in previous literature, the sentiment in news articles can be a leading indicator for reactions in the stock market. Goal of this analysis is to construct the sentiment indicator from news media articles using a large language model (LLM) respectively a Bidirectional Encoder Representation from Transaction (BERT) model to estimate the sentiment from a given text. It is expected that a BERT model performs better than traditional methods such as bag-of-word algorithms in correctly classifying the sentiment of text due to its ability to understand context in text. Using news articles from different sources a sentiment indicator in daily and weekly frequency will be constructed. The goal of this indicator will be to deliver early warning for increased risk of a specific bank. \\
+
+Hier noch gemäss PQM Richtlinien: Ziel, Motivation (das habe ich ja eig. schon) und Aufbau des Kapitels (ein Satz je Abschnitt).
 
 
 \section{Step 1: Preprocessing of News Articles}
@@ -55,6 +57,15 @@ After the sentiment of all paragraphs $p \in P$ in article $a$ about bank $b$ at
 	s\_wma_{b,t} = \frac{1}{\sum^N_{n=1}n} * \sum^{N-1}_{n=0}(N-n)*s_{b,t-n}
 \end{equation}
 
+As a result, we get a weekly and a daily indicator which proxies the sentiment in news articles were $s_{b,t} \in [0,1]$ and $s\_wma_{b,t} \in [0,1]$. Values in $[-1,0)$ indicate negative sentiment, $0$ neutral sentiment and $(0,1]$ positive sentiment.
+
+\section{Additional step: Topic Classification}
+
+Hier die Methode für Topic Modelling beschreiben. Auch schreiben dass dies nicht mehr weiter in Analyse verfolgt wurde. ODer sollte ich dies noch machen? Je nach Zeit und Umfang... Eventuell dann auch nur für ein sample und ein Moedll -> für "champion modell"? Zuerst Fokus auf was ich schon habe...
+
+\newpage
+
+mit topic modelling werde ich diese seite noch erreichen
 
 
 \cleardoublepage
