@@ -388,7 +388,7 @@ sentiment_euro_d <- sentiment_euro |>
   reframe(sentiment = mean(sentiment_score, na.rm = TRUE)) |>
   group_by(bank) |>
   mutate(
-    sentiment = na.approx(sentiment, maxgap = 2, rule = 2),
+    sentiment = zoo::na.approx(sentiment, maxgap = 2, rule = 2),
     sentiment_wma = as.numeric(stats::filter(sentiment, (n:1)/sum(n:1), sides = 1))
   ) |> 
   ungroup()
@@ -405,7 +405,7 @@ sentiment_swiss_d <- sentiment_swiss |>
   reframe(sentiment = mean(sentiment_score, na.rm = TRUE)) |>
   group_by(bank) |>
   mutate(
-    sentiment = na.approx(sentiment, maxgap = 2, rule = 2),
+    sentiment = zoo::na.approx(sentiment, maxgap = 2, rule = 2),
     sentiment_wma = as.numeric(stats::filter(sentiment, (n:1)/sum(n:1), sides = 1))
   ) |> 
   ungroup()
@@ -627,6 +627,8 @@ models[["cathart_all_swiss"]]["obsperiod"] <- paste(min(as.Date(dataset_cathart_
 
 create_table(models[grep("cathart_[a-z]+_swiss", names(models))], "Panel VAR sentiment, Swiss Bank Sample", "cdspvar_swiss")
 
+# to do: run model with sentiment as dependent var with lag 5, enables to show irf
+
 # to do: schauen ob diese analyse getrieben durch einzelne gruppe?
 test <- panelvar::pvargmm(
   dependent_vars = c("cds"),
@@ -744,13 +746,16 @@ create_table(models[grep("garchx_*", names(models))], "GARCH-X", "garchx")
 
 # heterogeneous autoregressive model
 
-stockreturn_cs <- as.xts(dataset_vola_swiss_cs$stockreturn, order.by = dataset_vola_swiss_cs$date)
-sentiment_cs <- as.xts(dataset_vola_swiss_cs$sentiment_wma, order.by = dataset_vola_swiss_cs$date)
-stockreturn_ubs <- as.xts(dataset_vola_swiss_ubs$stockreturn, order.by = dataset_vola_swiss_ubs$date)
-sentiment_ubs <- as.xts(dataset_vola_swiss_ubs$sentiment_wma, order.by = dataset_vola_swiss_ubs$date)
+stockreturn_cs <- xts::as.xts(dataset_vola_swiss_cs$stockreturn, order.by = dataset_vola_swiss_cs$date)
+sentiment_cs <- xts::as.xts(dataset_vola_swiss_cs$sentiment_wma, order.by = dataset_vola_swiss_cs$date)
+stockreturn_ubs <- xts::as.xts(dataset_vola_swiss_ubs$stockreturn, order.by = dataset_vola_swiss_ubs$date)
+sentiment_ubs <- xts::as.xts(dataset_vola_swiss_ubs$sentiment_wma, order.by = dataset_vola_swiss_ubs$date)
+
+periods <- c(3, 7, 22)
 
 results_har_cs <- highfrequency::HARmodel(
-  data = stockreturn_cs, externalRegressor = sentiment_cs, inputType = "RM"
+  data = stockreturn_cs, externalRegressor = sentiment_cs, inputType = "RM",
+  periods = periods, periodsJ = periods, periodsQ = periods
 )
 
 models[["har_cs"]] <- results_har_cs
@@ -760,7 +765,8 @@ models[["har_cs"]]["obsperiod"] <- paste(min(as.Date(dataset_vola_swiss_cs$date)
 
 
 results_har_ubs <- highfrequency::HARmodel(
-  data = stockreturn_ubs, externalRegressor = sentiment_ubs, inputType = "RM"
+  data = stockreturn_ubs, externalRegressor = sentiment_ubs, inputType = "RM",
+  periods = periods, periodsJ = periods, periodsQ = periods
 )
 
 models[["har_ubs"]] <- results_har_ubs
