@@ -422,17 +422,19 @@ marketvola <- indices |>
 
 # independent variables
 mdd_window <- 14
+
+calc_mdd <- function(close_price, date, w) {
+  sapply(seq_along(date), function(x) {
+    min_window <- min(close_price[date >= date[x] & date <= date[x] + w])
+    (min_window - close_price[x]) / close_price[x]
+  })
+}
+
 mdd <- stocks |> 
   group_by(Instrument) |> 
   mutate(
     date = as.Date(Date),
-    mdd = slider::slide_dbl(
-      .x = Close.Price,
-      .f = ~ min(.x - cummax(.x), na.rm = TRUE),
-      .before = mdd_window-1,
-      .complete = TRUE
-    ),
-    mdd = lead(mdd, mdd_window-1)
+    mdd = calc_mdd(Close.Price, date, mdd_window)
   ) |> 
   ungroup() |> 
   merge(y = meta_ric, by.x = "Instrument", by.y = "ric")
@@ -659,6 +661,22 @@ models[["cathart_swiss"]]["obsperiod"] <- paste(min(as.Date(dataset_cathart_swis
 
 create_table(models[grep("cathart_*", names(models))], "Panel VAR sentiment", "cdspvar")
 
+oirfs <- panelvar::oirf(results_cathart_swiss, 8)
+
+# ymin <- min(c(oirfs$cds, oirfs$sentiment))
+# ymax <- max(c(oirfs$cds, oirfs$sentiment))
+# 
+# par(mfrow = c(2,2))
+# plot(oirfs$cds[,1], type = "l", ylim = c(ymin, ymax), xlab = "", ylab = "")
+# plot(oirfs$cds[,2], type = "l", ylim = c(ymin, ymax), xlab = "", ylab = "")
+# plot(oirfs$sentiment[,1], type = "l", ylim = c(ymin, ymax), xlab = "", ylab = "")
+# plot(oirfs$sentiment[,2], type = "l", ylim = c(ymin, ymax), xlab = "", ylab = "")
+
+png(filename="tex/images/oirfs.png")
+plot(oirfs)
+dev.off()
+
+
 # to do: schauen ob diese analyse getrieben durch einzelne gruppe?
 test <- panelvar::pvarfeols(
   dependent_vars = c("cds", "sentiment"),
@@ -671,25 +689,65 @@ test <- panelvar::pvarfeols(
   panel_identifier = c("bank", "date")
 )
 
-# additional: granger causality test, daily frequency
-dataset_cds_d <- sentiment_swiss_d |> 
-  left_join(y = meta_ric, by = c("bank" = "query_bank")) |> 
-  left_join(y = cds_d, by = c("ric" = "bank", "date")) |>
-  select(bank, date, sentiment_wma, cds) |>
-  group_by(bank) |>
-  arrange(bank, date) |>
-  ungroup() |>
-  mutate(
-    bank = as.factor(bank),
-    date = as.factor(date)
-  ) |>
-  na.omit() |> 
-  as.data.frame()
+# additional: granger causality test
+# dataset_cds_d <- sentiment_swiss_d |> 
+#   left_join(y = meta_ric, by = c("bank" = "query_bank")) |> 
+#   left_join(y = cds_d, by = c("ric" = "bank", "date")) |>
+#   select(bank, date, sentiment_wma, cds) |>
+#   group_by(bank) |>
+#   arrange(bank, date) |>
+#   ungroup() |>
+#   mutate(
+#     bank = as.factor(bank),
+#     date = as.factor(date)
+#   ) |>
+#   na.omit() |> 
+#   as.data.frame()
+# 
+# dataset_cds_d_cs <- dataset_cds_d |> filter(bank == "credit_suisse")
+# dataset_cds_d_ubs <- dataset_cds_d |> filter(bank == "ubs")
+# 
+# dataset_cds_d_cs$sentiment_wma <- dataset_cds_d_cs$sentiment
+# dataset_cds_d_ubs$sentiment_wma <- dataset_cds_d_ubs$sentiment
+# 
+# results_granger_d <- data.frame()
+# 
+# for (i in 1:5) {
+#   
+#   cds_on_senti_cs <- lmtest::grangertest(
+#     x = dataset_cds_d_cs$sentiment_wma, y = dataset_cds_d_cs$cds, order = i
+#   )
+#   
+#   cds_on_senti_ubs <- lmtest::grangertest(
+#     x = dataset_cds_d_ubs$sentiment_wma, y = dataset_cds_d_ubs$cds, order = i
+#   )
+#   
+#   senti_on_cds_cs <- lmtest::grangertest(
+#     x = dataset_cds_d_cs$cds, y = dataset_cds_d_cs$sentiment_wma, order = i
+#   )
+#   
+#   senti_on_cds_ubs <- lmtest::grangertest(
+#     x = dataset_cds_d_ubs$cds, y = dataset_cds_d_ubs$sentiment_wma, order = i
+#   )
+#   
+#   results_granger_d <- rbind(results_granger_d, data.frame(
+#     lags = i,
+#     cds_on_senti_cs = cds_on_senti_cs$`Pr(>F)`[2],
+#     senti_on_cds_cs = senti_on_cds_cs$`Pr(>F)`[2],
+#     cds_on_senti_ubs = cds_on_senti_ubs$`Pr(>F)`[2],
+#     senti_on_cds_ubs = senti_on_cds_ubs$`Pr(>F)`[2]
+#   ))
+# }
+# 
+# create_table_granger(results_granger_d, "Granger Causality Test, daily", "granger_daily")
 
-dataset_cds_d_cs <- dataset_cds_d |> filter(bank == "credit_suisse")
-dataset_cds_d_ubs <- dataset_cds_d |> filter(bank == "ubs")
+dataset_cds_d_cs <- dataset_cathart_swiss |> filter(bank == "credit_suisse")
+dataset_cds_d_ubs <- dataset_cathart_swiss |> filter(bank == "ubs")
 
-results_granger <- data.frame()
+dataset_cds_d_cs$sentiment_wma <- dataset_cds_d_cs$sentiment
+dataset_cds_d_ubs$sentiment_wma <- dataset_cds_d_ubs$sentiment
+
+results_granger_w <- data.frame()
 
 for (i in 1:5) {
   
@@ -709,7 +767,7 @@ for (i in 1:5) {
     x = dataset_cds_d_ubs$cds, y = dataset_cds_d_ubs$sentiment_wma, order = i
   )
   
-  results_granger <- rbind(results_granger, data.frame(
+  results_granger_w <- rbind(results_granger_w, data.frame(
     lags = i,
     cds_on_senti_cs = cds_on_senti_cs$`Pr(>F)`[2],
     senti_on_cds_cs = senti_on_cds_cs$`Pr(>F)`[2],
@@ -718,7 +776,7 @@ for (i in 1:5) {
   ))
 }
 
-create_table_granger(results_granger, "Granger Causality Test", "granger")
+create_table_granger(results_granger_w, "Granger Causality Test", "granger_weekly")
 
 
 # =============================================================================.
@@ -733,23 +791,41 @@ dataset_mdd_euro <- sentiment_euro_d |>
   ungroup() |>
   mutate(
     bank = as.factor(bank),
-    date = as.factor(date)
+    date = as.factor(date),
+    sentiment_wma = lag(sentiment_wma),
+    sentiment_wma_adj = if_else(sentiment_wma >= -0.25, 0, sentiment_wma)
   ) |>
   na.omit() |> 
   as.data.frame()
 
-result_mdd_euro_nocontrols <- panelvar::pvargmm(
+result_mdd_euro <- panelvar::pvarfeols(
   dependent_vars = c("mdd"),
+  exog_vars = "sentiment_wma",
   lags = 5,
-  exog_vars = c("sentiment_wma"),
   data = dataset_mdd_euro,
-  panel_identifier = c("bank", "date"),
-  steps = c("onestep"),
-  collapse = TRUE
+  panel_identifier = c("bank", "date")
 )
-models[["mdd_nocontrols_euro"]] <- summary(result_mdd_euro_nocontrols)
-models[["mdd_nocontrols_euro"]]["sample"] <- "European Banks"
-models[["mdd_nocontrols_euro"]]["obsperiod"] <- paste(min(as.Date(dataset_mdd_euro$date)), "to", max(as.Date(dataset_mdd_euro$date)))
+
+attr(result_mdd_euro$OLS$coef, "dimnames")[[1]] <- "demeaned_mdd"
+
+models[["mdd_euro"]] <- summary(result_mdd_euro)
+models[["mdd_euro"]]["sample"] <- "European Banks"
+models[["mdd_euro"]]["obsperiod"] <- paste(min(as.Date(dataset_mdd_euro$date)), "to", max(as.Date(dataset_mdd_euro$date)))
+
+result_mdd_euro_adj <- panelvar::pvarfeols(
+  dependent_vars = c("mdd"),
+  exog_vars = "sentiment_wma_adj",
+  lags = 5,
+  data = dataset_mdd_euro,
+  panel_identifier = c("bank", "date")
+)
+
+attr(result_mdd_euro_adj$OLS$coef, "dimnames")[[1]] <- "demeaned_mdd"
+
+models[["mdd_euro_adj"]] <- summary(result_mdd_euro_adj)
+models[["mdd_euro_adj"]]["sample"] <- "European Banks"
+models[["mdd_euro_adj"]]["obsperiod"] <- paste(min(as.Date(dataset_mdd_euro$date)), "to", max(as.Date(dataset_mdd_euro$date)))
+
 
 
 
@@ -761,26 +837,44 @@ dataset_mdd_swiss <- sentiment_swiss_d |>
   ungroup() |>
   mutate(
     bank = as.factor(bank),
-    date = as.factor(date)
+    date = as.factor(date),
+    sentiment_wma = lag(sentiment_wma),
+    sentiment_wma_adj = if_else(sentiment_wma >= -0.25, 0, sentiment_wma)
   ) |>
   na.omit() |> 
   as.data.frame()
 
-result_mdd_swiss_nocontrols <- panelvar::pvargmm(
+result_mdd_swiss <- panelvar::pvarfeols(
   dependent_vars = c("mdd"),
-  lags = 5,
   exog_vars = c("sentiment_wma"),
+  lags = 5,
   data = dataset_mdd_swiss,
-  panel_identifier = c("bank", "date"),
-  steps = c("onestep"),
-  collapse = TRUE
+  panel_identifier = c("bank", "date")
 )
 
-models[["mdd_nocontrols_swiss"]] <- summary(result_mdd_swiss_nocontrols)
-models[["mdd_nocontrols_swiss"]]["sample"] <- "Swiss Banks"
-models[["mdd_nocontrols_swiss"]]["obsperiod"] <- paste(min(as.Date(dataset_mdd_swiss$date)), "to", max(as.Date(dataset_mdd_swiss$date)))
+attr(result_mdd_swiss$OLS$coef, "dimnames")[[1]] <- "demeaned_mdd"
 
-create_table(models[grep("mdd_*", names(models))], "Panel VAR MDD", "mddpvar")
+models[["mdd_swiss"]] <- summary(result_mdd_swiss)
+models[["mdd_swiss"]]["sample"] <- "Swiss Banks"
+models[["mdd_swiss"]]["obsperiod"] <- paste(min(as.Date(dataset_mdd_swiss$date)), "to", max(as.Date(dataset_mdd_swiss$date)))
+
+result_mdd_swiss_adj <- panelvar::pvarfeols(
+  dependent_vars = c("mdd"),
+  exog_vars = c("sentiment_wma_adj"),
+  lags = 5,
+  data = dataset_mdd_swiss,
+  panel_identifier = c("bank", "date")
+)
+
+attr(result_mdd_swiss_adj$OLS$coef, "dimnames")[[1]] <- "demeaned_mdd"
+
+models[["mdd_swiss_adj"]] <- summary(result_mdd_swiss_adj)
+models[["mdd_swiss_adj"]]["sample"] <- "Swiss Banks"
+models[["mdd_swiss_adj"]]["obsperiod"] <- paste(min(as.Date(dataset_mdd_swiss$date)), "to", max(as.Date(dataset_mdd_swiss$date)))
+
+
+create_table(models[grep("mdd_euro_*", names(models))], "Panel VAR MDD", "mddpvar_euro")
+create_table(models[grep("mdd_swiss_*", names(models))], "Panel VAR MDD", "mddpvar_swiss")
 
 # =============================================================================.
 # 5. Is sentiment predictor of volatility? ----
