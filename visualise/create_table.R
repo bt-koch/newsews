@@ -2,8 +2,10 @@ create_table <- function(models, caption, label, small_font = F) {
   
   if ("plm" %in% class(models[[1]])) {
     content <- create_table_plm(models)
+  } else if ("summary.pvarfeols" %in% class(models[[1]])) {
+    content <- create_table_pvarfeols(models)
   } else if ("summary.pvargmm" %in% class(models[[1]])) {
-    content <- create_table_pvar(models)
+    content <- create_table_pvargmm(models)
   } else if ("garchx" %in% class(models[[1]])) {
     content <- create_table_garchx(models)
   } else if ("HARmodel" %in% class(models[[1]])) {
@@ -97,7 +99,67 @@ create_table_plm <- function(models) {
   return(output)
 }
 
-create_table_pvar <- function(models) {
+create_table_pvarfeols <- function(models) {
+  
+  output <- data.frame()
+  
+  for (i in 1:length(models)) {
+    
+    temp <- data.frame(
+      variable = models[[i]]$results$demeaned_cds@coef.names,
+      coeff = models[[i]]$results$demeaned_cds@coef,
+      se = models[[i]]$results$demeaned_cds@se,
+      pval = models[[i]]$results$demeaned_cds@pvalues
+    ) |> 
+      mutate(
+        significance = if_else(pval < 0.1, "*", ""),
+        significance = if_else(pval < 0.05, "**", significance),
+        significance = if_else(pval < 0.01, "***", significance),
+        summary = paste0(round(coeff, 3), significance, " (", round(se, 2), ")"),
+        sort_index = 3,
+        sort_index = if_else(endsWith(variable, "cds"), 2, sort_index),
+        sort_index = if_else(endsWith(variable, "sentiment"), 1, sort_index)
+      ) |> 
+      select(variable, summary, sort_index) |>
+      add_row(
+        variable = "sample", summary = models[[i]]$sample,
+        sort_index = 4
+      ) |> 
+      add_row(
+        variable = "groups", summary = models[[i]]$nof_groups |> as.character(),
+        sort_index = 5
+      ) |> 
+      add_row(
+        variable = "Number of Obs.", summary = models[[i]]$nof_observations |> as.character(),
+        sort_index = 6
+      ) |> 
+      add_row(
+        variable = "Obs. Period", summary = models[[i]]$obsperiod,
+        sort_index = 7
+      )
+    
+    names(temp)[names(temp) == "summary"] <- paste("Model", i)
+    temp$variable <- gsub("_", " ", temp$variable)
+    
+    if (ncol(output) == 0) {
+      output <- temp
+    } else {
+      output <- merge(output, temp, by = c("variable", "sort_index"), all = T)
+    }
+  }
+  
+  output <- output |> 
+    arrange(sort_index) |> 
+    select(!sort_index)
+  
+  names(output)[names(output) == "variable"] <- ""
+  output[is.na(output)] <- ""
+  
+  return(output)
+  
+}
+
+create_table_pvargmm <- function(models) {
   
   output <- data.frame()
   
