@@ -28,7 +28,7 @@ df.to_csv(environvars.paths.path_refinitiv+"cds.csv", sep=";")
 
 # benchmark government bonds
 df = ek.get_data(
-    instruments=["EU1YT=RR", "EU2YT=RR", "EU5YT=RR", "EU10YT=RR"],
+    instruments=["EU1YT=RR", "EU2YT=RR", "EU5YT=RR", "EU10YT=RR", "CH1YT=RR", "CH2YT=RR", "CH5YT=RR", "CH10YT=RR"],
     fields=["TR.MIDYIELD.date", "TR.MIDYIELD"],
     parameters={"SDate":start, "EDate":end, "Frq":"D"}
 )
@@ -65,7 +65,7 @@ df[0].to_csv(environvars.paths.path_refinitiv+"stocks.csv", sep=";")
 
 # market index
 df = ek.get_data(
-    instruments=[".FTEU1", ".V2TX"],
+    instruments=[".FTEU1", ".V2TX", ".SSHI"],
     fields=["TR.CLOSEPRICE.Date", "TR.CLOSEPRICE"],
     parameters={"SDate":start, "EDate":end, "Frq":"D"}
 )
@@ -73,7 +73,7 @@ df[0].to_csv(environvars.paths.path_refinitiv+"indices.csv", sep=";")
 
 # interest rates
 df = ek.get_data(
-    instruments=["EURAB6E10Y="],
+    instruments=["EURAB6E10Y=", "CHFAB6L10Y="],
     fields=["TR.MIDPRICE.Date", "TR.MIDPRICE"],
     parameters={"SDate":start, "EDate":end, "Frq":"D"}
 )
