@@ -106,10 +106,10 @@ create_table_pvarfeols <- function(models) {
   for (i in 1:length(models)) {
     
     temp <- data.frame(
-      variable = models[[i]]$results$demeaned_cds@coef.names,
-      coeff = models[[i]]$results$demeaned_cds@coef,
-      se = models[[i]]$results$demeaned_cds@se,
-      pval = models[[i]]$results$demeaned_cds@pvalues
+      variable = models[[i]]$results[[1]]@coef.names,
+      coeff = models[[i]]$results[[1]]@coef,
+      se = models[[i]]$results[[1]]@se,
+      pval = models[[i]]$results[[1]]@pvalues
     ) |> 
       mutate(
         significance = if_else(pval < 0.1, "*", ""),
@@ -117,8 +117,8 @@ create_table_pvarfeols <- function(models) {
         significance = if_else(pval < 0.01, "***", significance),
         summary = paste0(round(coeff, 3), significance, " (", round(se, 2), ")"),
         sort_index = 3,
-        sort_index = if_else(endsWith(variable, "cds"), 2, sort_index),
-        sort_index = if_else(endsWith(variable, "sentiment"), 1, sort_index)
+        sort_index = if_else(endsWith(variable, "cds") | endsWith(variable, "mdd"), 2, sort_index),
+        sort_index = if_else(endsWith(variable, "sentiment") | endsWith(variable, "wma") | endsWith(variable, "wma_adj"), 1, sort_index)
       ) |> 
       select(variable, summary, sort_index) |>
       add_row(
