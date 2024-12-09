@@ -9,14 +9,21 @@ summarize motivation, model(s) and their results including the limitations \\
 \begin{itemize}
 	\item still noise of my way to classify relevancy. e.g. also LLM could make this job?
 	\item relatively short obs period for cds (max 15months)
+	\item no threshold when critital for supervision / supervision probably won't care about normal stock price decrease or something. this would need further analysis
+	\item maybe look at spreads also between risk proxies and between sentiment indicator
 \end{itemize}
+
+analysis shows that there is some information contained in news media sentiment about swiss banks. it can indicate higher risk and might be used for supervision or also credit risk management. to act as an early warning, we would need some decision rule when we need to look more closely at a bank. \\
+
+no true cause and effect in this analysis, more a correlational study. 
 
 \noindent
 \textit{extensions}:
 \begin{itemize}
 	\item fine tune LLM fine tune an llm to classify whether a text is relevant for a specific context
 	\item ...
-	\item principal component analysis -> we could expect a large commonality and co-movement in the risk proxies, i guess this is also backed by theory/literature?
+	\item principal component analysis -> we could expect a large commonality and co-movement in the risk proxies, i guess this is also backed by theory/literature? maybe also in sentiment scores?
+	\item maybe training a llm for sentiment classification in the perspective of banking supervision would be good, which also can distinguish between more negative news i.e. can assign values smaller than -1
 \end{itemize}
 
 problem with incentives of news media -> "sell adds" ie make noisy articles \\
