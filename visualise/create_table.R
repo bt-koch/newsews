@@ -297,3 +297,48 @@ create_table_har <- function(models) {
   return(output)
   
 }
+
+create_table_granger <- function(dataframe, caption, label) {
+  
+  footnote <- "Notes: *** p\\textless{}0.01, ** p\\textless{}0.05, * p\\textless{}0.1."
+  
+  format_pval <- function(p) {
+    rounded <- sprintf("%.2f", p)
+    if (p < 0.01) {
+      return(paste0(rounded, "***"))
+    } else if (p < 0.05) {
+      return(paste0(rounded, "**"))
+    } else if (p < 0.1) {
+      return(paste0(rounded, "*"))
+    } else {
+      return(as.character(rounded))
+    }
+  }
+  
+  content <- dataframe |> 
+    mutate(across(-lags, ~ sapply(.x, format_pval)))
+  
+  names(content) <- gsub("_", " ", names(content))
+  
+  textable <- c(
+    "\\begin{table}[h!]",
+    "\\centering",
+    "\\begin{tabular}{lll|ll}",
+    paste(paste(names(content), collapse = "&"), "\\\\ \\hline"),
+    paste(apply(content, 1, paste, collapse = "&"), "\\\\"),
+    "\\hline",
+    paste0("\\multicolumn{", ncol(content), "}{l}{", footnote, "}"),
+    "\\end{tabular}",
+    "",
+    paste0("\\caption{", caption, "}"),
+    paste0("\\label{tab:", label, "}"),
+    "\\end{table}"
+  )
+  
+  output_file <- file(paste0("tex/tables/", label, ".tex"))
+  writeLines(textable, output_file)
+  close(output_file)
+  
+}
+
+
