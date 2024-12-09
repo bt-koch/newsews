@@ -41,6 +41,10 @@ eurostr <- read.csv(file.path(paths$path_ecb, "euro_short_term_rate.csv")) |>
   rename(date = 1, value = 3) |> 
   select("date", "value")
 
+saron <- read.csv(file.path(paths$path_snb, "saron.csv"), sep = ";", skip = 3)
+
+vsmi <- read.csv(file.path(paths$path_six, "vsmi.csv"), sep = ";")
+
 meta_ric <- read.csv(file.path(paths$path_meta, "mapping_ric.csv"), sep = ";")
 
 # 1.2 prepare weekly data ----
@@ -145,9 +149,52 @@ stockmarket <- right_join(
     stockmarket = marketreturn - Mid.Yield
   )
 
+stockmarket_swiss <- right_join(
+  filter(indices, Instrument == ".SSHI"),
+  filter(govbonds, Instrument == "CH1YT=RR"),
+  by = "Date"
+) |>
+  mutate(
+    date = as.Date(Date),
+    week = cut.Date(date, breaks = "1 week", labels = FALSE)
+  ) |> 
+  group_by(week) |> 
+  slice_max(order_by = date, n = 1) |> 
+  ungroup() |> 
+  mutate(
+    date = as.Date(Date),
+    marketreturn = (Close.Price-lag(Close.Price))/lag(Close.Price) * 100,
+    stockmarket = marketreturn - Mid.Yield
+  )
+
+
 volatilitypremium <- right_join(
   filter(indices, Instrument == ".V2TX"),
   filter(indices, Instrument == ".FTEU1"),
+  by = "Date"
+) |> 
+  mutate(
+    date = as.Date(Date),
+    week = cut.Date(date, breaks = "1 week", labels = FALSE)
+  ) |> 
+  group_by(week) |> 
+  slice_max(order_by = date, n = 1) |> 
+  ungroup() |>
+  mutate(
+    date = as.Date(Date),
+    vola = zoo::rollapply(Close.Price.y, width = 30, FUN = sd, fill = NA, align = "right"),
+    volatilitypremium = Close.Price.x - vola
+  )
+
+vsmi <- vsmi |> 
+  mutate(
+    Date = as.Date(Date, format = "%d.%m.%Y"),
+    Close.Price = Indexvalue
+  )
+
+volatilitypremium_swiss <- right_join(
+  vsmi,
+  filter(indices, Instrument == ".SSHI") |> mutate(Date = as.Date(Date)),
   by = "Date"
 ) |> 
   mutate(
@@ -179,8 +226,36 @@ termpremium <- right_join(
     termpremium = Mid.Price - value
   )
 
+termpremium_swiss <- right_join(
+  filter(interest, Instrument == "CHFAB6L10Y=") |> mutate(date = as.Date(Date)),
+  saron |> mutate(date = as.Date(Date)),
+  by = "date"
+) |> 
+  mutate(
+    week = cut.Date(date, breaks = "1 week", labels = FALSE)
+  ) |> 
+  group_by(week) |> 
+  slice_max(order_by = date, n = 1) |> 
+  ungroup() |>
+  mutate(
+    termpremium = Mid.Price - Value
+  )
+
 treasurymarket <- govbonds |> 
   filter(Instrument == "EU5YT=RR") |> 
+  mutate(
+    date = as.Date(Date),
+    week = cut.Date(date, breaks = "1 week", labels = FALSE)
+  ) |> 
+  group_by(week) |> 
+  slice_max(order_by = date, n = 1) |> 
+  ungroup() |>
+  mutate(
+    treasurymarket = (Mid.Yield-lag(Mid.Yield))/lag(Mid.Yield) * 100
+  )
+
+treasurymarket_swiss <- govbonds |> 
+  filter(Instrument == "CH5YT=RR") |> 
   mutate(
     date = as.Date(Date),
     week = cut.Date(date, breaks = "1 week", labels = FALSE)
@@ -373,6 +448,20 @@ stockreturn <- stocks |>
   rename(bank = query_bank) |> 
   select(bank, date, stockreturn)
 
+cds_d <- read.csv(file.path(paths$path_refinitiv, "cds.csv"), sep = ";") |> 
+  mutate(
+    date = as.Date(date),
+  ) |> 
+  group_by(ric_cds, date) |> 
+  slice_max(order_by = date, n = 1) |> 
+  group_by(ric_cds) |> 
+  mutate(
+    cds = (value-lag(value))/lag(value) * 100
+  ) |> 
+  ungroup() |> 
+  rename(bank = ric_equity) |> 
+  select(bank, date, cds)
+
 
 # dependent variables
 n <- 5
@@ -484,11 +573,19 @@ dataset_cathart_euro <- sentiment_euro_w |>
   left_join(y = termpremium, by = "date") |> 
   left_join(y = treasurymarket, by = "date") |> 
   left_join(y = investgradespread, by = "date") |> 
-  left_join(y = highyieldspread, by = "date") |> 
+  left_join(y = highyieldspread, by = "date") |>
+  mutate(
+    stockmarket_l1 = lag(stockmarket),
+    volatilitypremium_l1 = lag(volatilitypremium),
+    termpremium_l1 = lag(termpremium),
+    treasurymarket_l1 = lag(treasurymarket),
+    investgradespread_l1 = lag(investgradespread),
+    highyieldspread_l1 = lag(highyieldspread)
+  ) |> 
   select(
-    sentiment, sentiment_l1, sentiment_l2, sentiment_l3, sentiment_l4,
-    sentiment_l5, stockmarket, volatilitypremium, termpremium, treasurymarket,
-    investgradespread, highyieldspread, bank, date, cds
+    sentiment,
+    stockmarket_l1, volatilitypremium_l1, termpremium_l1, treasurymarket_l1,
+    investgradespread_l1, highyieldspread_l1, bank, date, cds
   ) |> 
   na.omit() |> 
   mutate(
@@ -497,73 +594,45 @@ dataset_cathart_euro <- sentiment_euro_w |>
   ) |> 
   as.data.frame()
 
-result_cathart_euro_nolag <- panelvar::pvargmm(
-  dependent_vars = c("cds"),
+results_cathart_euro <- panelvar::pvarfeols(
+  dependent_vars = c("cds", "sentiment"),
   lags = 5,
   exog_vars = c(
-    "sentiment",
-    "stockmarket", "volatilitypremium", "termpremium",
-    "treasurymarket", "investgradespread", "highyieldspread"
+    "stockmarket_l1", "volatilitypremium_l1", "termpremium_l1",
+    "treasurymarket_l1", "investgradespread_l1", "highyieldspread_l1"
   ),
   data = dataset_cathart_euro,
-  panel_identifier = c("bank", "date"),
-  steps = c("onestep"),
-  collapse = TRUE
+  panel_identifier = c("bank", "date")
 )
-models[["cathart_nolag_euro"]] <- summary(result_cathart_euro_nolag)
-models[["cathart_nolag_euro"]]["sample"] <- "European Banks"
-models[["cathart_nolag_euro"]]["obsperiod"] <- paste(min(as.Date(dataset_cathart_euro$date)), "to", max(as.Date(dataset_cathart_euro$date)))
 
-# result_cathart_euro_onlylag <- panelvar::pvargmm(
-#   dependent_vars = c("cds"),
-#   lags = 5,
-#   exog_vars = c(
-#     "sentiment_l1", "sentiment_l2", "sentiment_l3", "sentiment_l4", "sentiment_l5",
-#     "stockmarket", "volatilitypremium", "termpremium",
-#     "treasurymarket", "investgradespread", "highyieldspread"
-#   ),
-#   data = dataset_cathart_euro,
-#   panel_identifier = c("bank", "date"),
-#   steps = c("onestep"),
-#   collapse = TRUE
-# )
-# models[["cathart_onlylag_euro"]] <- summary(result_cathart_euro_onlylag)
-# models[["cathart_onlylag_euro"]]["sample"] <- "European Banks"
-# models[["cathart_onlylag_euro"]]["obsperiod"] <- paste(min(as.Date(dataset_cathart_euro$date)), "to", max(as.Date(dataset_cathart_euro$date)))
-
-result_cathart_euro_all <- panelvar::pvargmm(
-  dependent_vars = c("cds"),
-  lags = 5,
-  exog_vars = c(
-    "sentiment", "sentiment_l1", "sentiment_l2", "sentiment_l3", "sentiment_l4", "sentiment_l5",
-    "stockmarket", "volatilitypremium", "termpremium",
-    "treasurymarket", "investgradespread", "highyieldspread"
-  ),
-  data = dataset_cathart_euro,
-  panel_identifier = c("bank", "date"),
-  steps = c("onestep"),
-  collapse = TRUE
-)
-models[["cathart_all_euro"]] <- summary(result_cathart_euro_all)
-models[["cathart_all_euro"]]["sample"] <- "European Banks"
-models[["cathart_all_euro"]]["obsperiod"] <- paste(min(as.Date(dataset_cathart_euro$date)), "to", max(as.Date(dataset_cathart_euro$date)))
-
-create_table(models[grep("cathart_[a-z]+_euro", names(models))], "Panel VAR sentiment, European Bank Sample", "cdspvar_euro")
+models[["cathart_euro"]] <- summary(results_cathart_euro)
+models[["cathart_euro"]]["sample"] <- "European Banks"
+models[["cathart_euro"]]["obsperiod"] <- paste(min(as.Date(dataset_cathart_euro$date)), "to", max(as.Date(dataset_cathart_euro$date)))
 
 
 dataset_cathart_swiss <- sentiment_swiss_w |> 
   left_join(y = meta_ric, by = c("bank" = "query_bank")) |> 
   left_join(y = cds, by = c("date", "ric" = "bank")) |> 
-  left_join(y = stockmarket, by = "date") |> 
-  left_join(y = volatilitypremium, by = "date") |> 
-  left_join(y = termpremium, by = "date") |> 
-  left_join(y = treasurymarket, by = "date") |> 
+  left_join(y = stockmarket_swiss, by = "date") |> 
+  left_join(y = volatilitypremium_swiss, by = "date") |> 
+  left_join(y = termpremium_swiss, by = "date") |> 
+  left_join(y = treasurymarket_swiss, by = "date") |> 
   left_join(y = investgradespread, by = "date") |> 
   left_join(y = highyieldspread, by = "date") |> 
+  group_by(bank) |> 
+  mutate(
+    stockmarket_l1 = lag(stockmarket),
+    volatilitypremium_l1 = lag(volatilitypremium),
+    termpremium_l1 = lag(termpremium),
+    treasurymarket_l1 = lag(treasurymarket),
+    investgradespread_l1 = lag(investgradespread),
+    highyieldspread_l1 = lag(highyieldspread)
+  ) |> 
+  ungroup() |> 
   select(
-    sentiment, sentiment_l1, sentiment_l2, sentiment_l3, sentiment_l4,
-    sentiment_l5, stockmarket, volatilitypremium, termpremium, treasurymarket,
-    investgradespread, highyieldspread, bank, date, cds
+    bank, date, cds, sentiment,
+    stockmarket_l1, volatilitypremium_l1, termpremium_l1, treasurymarket_l1,
+    investgradespread_l1, highyieldspread_l1,
   ) |> 
   na.omit() |> 
   mutate(
@@ -572,77 +641,85 @@ dataset_cathart_swiss <- sentiment_swiss_w |>
   ) |> 
   as.data.frame()
 
-result_cathart_swiss_nolag <- panelvar::pvargmm(
-  dependent_vars = c("cds"),
+
+results_cathart_swiss <- panelvar::pvarfeols(
+  dependent_vars = c("cds", "sentiment"),
   lags = 5,
   exog_vars = c(
-    "sentiment",
-    "stockmarket", "volatilitypremium", "termpremium",
-    "treasurymarket", "investgradespread", "highyieldspread"
+    "stockmarket_l1", "volatilitypremium_l1", "termpremium_l1",
+    "treasurymarket_l1", "investgradespread_l1", "highyieldspread_l1"
   ),
   data = dataset_cathart_swiss,
-  panel_identifier = c("bank", "date"),
-  steps = c("onestep"),
-  collapse = TRUE
+  panel_identifier = c("bank", "date")
 )
-models[["cathart_nolag_swiss"]] <- summary(result_cathart_swiss_nolag)
-models[["cathart_nolag_swiss"]]["sample"] <- "Swiss Banks"
-models[["cathart_nolag_swiss"]]["obsperiod"] <- paste(min(as.Date(dataset_cathart_swiss$date)), "to", max(as.Date(dataset_cathart_swiss$date)))
 
+models[["cathart_swiss"]] <- summary(results_cathart_swiss)
+models[["cathart_swiss"]]["sample"] <- "Swiss Banks"
+models[["cathart_swiss"]]["obsperiod"] <- paste(min(as.Date(dataset_cathart_swiss$date)), "to", max(as.Date(dataset_cathart_swiss$date)))
 
-# result_cathart_swiss_onlylag <- panelvar::pvargmm(
-#   dependent_vars = c("cds"),
-#   lags = 5,
-#   exog_vars = c(
-#     "sentiment_l1", "sentiment_l2", "sentiment_l3", "sentiment_l4", "sentiment_l5",
-#     "stockmarket", "volatilitypremium", "termpremium",
-#     "treasurymarket", "investgradespread", "highyieldspread"
-#   ),
-#   data = dataset_cathart_swiss,
-#   panel_identifier = c("bank", "date"),
-#   steps = c("onestep"),
-#   collapse = TRUE
-# )
-# models[["cathart_onlylag_swiss"]] <- summary(result_cathart_swiss_onlylag)
-# models[["cathart_onlylag_swiss"]]["sample"] <- "Swiss Banks"
-# models[["cathart_onlylag_swiss"]]["obsperiod"] <- paste(min(as.Date(dataset_cathart_swiss$date)), "to", max(as.Date(dataset_cathart_swiss$date)))
-
-
-result_cathart_swiss_all <- panelvar::pvargmm(
-  dependent_vars = c("cds"),
-  lags = 5,
-  exog_vars = c(
-    "sentiment", "sentiment_l1", "sentiment_l2", "sentiment_l3", "sentiment_l4", "sentiment_l5",
-    "stockmarket", "volatilitypremium", "termpremium",
-    "treasurymarket", "investgradespread", "highyieldspread"
-  ),
-  data = dataset_cathart_swiss,
-  panel_identifier = c("bank", "date"),
-  steps = c("onestep"),
-  collapse = TRUE
-)
-models[["cathart_all_swiss"]] <- summary(result_cathart_swiss_all)
-models[["cathart_all_swiss"]]["sample"] <- "Swiss Banks"
-models[["cathart_all_swiss"]]["obsperiod"] <- paste(min(as.Date(dataset_cathart_swiss$date)), "to", max(as.Date(dataset_cathart_swiss$date)))
-
-create_table(models[grep("cathart_[a-z]+_swiss", names(models))], "Panel VAR sentiment, Swiss Bank Sample", "cdspvar_swiss")
-
-# to do: run model with sentiment as dependent var with lag 5, enables to show irf
+create_table(models[grep("cathart_*", names(models))], "Panel VAR sentiment", "cdspvar")
 
 # to do: schauen ob diese analyse getrieben durch einzelne gruppe?
-test <- panelvar::pvargmm(
-  dependent_vars = c("cds"),
+test <- panelvar::pvarfeols(
+  dependent_vars = c("cds", "sentiment"),
   lags = 5,
   exog_vars = c(
-    "sentiment", "sentiment_l1", "sentiment_l2", "sentiment_l3", "sentiment_l4", "sentiment_l5",
-    "stockmarket", "volatilitypremium", "termpremium",
-    "treasurymarket", "investgradespread", "highyieldspread"
+    "stockmarket_l1", "volatilitypremium_l1", "termpremium_l1",
+    "treasurymarket_l1", "investgradespread_l1", "highyieldspread_l1"
   ),
   data = dataset_cathart_swiss |> filter(bank == "ubs"),
-  panel_identifier = c("bank", "date"),
-  steps = c("onestep"),
-  collapse = TRUE
+  panel_identifier = c("bank", "date")
 )
+
+# additional: granger causality test, daily frequency
+dataset_cds_d <- sentiment_swiss_d |> 
+  left_join(y = meta_ric, by = c("bank" = "query_bank")) |> 
+  left_join(y = cds_d, by = c("ric" = "bank", "date")) |>
+  select(bank, date, sentiment_wma, cds) |>
+  group_by(bank) |>
+  arrange(bank, date) |>
+  ungroup() |>
+  mutate(
+    bank = as.factor(bank),
+    date = as.factor(date)
+  ) |>
+  na.omit() |> 
+  as.data.frame()
+
+dataset_cds_d_cs <- dataset_cds_d |> filter(bank == "credit_suisse")
+dataset_cds_d_ubs <- dataset_cds_d |> filter(bank == "ubs")
+
+results_granger <- data.frame()
+
+for (i in 1:5) {
+  
+  cds_on_senti_cs <- lmtest::grangertest(
+    x = dataset_cds_d_cs$sentiment_wma, y = dataset_cds_d_cs$cds, order = i
+  )
+  
+  cds_on_senti_ubs <- lmtest::grangertest(
+    x = dataset_cds_d_ubs$sentiment_wma, y = dataset_cds_d_ubs$cds, order = i
+  )
+  
+  senti_on_cds_cs <- lmtest::grangertest(
+    x = dataset_cds_d_cs$cds, y = dataset_cds_d_cs$sentiment_wma, order = i
+  )
+  
+  senti_on_cds_ubs <- lmtest::grangertest(
+    x = dataset_cds_d_ubs$cds, y = dataset_cds_d_ubs$sentiment_wma, order = i
+  )
+  
+  results_granger <- rbind(results_granger, data.frame(
+    lags = i,
+    cds_on_senti_cs = cds_on_senti_cs$`Pr(>F)`[2],
+    senti_on_cds_cs = senti_on_cds_cs$`Pr(>F)`[2],
+    cds_on_senti_ubs = cds_on_senti_ubs$`Pr(>F)`[2],
+    senti_on_cds_ubs = senti_on_cds_ubs$`Pr(>F)`[2]
+  ))
+}
+
+create_table_granger(results_granger, "Granger Causality Test", "granger")
+
 
 # =============================================================================.
 # 4. Is sentiment predictor of maximum drawdown? ----
