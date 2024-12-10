@@ -1,40 +1,40 @@
 \chapter{Conclusion and Outlook}\label{sec6}
 \thispagestyle{empty}
 
-\textit{conclusion}: \\
-summarize motivation, model(s) and their results including the limitations \\
+Using some exploratory analyses, this study tries to answer the question whether the sentiment of the content of financial news articles about individual banks can be quantified and whether this quantification has predictive power for the risk of the corresponding bank. The main question of interest is whether an indicator constructed from news media articles can improve in the decision process whether a specific bank needs closer monitoring in the perspective of a banking supervisor. It shows that current developments in the research area of large language models can be applied to classify the sentiment of financial news articles. To assess the predictive power of the sentiment indicator, various models for different risk proxies such as Credit Default Swap spreads, the maximum drop of a stock price in a leading observation window or the future volatility are fitted and evaluated. The results suggest, that there might be predictive power, whereby this is dependent on the news articles data source the indicator is constructed upon, the considered sample and risk proxy in question. In particular, the results suggest that a sentiment indicator constructed on news articles from main stream media performs better than a sentiment indicator constructed on news articles from a dedicated financial news media provider. One main advantage of such an indicator is that in enables to now-cast the level of financial distress of a bank compared to more traditional proxies which might only be published in a quarterly or yearly frequency. Additionally, this indicator might capture information which for example is not visible in pure accounting based metrics such as damage to reputation or trust which might severely harm the bank. To utilise this sentiment indicator as an early warning signal in a supervisory perspective, there is additional study and further extensions of the methods presented here necessary. First, a decision needs to be implemented which states when additional supervisory activity is required due to the signals from the sentiment indicator. It should only be signalling if the negative sentiment does not represent a regular adverse event, but rather a threat to the financial health of a bank. Additionally, if textual data should be of major interest in the supervisory process, it might be of use to train a large language model specifically for the use of supervisory purposes rather than using a large language model which was trained for financial applications in general.
 
-\noindent
-\textit{limitations}
-\begin{itemize}
-	\item still noise of my way to classify relevancy. e.g. also LLM could make this job?
-	\item relatively short obs period for cds (max 15months)
-	\item no threshold when critital for supervision / supervision probably won't care about normal stock price decrease or something. this would need further analysis
-	\item maybe look at spreads also between risk proxies and between sentiment indicator
-\end{itemize}
-
-analysis shows that there is some information contained in news media sentiment about swiss banks. it can indicate higher risk and might be used for supervision or also credit risk management. to act as an early warning, we would need some decision rule when we need to look more closely at a bank. \\
-
-no true cause and effect in this analysis, more a correlational study. 
-
-\noindent
-\textit{extensions}:
-\begin{itemize}
-	\item fine tune LLM fine tune an llm to classify whether a text is relevant for a specific context
-	\item ...
-	\item principal component analysis -> we could expect a large commonality and co-movement in the risk proxies, i guess this is also backed by theory/literature? maybe also in sentiment scores?
-	\item maybe training a llm for sentiment classification in the perspective of banking supervision would be good, which also can distinguish between more negative news i.e. can assign values smaller than -1
-\end{itemize}
-
-problem with incentives of news media -> "sell adds" ie make noisy articles \\
-
-maybe auch viele artikel auf plattformen wie refinitiv von maschine geschrieben -> reflektiert dies eventuell sowieso nur informationen welche bereits eingepreist sind? \\
-
-wichtig auch zu sagen dass high frequency indicators schwierig ist für individual banks, daher news sentiment o.ä. attraktiv
-
-\newpage
-
-das wird wohl auch 2 seiten
+%\textit{conclusion}: \\
+%summarize motivation, model(s) and their results including the limitations \\
+%
+%\noindent
+%\textit{limitations}
+%\begin{itemize}
+%	\item still noise of my way to classify relevancy. e.g. also LLM could make this job?
+%	\item relatively short obs period for cds (max 15months)
+%	\item no threshold when critital for supervision / supervision probably won't care about normal stock price decrease or something. this would need further analysis
+%	\item maybe look at spreads also between risk proxies and between sentiment indicator
+%\end{itemize}
+%
+%analysis shows that there is some information contained in news media sentiment about swiss banks. it can indicate higher risk and might be used for supervision or also credit risk management. to act as an early warning, we would need some decision rule when we need to look more closely at a bank. \\
+%
+%no true cause and effect in this analysis, more a correlational study. 
+%
+%\noindent
+%\textit{extensions}:
+%\begin{itemize}
+%	\item fine tune LLM fine tune an llm to classify whether a text is relevant for a specific context
+%	\item ...
+%	\item principal component analysis -> we could expect a large commonality and co-movement in the risk proxies, i guess this is also backed by theory/literature? maybe also in sentiment scores?
+%	\item maybe training a llm for sentiment classification in the perspective of banking supervision would be good, which also can distinguish between more negative news i.e. can assign values smaller than -1
+%	\item design a decision rule, e.g. classify banks on high risk or something
+%	\item out of sample analysis
+%\end{itemize}
+%
+%problem with incentives of news media -> "sell adds" ie make noisy articles \\
+%
+%maybe auch viele artikel auf plattformen wie refinitiv von maschine geschrieben -> reflektiert dies eventuell sowieso nur informationen welche bereits eingepreist sind? \\
+%
+%wichtig auch zu sagen dass high frequency indicators schwierig ist für individual banks, daher news sentiment o.ä. attraktiv
 
 
 

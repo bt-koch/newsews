@@ -11,7 +11,7 @@ Swissdox@LiRI is a database which includes about 23 million media articles from 
 
 The sample of publicly traded Swiss banks was extended to all European Globally Systematically Important Banks (G-SIBs) from the 2023 list, which were identified by the Financial Stability Board in consultation with the Basel Committe on Banking Supervision and national authorities. To retrieve news articles about the European G-SIBs, the Eikon Data API as a second provider for news media articles was used, which provided the option to request news articles from their news feed. This provider also offers the whole content of news articles in a machine-readable format. However, since the interface is not specifically designed for big data applications, the procurement of each item requires a separate API request. Therefore, corresponding API limits are quickly reached, which is why only english articles which were labeled as significant news by an algorithm by Eikon were requested. Furthermore, if there were more than 5 articles correspondent to a specific bank on a given day, only five articles were queried which were chosen randomly. HIER SCHREIBEN WIE HÄUFIG DAS MIT MEH ALS FÜF DER FALL WAR. Furthermore, using the Eikon Data API, only news articles from the past 15 months can be retrieved. Thus, the observation period start in September 2023 and spans until October 2024.
 
-\section{Experimental Design and Hypotheses}
+\section{Experimental Design and Hypotheses} \label{sec:hypotheses}
 
 First, the analysis focuses on Credit Default Swap (CDS) spreads as a proxy of the risk associated with a bank. We start by analyzing whether the sentiment indicator is a determinant of the changes in CDS spreads. This analysis is based on the work of \cite{annaert2013}, which will be extended by the inclusion of the sentiment indicator as a potential determinant. \cite{annaert2013} try to explain and not to predict changes in CDS spreads using contemporaneous explanatory variables. The explanatory variables include the risk free rate, leverage and the equity volatility as credit risk variables, the bid-ask spread as liquidity variable and the term structure slope, swap spread, corporate bond spread, market return and market volatility as business cycle and market wide variables. The definition of these explanatory variables can be found in the Online Appendix TODO!!!. \cite{annaert2013} run their analysis for 32 listed banks from the euro area in the period from 2004 to 2010. HIER NOCH MEHR ÜBER IHRE FINDINGS SCHREIBEN. VORALLEM DASS DIE GESCHÄTZTEN KOEFFS ÜBER DIE ZEIT NICHT STABIL SIND. \\		
 
@@ -61,15 +61,13 @@ We test if there is a bidirectional hypothesis by conducting a Granger Causality
 
 The main problem of the previous regression models is, that it requires CDS spreads on the banks to be analyzed. However, there are no traded CDS on the majority of Swiss banks. Hence, to include the remaining banks of our Swiss sample in the analysis, we need to use another proxy for the risk perceived in the financial markets about the corresponding banks. Since all banks are publicly traded, risk proxies constructed from the corresponding stock price allows to include all banks to be included in the analysis without high demands on data availability. Hence, the remaining models focus on risk proxies derived from the stock price and are fitted on the whole sample of Swiss banks and European G-SIBs. \\
 
-First, we assume that the sentiment of the news media is reflected in the stock price of the corresponding bank in the foreseeable future. As the literature has shown, the effect of news sentiment is most pronounced for media pessimism which is able to predict falling stock prices (for example as in \cite{tetlock2007}). Additionally, from the perspective of banking supervision, we care most about increased risk. Hence, we use the maximum drawdown over the next 14 days of the corresponding bank's stock price as a risk proxy. For this analysis, we analyse the data in daily frequency and hence use the weighted moving average of the news sentiment as described in equation \ref{eq:sentind_wma}. We therefore fit following panel autoregressive model: \\
+First, we assume that the sentiment of the news media is reflected in the stock price of the corresponding bank in the foreseeable future. As the literature has shown, the effect of news sentiment is most pronounced for media pessimism which is able to predict falling stock prices (for example as in \cite{tetlock2007}). Additionally, from the perspective of banking supervision, we care most about increased risk. Hence, we use the maximum drawdown over the next 14 days of the corresponding bank's stock price as a risk proxy. For this analysis, we analyse the data in daily frequency and hence use the weighted moving average of the news sentiment as described in equation \ref{eq:sentind_wma}. We therefore fit following panel autoregressive model:
 
-TO DO HERE CHECK WHETHER THE SENTIM INDIC COMES INTO MODEL AS IN T OR IN T-1 AS IT SHOULD (AS EXOG. VAR)!!
-
-\begin{equation}
+\begin{equation} \label{eq:mdd}
 	mdd_{b,t} = \alpha_b + \sum_{\tau=1}^5\delta_\tau mdd_{b,t-\tau} + \theta s\_wma_{b,t-1} + e_{b,t}
 \end{equation}
 
-whereby $mdd_{b,t}$ is the $t+14$ maximum drawdown of the stock price of bank $b$ at time $t$. Again, as in the model as described in equation \ref{eq:panelvar-cds-exogsenti}, the maximum drawdown as the independent variable is included as lagged control variables for up to five lags in the model. HERE SAY SOMETHING ABOUT MISSING CONTROL VARIABLES. Using this model, we check following hypothesis:
+whereby $mdd_{b,t}$ is the $t+14$ maximum drawdown of the stock price of bank $b$ at time $t$. Again, as in the model as described in equation \ref{eq:panelvar-cds-exogsenti}, the maximum drawdown as the independent variable is included as lagged control variables for up to five lags in the model. HERE SAY SOMETHING ABOUT MISSING CONTROL VARIABLES. HERE REPORT REASON AND METHOD FOR ADJUSTED SMA. Using this model, we check following hypothesis:
 
 \begin{hyp}
 	The sentiment indicator predicts the maximum drawdown of a banks stock price.
@@ -91,15 +89,13 @@ whereby $\sigma^2_{b,t}$ is the realised volatility, $e^2_{t-1}$ is the squared 
 
 whereby $\sigma^2_{b,t}$ is the realised volatility at $t$. We include the volatility of the stock price of the past 3, 7 and 22 days ($\sigma^2_{b,t-2:t}$, $\sigma^2_{b,t-6:t}$ and $\sigma^2_{b,t-21:t}$) as well as the weighted moving average of the sentiment indicator $s\_wma_{b,t-1}$ according to equation \ref{eq:sentind_wma}.
 
-
-
 \begin{hyp}
 	The sentiment indicator predicts stock price volatility.
 \end{hyp} 
 
 We expect and test whether the coefficient for the sentiment indicator is different from zero, more specifically we expect $\theta_b>0$ which would indicate that negative sentiment increases stock price volatility. Note that both the GARCH-X model and the HAR model can only be fitted for one bank at once. Hence, we do not estimate the whole panel, rather we focus on Credit Suisse and UBS as the two biggest banks in the Swiss sample, as we expect highest media coverage and market activity for these banks.
 
-\section{Evaluation of Hypotheses}
+\section{Evaluation of Hypotheses} \label{sec:results}
 
 % hypothesis 1:
 First, according to hypothesis 1 we check whether the sentiment indicator is a determinant of CDS spreads. In table \ref{tab:cdsdet} we show the results of the panel regression of CDS spreads following \cite{annaert2013}, whereby the main interest is in the estimated coefficient for the sentiment. As we can see, the estimated coefficient is not statistically different from zero. Still, as expected, the coefficient is negative which would mean that negative sentiment is associated with increased risk of the corresponding bank. Noticeable is the difference in magnitude of the coefficient and its standard error between the two samples. Given the results of the panel regression following \cite{annaert2013}, we cannot confirm hypothesis 1 that the current news sentiment of a bank is a determinant of the corresponding CDS spread. \\
@@ -126,25 +122,21 @@ Figure \ref{fig:oirfs} further support this conclusion. As we can see, the ortho
 \end{figure}
 
 
-% hypothesis 3 ----
-Having analysed the relationship between the sentiment indicator as proposed in equation \ref{eq:sentind} and CDS spreads, we now turn to the hypothesis whether the sentiment indicator as proposed in \ref{eq:sentind_wma} has predictive performance for the maximum drawdown over the next 14 days of the corresponding bank. Again, the coefficient for the sentiment indicator is not statistically different from zero for the European G-SIBs, while we observe a coefficient for the sentiment indicator which is statistically significant different from zero and as expected 
-
-
-%\input{tables/mddpvar_euro.tex} -> do not show
+% hypothesis 5:
+Having analysed the relationship between the sentiment indicator as proposed in equation \ref{eq:sentind} and CDS spreads, we now turn to the hypothesis whether the sentiment indicator as proposed in \ref{eq:sentind_wma} has predictive performance for the maximum drawdown over the next 14 days of the corresponding bank. For the European G-SIBs, the estimated coefficients for the sentiment indicator are not statistically different from zero, hence the results of the model according to equation \ref{eq:mdd} are not reported. Table \ref{tab:mddpvar_swiss} reports the results of this regression for the Swiss sample. While the coefficient of the unadjusted sentiment indicator is not statistically significantly different from zero, the coefficient of the adjusted sentiment indicator is. The results indicate that negative sentiment is associated with a higher drop in the stock price represented as a lower value of the maximum drawdown according to equation TODO. Hence, the results of the Swiss Bank sample support the hypothesis 5 that the news sentiment indicator has predictive power of the maximum drawdown. \\
 
 \input{tables/mddpvar_swiss.tex}
 
-
-
-% paragraph 4: hypothesis 4 ----
+% hypothesis 6:
+Lastly, when evaluating both models for predicting the volatility of the banks stock price, neither the GARCH-X model as reported in table \ref{tab:garchx} nor the HAR model as reported in table \ref{tab:har} resulted in estimated coefficients for the sentiment indicator which are statistically different from zero. Hence, this analysis does not support the hypothesis 6 that the sentiment indicator has predictive performance in forecasting future stock price volatility of corresponding banks.
 
 \input{tables/garchx.tex}
 
 \input{tables/har.tex}
 
-% paragraph 5: hypothesis 5 ----
 
-\section{Evaluation of Predictive Performance, out of sample...}
+
+\section{Evaluation of Predictive Performance, out of sample analysis}
 
 here i guess i will just focus on champion model \\
 
@@ -152,26 +144,21 @@ then also look at credit suisse at crisis \\
 
 visualize pred vs actual for cs and ubs \\
 
-\newpage
 
 \section{Discussion}
 
-hier auch noch hinweisen auf unterschied zwischen refinitiv vs swissdox. \\
+The results in section \ref{sec:results} only partly support our hypotheses stated in section \ref{sec:hypotheses}. Particularly striking is the difference between the results of the European G-SIB sample and the Swiss Banks sample. One difference between the samples is the observation period used for the analysis. As the results of \cite{annaert2013} have shown, estimated coefficients and their significants are not stable over time. In particular, their results suggest that the variables included in their analysis were more influential in time of crisis. The Swiss Bank sample does include the 2023 banking crisis while the European sample does not, which might be a reason for the difference in results. \\
 
-klar ist sample period anderst. aber eventuell auch unterschiede zwischen den quellen? im sinne von enthalten dedicated financial news articles andere informationen als main stream media? im sinn von eventuell ist relevanz von information in mainstream höher da "reguläre entwicklungen" grosse population ncith interessiert. \\
+Another big difference is the news article database the corresponding news sentiment articles are constructed upon. The news sentiment indicator constructed for the Swiss banks sample is built on much more articles which, through aggregation, might reduce the noise by giving less weight to potential articles which do not contain much impactful information about the state of the corresponding bank. Since the general public which consumes mainstream media as contained in the database used for the Swiss sample does not care as much about recent developments as the reader of news provided by specialised vendors as Refinitv, only highly relevant information might be published in the mainstream media. Hence, news articles published from mainstream media as in the Swiss banks sample might contain information of greater importance compared to financial news in average. \\
 
-sicher fokus bei der diskussion auf unterschiede zwischen den zwei samples: was sind mögliche gründe?
+The results in this analysis can be interpreted as explorative studies for finding whether the content of financial news articles can be quantified and used as a predictive indicator in applications relevant for banking supervision or risk management. We can see that for some periods, samples and risk proxies there might be predictive performance in the content of media articles. To build a reliable indicator, more detailed analysis regarding sample size, observation period and robustness is required. As we have seen in the analysis of hypothesis 5, there might also be the need of further adjusting the indicator by adapting the classification rule to distinguish more clearly between positive, neutral and negative signals. \\
 
-paragraph 1: result 1 \\
+Finally, to build an early warning indicator, we would need to implement a decision rule on when the corresponding bank should be classified as risky enough to be further monitored by the supervisor. If adverse events of regular severity are occurring and the financial markets are reacting accordingly, there should not be a signal for the supervisor. For example, if quarterly results are worse than expected, which could be reflected in the news coverage as well as the risk proxies, a financially sound bank should not become financially distressed. Thus, a threshold of the corresponding risk proxy could be defined and if the predicted value crosses this threshold could be defined as the decision rule to initiate a more in-depth monitoring process. There might also be a threshold which could be implemented which decides whether a predicted increase in the corresponding risk proxy could be a normal market reaction or a sign of increased financial distress. \\
 
-paragraph 2: result 2 \\
+The sentiment indicator itself could also be constructed in a different way such that the indicator itself could be used for a decision rule. The sentiment indicator as of now does not distinguish on news on higher or lower relevancy for a supervisory context. This could be done by training a LLM by providing a metric for each textual input which indicates the level of relevancy. Another possibility would be to define classes of topics such as legal news which are highly relevant in the supervisory context and construct the sentiment indicator only on news about these predefined categories. Additionally, the construction of the sentiment indicator could further be extended such that the textual inputs could be classified not only as negative but also in slightly negative, negative or highly negative (for example by assigning values -1, -2 and -3 accordingly). For this, it would be required to train a novel LLM which could classify the relevancy and severity of negative news in a supervisory perspective. Given the methods used in this analysis, one could construct the sentiment indicator by multiplying the assigned value of -1, and 1 for positive news with the metric provided by the LLM about how sure it is about its classification (HERE WRITE THIS LESS LIKE ITS A HUMAN OR SOMETHING.) \\
 
-paragraph 3: result 3 \\
+Furthermore, the analysis could be extended by predicting spreads between the risk proxies between the different banks. For example, one could define the bank with the risk proxy which indicates the least risk or the average risk proxy as a benchmark and analyse the developments of the spreads from the banks to this benchmark and if they can be predicted using a sentiment indicator which itself could be the spread between the sentiment towards the specific bank compared to all banks in general. This might reveal if the risk of a specific bank deteriorates abnormally in comparison to its peers. \\
 
-paragraph 4: result 4 \\
-
-paragraph 5: result 5
-
-
+Talk here also about PCA
 
 \cleardoublepage
