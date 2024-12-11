@@ -32,6 +32,15 @@ Hence, if you want to replicate this study, you need access to both the swissdox
 
 2. run `create_datasets.py` with `step=2` to create `sentiment_scores.csv` and `sentiment_scores_refinitiv.csv`
 
+Note that this datasets are available in `data/` since there is just a randomised identificator for the corresponding article and no further information.
+
+## Step 4: Regression Analysis
+
+1. run `analysis_regressionmodels.R` to replicate the results of the different models reported in the report.
+
+## Optional Step: Topic Classification
+
+to do
 
 ## Additional files
 
