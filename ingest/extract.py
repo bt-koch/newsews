@@ -612,9 +612,6 @@ class refinitiv:
         df = df.replace("NaN", pd.NA)
         return df
 
-    # use this to get news headlines
-    # test = ek.get_news_headlines("UBSG.S")
-
 class newyorktimes:
 
     def connect():
