@@ -4,7 +4,7 @@ venv_newsews
 .vscode
 .Rhistory
 test*.py
-literature/pdf
+literature/*
 tex/*
 !tex/sec[0-9]*.tex
 config/credentials.py
