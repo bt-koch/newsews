@@ -1,25 +1,16 @@
-\chapter{Decision Problem}\label{sec2}
+\chapter{Sentiment Analytics for Supervision}\label{sec2}
 \thispagestyle{empty}
 
-Klärung folgender Fragen:
-\begin{itemize}
-	\item Was ist gegeben? $\rightarrow$ "traditional models" without sentiment as input resp hier auch auf diese BIS reports eingehen
-	\item Was ist gesucht? $\rightarrow$ does sentiment indicator improve performance?
-	\item Was ist das Zielkriterium? $\rightarrow$ new statistically significant and relevant independent variable for estimating risk proxies of banks
-	\item Welche Randbedingungen gilt es zu berücksichtigen? $\rightarrow$ maybe trade off between improved performance vs complexity/costs of data? hier dieses paradox erwähnen aus dieser speech
-\end{itemize}
+First published in 1997 by the Basel Committee on Banking Supervision (BCBS), the 29 Core Principles for effective banking supervision, or the Basel Core Principles (BCPs), are the minimum global standard for the sound prudential regulation and supervision of banks and banking systems \citep{bis2024}. These BCPs can be categorised to BCPs 1-13 which define the powers, responsibilities and functions of supervisors and BCPs 14-29 about prudential regulations and requirements for banks. Relevant for this study are BCPs 8-13, which outline various tools and techniques aimed at facilitating robust on-site and off-site supervision of banks and banking groups. Particularly BCP 8 which defines the supervisory approach states, that the supervisor develops and maintains a forward-looking assessment of the risk profile of individual banks. \\
 
-hier auch erwähnenswert: vieles ist nur in low frequency verfügbar (accounting measures etc)  \\
+% mabye cite this (also) for BCPs: https://www.bis.org/bcbs/publ/d383.pdf
 
-daher sentiment indicator könnte attraktiv sein da hohe frequenz \\
+The turmoils in the banking sector in early 2023 highlighted the importance of this forward-looking risk assessment. As \cite{prenio2024} states, a lack of adequate resources and effective tools affects the ability of supervisory authorities for timely interventions. Besides investments in human resources, supervisory authorities are investing in innovative tools using novel techonology \citep{prenio2024}. \cite{broeders2018} defined the use of innovative technology by supervision agencies to support supervision as supervision technology, or suptech. According to \cite{prenio2024}, there is much hope that suptech helps to enhances supervisory ability, whereby the developments in generative artificial intelligence might provide the potential of suptech to be a transformative force in financial supervision. \\
 
-alternativen sind marktdaten, ie stock returns undsoweiter cds options blabla \\
+Facing this need for effective tools for the process of banking supervision and new possibilities through artificial intelligence, this study presents an indicator which tries to proxy the sentiment of the news media on publicly traded Swiss Banks as well as European Globally Systemically Important Banks (G-SIBs). This news sentiment indicator is constructed using a Large Languange Model (LLM). Using an exploratory approach, it is tested whether this indicator can predict several proxies of a banks risk. If the news sentiment on a specific bank is a leading indicator for its risk, it might be possible to define or incorporate this indicator in an early warning system which helps to decide whether more intensive monitoring of the corresponding bank is necessary. The process of data retrieval, sentiment classification and construction of this indicator can be fully automated. The process is executed on a local machine with regular consumer hardware. Hence, a similar process could be implemented in a supervisory context without significant investments in IT infrastructure. Since the process is run locally, it might also be possible to include sensitive data. \\
 
-vorteil sentiment: bietet einen high frequency indikator für nicht an der börse gehandelte banken?
+Note that a lot of measures used for nowcasting the current riskiness of a bank are derived from market data, since other measures such as accounting based metrics are only available in a relatively low frequency. However, there are banks under supervision which are not publicly traded and therefore these measures are not available. Additionally, even for the publicly traded banks, metrics such as Credit Default Swaps or metrics derived from the option market might still not be available since the corresponding financial product is not traded at all or without a sufficiently high volume. Hence, nowcasting the risk of the banks concerned might be additionally challenging. The suggested news sentiment indicator does not have the requirement. Additionally, the finance literature has shown that news sentiment can be a leading indicator in the financial markets and therefore might signal increased risk earlier than market derived measures. Although the sentiment indicator does not require that the bank is publicly traded, it should be media coverage of sufficient extent about the corresponding bank that a high frequency indicator can be constructed without that the indicator might be driven by few articles with extreme sentiment. For the Swiss banking sector, this indicator could be of great value, since three of the four systemically important banks are not publicly traded.
 
-\newpage
-
-das wird auch noch decision problem
 
 
 \cleardoublepage
