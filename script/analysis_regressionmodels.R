@@ -946,3 +946,124 @@ models[["har_ubs"]]["nobs"] <- length(stockreturn_ubs)
 models[["har_ubs"]]["obsperiod"] <- paste(min(as.Date(dataset_vola_swiss_ubs$date)), "to", max(as.Date(dataset_vola_swiss_ubs$date)))
 
 create_table(models[grep("^har_*", names(models))], "HAR", "har")
+
+
+# =============================================================================.
+# 6. Additional analysis: include topics to cathart ----
+# =============================================================================.
+
+topics <- read.csv(file.path(paths$path_results, "topics.csv"), sep = ";")
+
+sentiment_swiss_w_topic <- sentiment_swiss |> 
+  mutate(
+    date = as.Date(date),
+    week = cut.Date(date, breaks = "1 week", labels = FALSE)
+  ) |> 
+  left_join(y = topics, by = "identifier", relationship = "many-to-many") |> 
+  filter(
+    bank %in% c("credit_suisse", "ubs"),
+    topic_lead %in% c("Legal | Regulation", "Company | Product News", "Personnel Change")
+  ) |> 
+  group_by(bank, week, topic_lead) |> 
+  reframe(sentiment = mean(sentiment_score, na.rm = TRUE)) |> 
+  group_by(bank) |> 
+  tidyr::pivot_wider(
+    id_cols = c("bank", "week"),
+    names_from = "topic_lead",
+    values_from = "sentiment"
+  ) |> 
+  rename(
+    sentiment_legal = `Legal | Regulation`,
+    sentiment_product_news = `Company | Product News`,
+    sentiment_personnel_change = `Personnel Change`
+  ) |> 
+  mutate(
+    sentiment_legal = zoo::na.approx(sentiment_legal, maxgap = 2, rule = 2),
+    sentiment_product_news = zoo::na.approx(sentiment_product_news, maxgap = 2, rule = 2),
+    sentiment_personnel_change = zoo::na.approx(sentiment_personnel_change, maxgap = 2, rule = 2)
+  ) |> 
+  right_join(y = map_date_swiss, by = "week") |> 
+  mutate(
+    date = date - 2
+  ) |> 
+  ungroup()
+
+dataset_cathart_swiss_topic <- sentiment_swiss_w_topic |> 
+  left_join(y = meta_ric, by = c("bank" = "query_bank")) |> 
+  left_join(y = cds, by = c("date", "ric" = "bank")) |> 
+  left_join(y = stockmarket_swiss, by = "date") |> 
+  left_join(y = volatilitypremium_swiss, by = "date") |> 
+  left_join(y = termpremium_swiss, by = "date") |> 
+  left_join(y = treasurymarket_swiss, by = "date") |> 
+  left_join(y = investgradespread, by = "date") |> 
+  left_join(y = highyieldspread, by = "date") |> 
+  group_by(bank) |> 
+  mutate(
+    stockmarket_l1 = lag(stockmarket),
+    volatilitypremium_l1 = lag(volatilitypremium),
+    termpremium_l1 = lag(termpremium),
+    treasurymarket_l1 = lag(treasurymarket),
+    investgradespread_l1 = lag(investgradespread),
+    highyieldspread_l1 = lag(highyieldspread)
+  ) |> 
+  ungroup() |> 
+  select(
+    bank, date, cds, sentiment_legal, sentiment_product_news, sentiment_personnel_change,
+    stockmarket_l1, volatilitypremium_l1, termpremium_l1, treasurymarket_l1,
+    investgradespread_l1, highyieldspread_l1,
+  ) |> 
+  na.omit() |> 
+  mutate(
+    bank = as.factor(bank),
+    date = as.factor(date)
+  ) |> 
+  as.data.frame()
+
+result_topic_legal <- panelvar::pvarfeols(
+  dependent_vars = c("cds", "sentiment_legal"),
+  lags = 5,
+  exog_vars = c(
+    "stockmarket_l1", "volatilitypremium_l1", "termpremium_l1",
+    "treasurymarket_l1", "investgradespread_l1", "highyieldspread_l1"
+  ),
+  data = dataset_cathart_swiss_topic,
+  panel_identifier = c("bank", "date")
+)
+
+models[["topic_legal"]] <- summary(result_topic_legal)
+models[["topic_legal"]]["sample"] <- "Swiss Banks"
+models[["topic_legal"]]["obsperiod"] <- paste(min(as.Date(dataset_cathart_swiss_topic$date)), "to", max(as.Date(dataset_cathart_swiss_topic$date)))
+
+
+result_topic_product <- panelvar::pvarfeols(
+  dependent_vars = c("cds", "sentiment_product_news"),
+  lags = 5,
+  exog_vars = c(
+    "stockmarket_l1", "volatilitypremium_l1", "termpremium_l1",
+    "treasurymarket_l1", "investgradespread_l1", "highyieldspread_l1"
+  ),
+  data = dataset_cathart_swiss_topic,
+  panel_identifier = c("bank", "date")
+)
+
+models[["topic_product"]] <- summary(result_topic_product)
+models[["topic_product"]]["sample"] <- "Swiss Banks"
+models[["topic_product"]]["obsperiod"] <- paste(min(as.Date(dataset_cathart_swiss_topic$date)), "to", max(as.Date(dataset_cathart_swiss_topic$date)))
+
+result_topic_personnel_change <- panelvar::pvarfeols(
+  dependent_vars = c("cds", "sentiment_personnel_change"),
+  lags = 5,
+  exog_vars = c(
+    "stockmarket_l1", "volatilitypremium_l1", "termpremium_l1",
+    "treasurymarket_l1", "investgradespread_l1", "highyieldspread_l1"
+  ),
+  data = dataset_cathart_swiss_topic,
+  panel_identifier = c("bank", "date")
+)
+
+models[["topic_personnel"]] <- summary(result_topic_personnel_change)
+models[["topic_personnel"]]["sample"] <- "Swiss Banks"
+models[["topic_personnel"]]["obsperiod"] <- paste(min(as.Date(dataset_cathart_swiss_topic$date)), "to", max(as.Date(dataset_cathart_swiss_topic$date)))
+
+create_table(models[grep("^topic_*", names(models))], "TOPIC", "topic")
+
