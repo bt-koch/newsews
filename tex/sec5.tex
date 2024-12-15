@@ -139,7 +139,7 @@ Figure \ref{fig:oirfs} further support this conclusion. As we can see, the ortho
 % to do: make plot by myself and wrap this tex code in R function
 \begin{figure}[h!]
     \centering
-    \includegraphics[width=0.75\textwidth]{images/oirfs.png}
+    \includegraphics[width=\textwidth]{images/oirfs.png}
     \caption{Orthogonalized impulse response function}
     \label{fig:oirfs}
 \end{figure}
@@ -148,10 +148,10 @@ Figure \ref{fig:oirfs} further support this conclusion. As we can see, the ortho
 % hypothesis 5:
 Having analysed the relationship between the sentiment indicator as proposed in equation \ref{eq:sentind} and CDS spreads, we now turn to the hypothesis whether the sentiment indicator as proposed in \ref{eq:sentind_wma} has predictive performance for the maximum stock price decrease over the next 14 days of the corresponding bank. For the European G-SIBs, the estimated coefficients for the sentiment indicator are not statistically different from zero, hence the results of the model according to equation \ref{eq:mdd} are not reported. Table \ref{tab:mddpvar_swiss} reports the results of this regression for the Swiss sample. While the coefficient of the unadjusted sentiment indicator is not statistically significantly different from zero, the coefficient of the adjusted sentiment indicator is. The results indicate that negative sentiment is associated with a higher drop in the stock price. Hence, the results of the Swiss Bank sample support the hypothesis 5 that the news sentiment indicator has predictive power of the maximum drawdown. \\
 
-\input{tables/mddpvar_swiss.tex}
+\input{tables/mdpvar_swiss.tex}
 
 % hypothesis 6:
-Lastly, when evaluating both models for predicting the volatility of the banks stock price, neither the GARCH-X model as reported in table \ref{tab:garchx} nor the HAR model as reported in table \ref{tab:har} resulted in estimated coefficients for the sentiment indicator which are statistically different from zero. Hence, this analysis does not support the hypothesis 6 that the sentiment indicator has predictive performance in forecasting future stock price volatility of corresponding banks. \\
+When evaluating both models for predicting the volatility of the banks stock price, neither the GARCH-X model as reported in table \ref{tab:garchx} nor the HAR model as reported in table \ref{tab:har} resulted in estimated coefficients for the sentiment indicator which are statistically different from zero. Hence, this analysis does not support the hypothesis 6 that the sentiment indicator has predictive performance in forecasting future stock price volatility of corresponding banks. \\
 
 \input{tables/garchx.tex}
 
@@ -160,6 +160,7 @@ Lastly, when evaluating both models for predicting the volatility of the banks s
 % hypothesis 7:
 HERE DISPLAY RESULTS OF ANALYSIS OF HYPO 7
 
+\input{tables/topic.tex}
 
 
 %\section{Evaluation of Predictive Performance, out of sample analysis}
