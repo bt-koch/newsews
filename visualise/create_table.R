@@ -1,4 +1,4 @@
-create_table <- function(models, caption, label, small_font = F) {
+create_table <- function(models, caption, label, autoscale = T) {
   
   if ("plm" %in% class(models[[1]])) {
     content <- create_table_plm(models)
@@ -19,13 +19,14 @@ create_table <- function(models, caption, label, small_font = F) {
   textable <- c(
     "\\begin{table}[h!]",
     "\\centering",
-    if (small_font) "\\tiny",
+    if (autoscale) "\\resizebox{\\textwidth}{!}{",
     paste0("\\begin{tabular}{l", strrep("r", ncol(content)-1), "}"),
     paste(paste(names(content), collapse = "&"), "\\\\ \\hline"),
     paste(apply(content, 1, paste, collapse = "&"), "\\\\"),
     "\\hline",
     paste0("\\multicolumn{", ncol(content), "}{l}{", footnote, "}"),
     "\\end{tabular}",
+    if (autoscale) "}",
     "",
     paste0("\\caption{", caption, "}"),
     paste0("\\label{tab:", label, "}"),
@@ -90,6 +91,17 @@ create_table_plm <- function(models) {
   }
   
   output <- output |> 
+    mutate(
+      sort_index = if_else(variable == "sentiment", 0, sort_index),
+      variable = if_else(variable == "corpbondspread", "corporate bond spread", variable),
+      variable = if_else(variable == "equivol", "equity volatility", variable),
+      variable = if_else(variable == "marketreturn", "market return", variable),
+      variable = if_else(variable == "marketvola", "market volatility", variable),
+      variable = if_else(variable == "riskfree", "risk free rate", variable),
+      variable = if_else(variable == "termstructure", "term structure", variable)
+    )
+  
+  output <- output |> 
     arrange(sort_index) |> 
     select(!sort_index)
   
@@ -117,8 +129,9 @@ create_table_pvarfeols <- function(models) {
         significance = if_else(pval < 0.01, "***", significance),
         summary = paste0(round(coeff, 3), significance, " (", round(se, 2), ")"),
         sort_index = 3,
-        sort_index = if_else(endsWith(variable, "cds") | endsWith(variable, "mdd"), 2, sort_index),
-        sort_index = if_else(endsWith(variable, "sentiment") | endsWith(variable, "wma") | endsWith(variable, "wma_adj"), 1, sort_index)
+        sort_index = if_else(endsWith(variable, "cds") | endsWith(variable, "md"), 2, sort_index),
+        sort_index = if_else(endsWith(variable, "sentiment") | endsWith(variable, "wma") | endsWith(variable, "wma_adj"), 1, sort_index),
+        variable = gsub("legal|product_news|personnel_change", "", variable)
       ) |> 
       select(variable, summary, sort_index) |>
       add_row(
@@ -138,7 +151,17 @@ create_table_pvarfeols <- function(models) {
         sort_index = 7
       )
     
-    names(temp)[names(temp) == "summary"] <- paste("Model", i)
+    if ("demeaned_lag1_sentiment_legal" %in% models[[i]]$results[[1]]@coef.names) {
+      name <- "Legal"
+    } else if ("demeaned_lag1_sentiment_product_news" %in% models[[i]]$results[[1]]@coef.names) {
+      name <- "Product News"
+    } else if ("demeaned_lag1_sentiment_personnel_change" %in% models[[i]]$results[[1]]@coef.names) {
+      name <- "Personnel Change"
+    } else {
+      name <- paste("Model", i)
+    }
+    
+    names(temp)[names(temp) == "summary"] <- name
     temp$variable <- gsub("_", " ", temp$variable)
     
     if (ncol(output) == 0) {
@@ -149,6 +172,21 @@ create_table_pvarfeols <- function(models) {
   }
   
   output <- output |> 
+    mutate(
+      variable = gsub("demeaned ", "", variable),
+      variable = gsub("l1", "$(t-1)$", variable),
+      variable = gsub("^lag(\\d+)\\s(.+)", "\\2 $(t-\\1)$", variable),
+      variable = gsub("stockmarket", "stock market", variable),
+      variable = gsub("termpremium", "term premium", variable),
+      variable = gsub("treasurymarket", "treasury market", variable),
+      variable = gsub("volatilitypremium", "volatility premium", variable),
+      variable = gsub("highyieldspread", "high yield spread", variable),
+      variable = gsub("investgradespread", "investment grade spread", variable)
+    )
+
+  
+  output <- output |> 
+    mutate(sort_index = if_else(grepl("sentiment", variable), 1, sort_index)) |> 
     arrange(sort_index) |> 
     select(!sort_index)
   
@@ -240,7 +278,7 @@ create_table_garchx <- function(models) {
       ) |> 
       add_row(summary = as.character(models[[i]]$y.n)) |> 
       add_row(summary = models[[i]]$obsperiod) |> 
-      cbind(dimension = c("alpha", "beta", "lambda", "Number of Obs.", "Obs. Period")) |> 
+      cbind(dimension = c("$e^2_{t-1}$", "$\\sigma^2_{t-1}$", "$\\tilde{s}_{b,t-1}$", "Number of Obs.", "Obs. Period")) |> 
       select(dimension, summary)
     
     if (ncol(output) == 0) {
@@ -292,7 +330,16 @@ create_table_har <- function(models) {
     
   }
   
-  names(output)[names(output) == "dimension"] <- ""
+  output <- output |> 
+    mutate(
+      variable = if_else(variable == "beta0", "$\\alpha_b$", variable),
+      variable = if_else(variable == "beta1", "$\\sigma^2_{b,t-2:t}$", variable),
+      variable = if_else(variable == "beta2", "$\\sigma^2_{b,t-6:t}$", variable),
+      variable = if_else(variable == "beta3", "$\\sigma^2_{b,t-21:t}$", variable),
+      variable = if_else(variable == "beta4", "$\\tilde{s}_{b,t-1}$", variable)
+    )
+  
+  names(output)[names(output) == "variable"] <- ""
   
   return(output)
   
@@ -318,13 +365,19 @@ create_table_granger <- function(dataframe, caption, label) {
   content <- dataframe |> 
     mutate(across(-lags, ~ sapply(.x, format_pval)))
   
-  names(content) <- gsub("_", " ", names(content))
+  stopifnot(identical(names(content), c("lags", "cds_on_senti_cs", "senti_on_cds_cs", "cds_on_senti_ubs", "senti_on_cds_ubs")))
   
+  content <- cbind(content[, 1:3], `_` = "", content[, 4:5])
+  
+  names(content) <- gsub("_", " ", names(content))
+
   textable <- c(
     "\\begin{table}[h!]",
     "\\centering",
-    "\\begin{tabular}{lll|ll}",
-    paste(paste(names(content), collapse = "&"), "\\\\ \\hline"),
+    "\\begin{tabular}{cccccc}",
+    "\\hline",
+    "& \\multicolumn{2}{c}{Credit Suisse} &  & \\multicolumn{2}{c}{UBS} \\\\ \\cline{2-3} \\cline{5-6}",
+    "& $s$ causes $cdsspread$ & $cdsspread$ causes $s$ &  & $s$ causes $cdsspread$ & $cdsspread$ causes $s$ \\\\ \\hline",
     paste(apply(content, 1, paste, collapse = "&"), "\\\\"),
     "\\hline",
     paste0("\\multicolumn{", ncol(content), "}{l}{", footnote, "}"),
@@ -341,4 +394,13 @@ create_table_granger <- function(dataframe, caption, label) {
   
 }
 
-
+create_timestamp <- function(dataframe) {
+  
+  timestamp <- paste0(
+    format(min(as.Date(dataframe$date)), "%b %Y"),
+    "-",
+    format(max(as.Date(dataframe$date)), "%b %Y")
+  )
+  
+  return(timestamp)
+}
