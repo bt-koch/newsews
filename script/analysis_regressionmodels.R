@@ -531,7 +531,7 @@ models[["annaert_euro"]] <- summary(result_annaert_euro)
 models[["annaert_euro"]]["sample"] <- "European Banks"
 models[["annaert_euro"]]["groups"] <- dataset_annaert_euro$bank |> unique() |> length()
 models[["annaert_euro"]]["nobs"] <- nrow(dataset_annaert_euro)
-models[["annaert_euro"]]["obsperiod"] <- paste(min(dataset_annaert_euro$date), "to", max(dataset_annaert_euro$date))
+models[["annaert_euro"]]["obsperiod"] <- create_timestamp(dataset_annaert_euro)
 
 dataset_annaert_swiss <- sentiment_swiss_w |> 
   left_join(y = meta_ric, by = c("bank" = "query_bank")) |> 
@@ -558,7 +558,7 @@ models[["annaert_swiss"]] <- summary(result_annaert_swiss)
 models[["annaert_swiss"]]["sample"] <- "Swiss Banks"
 models[["annaert_swiss"]]["groups"] <- dataset_annaert_swiss$bank |> unique() |> length()
 models[["annaert_swiss"]]["nobs"] <- nrow(dataset_annaert_swiss)
-models[["annaert_swiss"]]["obsperiod"] <- paste(min(dataset_annaert_swiss$date), "to", max(dataset_annaert_swiss$date))
+models[["annaert_swiss"]]["obsperiod"] <- create_timestamp(dataset_annaert_swiss)
 
 create_table(models[grep("annaert_*", names(models))], "Determinant of CDS spread", "cdsdet")
 
@@ -609,7 +609,7 @@ results_cathart_euro <- panelvar::pvarfeols(
 
 models[["cathart_euro"]] <- summary(results_cathart_euro)
 models[["cathart_euro"]]["sample"] <- "European Banks"
-models[["cathart_euro"]]["obsperiod"] <- paste(min(as.Date(dataset_cathart_euro$date)), "to", max(as.Date(dataset_cathart_euro$date)))
+models[["cathart_euro"]]["obsperiod"] <- create_timestamp(dataset_cathart_euro)
 
 
 dataset_cathart_swiss <- sentiment_swiss_w |> 
@@ -657,7 +657,7 @@ results_cathart_swiss <- panelvar::pvarfeols(
 
 models[["cathart_swiss"]] <- summary(results_cathart_swiss)
 models[["cathart_swiss"]]["sample"] <- "Swiss Banks"
-models[["cathart_swiss"]]["obsperiod"] <- paste(min(as.Date(dataset_cathart_swiss$date)), "to", max(as.Date(dataset_cathart_swiss$date)))
+models[["cathart_swiss"]]["obsperiod"] <- create_timestamp(dataset_cathart_swiss)
 
 create_table(models[grep("cathart_*", names(models))], "Panel VAR sentiment", "cdspvar")
 
@@ -810,7 +810,7 @@ attr(result_mdd_euro$OLS$coef, "dimnames")[[1]] <- "demeaned_mdd"
 
 models[["mdd_euro"]] <- summary(result_mdd_euro)
 models[["mdd_euro"]]["sample"] <- "European Banks"
-models[["mdd_euro"]]["obsperiod"] <- paste(min(as.Date(dataset_mdd_euro$date)), "to", max(as.Date(dataset_mdd_euro$date)))
+models[["mdd_euro"]]["obsperiod"] <- create_timestamp(dataset_mdd_euro)
 
 result_mdd_euro_adj <- panelvar::pvarfeols(
   dependent_vars = c("mdd"),
@@ -824,7 +824,7 @@ attr(result_mdd_euro_adj$OLS$coef, "dimnames")[[1]] <- "demeaned_mdd"
 
 models[["mdd_euro_adj"]] <- summary(result_mdd_euro_adj)
 models[["mdd_euro_adj"]]["sample"] <- "European Banks"
-models[["mdd_euro_adj"]]["obsperiod"] <- paste(min(as.Date(dataset_mdd_euro$date)), "to", max(as.Date(dataset_mdd_euro$date)))
+models[["mdd_euro_adj"]]["obsperiod"] <- create_timestamp(dataset_mdd_euro)
 
 
 
@@ -856,7 +856,7 @@ attr(result_mdd_swiss$OLS$coef, "dimnames")[[1]] <- "demeaned_mdd"
 
 models[["mdd_swiss"]] <- summary(result_mdd_swiss)
 models[["mdd_swiss"]]["sample"] <- "Swiss Banks"
-models[["mdd_swiss"]]["obsperiod"] <- paste(min(as.Date(dataset_mdd_swiss$date)), "to", max(as.Date(dataset_mdd_swiss$date)))
+models[["mdd_swiss"]]["obsperiod"] <- create_timestamp(dataset_mdd_swiss)
 
 result_mdd_swiss_adj <- panelvar::pvarfeols(
   dependent_vars = c("mdd"),
@@ -870,7 +870,7 @@ attr(result_mdd_swiss_adj$OLS$coef, "dimnames")[[1]] <- "demeaned_mdd"
 
 models[["mdd_swiss_adj"]] <- summary(result_mdd_swiss_adj)
 models[["mdd_swiss_adj"]]["sample"] <- "Swiss Banks"
-models[["mdd_swiss_adj"]]["obsperiod"] <- paste(min(as.Date(dataset_mdd_swiss$date)), "to", max(as.Date(dataset_mdd_swiss$date)))
+models[["mdd_swiss_adj"]]["obsperiod"] <- create_timestamp(dataset_mdd_swiss)
 
 
 create_table(models[grep("mdd_euro_*", names(models))], "Panel VAR MDD", "mddpvar_euro")
@@ -906,12 +906,12 @@ sentiment_ubs <- dataset_vola_swiss_ubs |>
 result_garchx_cs <- garchx::garchx(stockreturn_cs, xreg = sentiment_cs)
 models[["garchx_cs"]] <- result_garchx_cs
 models[["garchx_cs"]]["sample"] <- "Credit Suisse"
-models[["garchx_cs"]]["obsperiod"] <- paste(min(as.Date(dataset_vola_swiss_cs$date)), "to", max(as.Date(dataset_vola_swiss_cs$date)))
+models[["garchx_cs"]]["obsperiod"] <- create_timestamp(dataset_vola_swiss_cs)
 
 result_garchx_ubs <- garchx::garchx(stockreturn_ubs, xreg = sentiment_ubs)
 models[["garchx_ubs"]] <- result_garchx_ubs
 models[["garchx_ubs"]]["sample"] <- "UBS" 
-models[["garchx_ubs"]]["obsperiod"] <- paste(min(as.Date(dataset_vola_swiss_ubs$date)), "to", max(as.Date(dataset_vola_swiss_ubs$date)))
+models[["garchx_ubs"]]["obsperiod"] <- create_timestamp(dataset_vola_swiss_ubs)
 
 create_table(models[grep("garchx_*", names(models))], "GARCH-X", "garchx")
 
@@ -932,7 +932,7 @@ results_har_cs <- highfrequency::HARmodel(
 models[["har_cs"]] <- results_har_cs
 models[["har_cs"]]["sample"] <- "Credit Suisse"
 models[["har_cs"]]["nobs"] <- length(stockreturn_cs)
-models[["har_cs"]]["obsperiod"] <- paste(min(as.Date(dataset_vola_swiss_cs$date)), "to", max(as.Date(dataset_vola_swiss_cs$date)))
+models[["har_cs"]]["obsperiod"] <- create_timestamp(dataset_vola_swiss_cs)
 
 
 results_har_ubs <- highfrequency::HARmodel(
@@ -943,7 +943,7 @@ results_har_ubs <- highfrequency::HARmodel(
 models[["har_ubs"]] <- results_har_ubs
 models[["har_ubs"]]["sample"] <- "UBS"
 models[["har_ubs"]]["nobs"] <- length(stockreturn_ubs)
-models[["har_ubs"]]["obsperiod"] <- paste(min(as.Date(dataset_vola_swiss_ubs$date)), "to", max(as.Date(dataset_vola_swiss_ubs$date)))
+models[["har_ubs"]]["obsperiod"] <- create_timestamp(dataset_vola_swiss_ubs)
 
 create_table(models[grep("^har_*", names(models))], "HAR", "har")
 
@@ -1032,8 +1032,7 @@ result_topic_legal <- panelvar::pvarfeols(
 
 models[["topic_legal"]] <- summary(result_topic_legal)
 models[["topic_legal"]]["sample"] <- "Swiss Banks"
-models[["topic_legal"]]["obsperiod"] <- paste(min(as.Date(dataset_cathart_swiss_topic$date)), "to", max(as.Date(dataset_cathart_swiss_topic$date)))
-
+models[["topic_legal"]]["obsperiod"] <- create_timestamp(dataset_cathart_swiss_topic)
 
 result_topic_product <- panelvar::pvarfeols(
   dependent_vars = c("cds", "sentiment_product_news"),
@@ -1048,7 +1047,7 @@ result_topic_product <- panelvar::pvarfeols(
 
 models[["topic_product"]] <- summary(result_topic_product)
 models[["topic_product"]]["sample"] <- "Swiss Banks"
-models[["topic_product"]]["obsperiod"] <- paste(min(as.Date(dataset_cathart_swiss_topic$date)), "to", max(as.Date(dataset_cathart_swiss_topic$date)))
+models[["topic_product"]]["obsperiod"] <- create_timestamp(dataset_cathart_swiss_topic)
 
 result_topic_personnel_change <- panelvar::pvarfeols(
   dependent_vars = c("cds", "sentiment_personnel_change"),
@@ -1063,7 +1062,7 @@ result_topic_personnel_change <- panelvar::pvarfeols(
 
 models[["topic_personnel"]] <- summary(result_topic_personnel_change)
 models[["topic_personnel"]]["sample"] <- "Swiss Banks"
-models[["topic_personnel"]]["obsperiod"] <- paste(min(as.Date(dataset_cathart_swiss_topic$date)), "to", max(as.Date(dataset_cathart_swiss_topic$date)))
+models[["topic_personnel"]]["obsperiod"] <- create_timestamp(dataset_cathart_swiss_topic)
 
 create_table(models[grep("^topic_*", names(models))], "TOPIC", "topic")
 
