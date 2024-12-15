@@ -2,6 +2,7 @@ rm(list=ls()); gc()
 library(dplyr)
 
 source("visualise/create_table.R")
+source("visualise/plot.R")
 source("config/environvars.R")
 
 models <- list()
@@ -672,9 +673,11 @@ oirfs <- panelvar::oirf(results_cathart_swiss, 8)
 # plot(oirfs$sentiment[,1], type = "l", ylim = c(ymin, ymax), xlab = "", ylab = "")
 # plot(oirfs$sentiment[,2], type = "l", ylim = c(ymin, ymax), xlab = "", ylab = "")
 
-png(filename="tex/images/oirfs.png")
-plot(oirfs)
-dev.off()
+# png(filename="tex/images/oirfs.png")
+# plot(oirfs)
+# dev.off()
+
+create_plot_irfs(oirfs)
 
 
 # to do: schauen ob diese analyse getrieben durch einzelne gruppe?
