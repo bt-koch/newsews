@@ -421,20 +421,20 @@ marketvola <- indices |>
 # 1.3 prepare daily data ----
 
 # independent variables
-mdd_window <- 14
+md_window <- 14
 
-calc_mdd <- function(close_price, date, w) {
+calc_md <- function(close_price, date, w) {
   sapply(seq_along(date), function(x) {
     min_window <- min(close_price[date >= date[x] & date <= date[x] + w])
     (min_window - close_price[x]) / close_price[x]
   })
 }
 
-mdd <- stocks |> 
+md <- stocks |> 
   group_by(Instrument) |> 
   mutate(
     date = as.Date(Date),
-    mdd = calc_mdd(Close.Price, date, mdd_window)
+    md = calc_md(Close.Price, date, md_window)
   ) |> 
   ungroup() |> 
   merge(y = meta_ric, by.x = "Instrument", by.y = "ric")
@@ -560,7 +560,7 @@ models[["annaert_swiss"]]["groups"] <- dataset_annaert_swiss$bank |> unique() |>
 models[["annaert_swiss"]]["nobs"] <- nrow(dataset_annaert_swiss)
 models[["annaert_swiss"]]["obsperiod"] <- create_timestamp(dataset_annaert_swiss)
 
-create_table(models[grep("annaert_*", names(models))], "Determinant of CDS spread", "cdsdet")
+create_table(models[grep("annaert_*", names(models))], "Determinants of CDS spread", "cdsdet")
 
 
 # =============================================================================.
@@ -659,7 +659,7 @@ models[["cathart_swiss"]] <- summary(results_cathart_swiss)
 models[["cathart_swiss"]]["sample"] <- "Swiss Banks"
 models[["cathart_swiss"]]["obsperiod"] <- create_timestamp(dataset_cathart_swiss)
 
-create_table(models[grep("cathart_*", names(models))], "Panel VAR sentiment", "cdspvar")
+create_table(models[grep("cathart_*", names(models))], "Panel VAR of CDS on Sentiment", "cdspvar")
 
 oirfs <- panelvar::oirf(results_cathart_swiss, 8)
 
@@ -783,9 +783,9 @@ create_table_granger(results_granger_w, "Granger Causality Test", "granger_weekl
 # 4. Is sentiment predictor of maximum drawdown? ----
 # =============================================================================.
 
-dataset_mdd_euro <- sentiment_euro_d |>
-  left_join(y = mdd, by = c("bank" = "query_bank", "date")) |>
-  select(bank, date, sentiment_wma, mdd) |>
+dataset_md_euro <- sentiment_euro_d |>
+  left_join(y = md, by = c("bank" = "query_bank", "date")) |>
+  select(bank, date, sentiment_wma, md) |>
   group_by(bank) |>
   arrange(bank, date) |>
   ungroup() |>
@@ -798,40 +798,40 @@ dataset_mdd_euro <- sentiment_euro_d |>
   na.omit() |> 
   as.data.frame()
 
-result_mdd_euro <- panelvar::pvarfeols(
-  dependent_vars = c("mdd"),
+result_md_euro <- panelvar::pvarfeols(
+  dependent_vars = c("md"),
   exog_vars = "sentiment_wma",
   lags = 5,
-  data = dataset_mdd_euro,
+  data = dataset_md_euro,
   panel_identifier = c("bank", "date")
 )
 
-attr(result_mdd_euro$OLS$coef, "dimnames")[[1]] <- "demeaned_mdd"
+attr(result_md_euro$OLS$coef, "dimnames")[[1]] <- "demeaned_md"
 
-models[["mdd_euro"]] <- summary(result_mdd_euro)
-models[["mdd_euro"]]["sample"] <- "European Banks"
-models[["mdd_euro"]]["obsperiod"] <- create_timestamp(dataset_mdd_euro)
+models[["md_euro"]] <- summary(result_md_euro)
+models[["md_euro"]]["sample"] <- "European Banks"
+models[["md_euro"]]["obsperiod"] <- create_timestamp(dataset_md_euro)
 
-result_mdd_euro_adj <- panelvar::pvarfeols(
-  dependent_vars = c("mdd"),
+result_md_euro_adj <- panelvar::pvarfeols(
+  dependent_vars = c("md"),
   exog_vars = "sentiment_wma_adj",
   lags = 5,
-  data = dataset_mdd_euro,
+  data = dataset_md_euro,
   panel_identifier = c("bank", "date")
 )
 
-attr(result_mdd_euro_adj$OLS$coef, "dimnames")[[1]] <- "demeaned_mdd"
+attr(result_md_euro_adj$OLS$coef, "dimnames")[[1]] <- "demeaned_md"
 
-models[["mdd_euro_adj"]] <- summary(result_mdd_euro_adj)
-models[["mdd_euro_adj"]]["sample"] <- "European Banks"
-models[["mdd_euro_adj"]]["obsperiod"] <- create_timestamp(dataset_mdd_euro)
-
-
+models[["md_euro_adj"]] <- summary(result_md_euro_adj)
+models[["md_euro_adj"]]["sample"] <- "European Banks"
+models[["md_euro_adj"]]["obsperiod"] <- create_timestamp(dataset_md_euro)
 
 
-dataset_mdd_swiss <- sentiment_swiss_d |>
-  left_join(y = mdd, by = c("bank" = "query_bank", "date")) |>
-  select(bank, date, sentiment_wma, mdd) |>
+
+
+dataset_md_swiss <- sentiment_swiss_d |>
+  left_join(y = md, by = c("bank" = "query_bank", "date")) |>
+  select(bank, date, sentiment_wma, md) |>
   group_by(bank) |>
   arrange(bank, date) |>
   ungroup() |>
@@ -844,37 +844,37 @@ dataset_mdd_swiss <- sentiment_swiss_d |>
   na.omit() |> 
   as.data.frame()
 
-result_mdd_swiss <- panelvar::pvarfeols(
-  dependent_vars = c("mdd"),
+result_md_swiss <- panelvar::pvarfeols(
+  dependent_vars = c("md"),
   exog_vars = c("sentiment_wma"),
   lags = 5,
-  data = dataset_mdd_swiss,
+  data = dataset_md_swiss,
   panel_identifier = c("bank", "date")
 )
 
-attr(result_mdd_swiss$OLS$coef, "dimnames")[[1]] <- "demeaned_mdd"
+attr(result_md_swiss$OLS$coef, "dimnames")[[1]] <- "demeaned_md"
 
-models[["mdd_swiss"]] <- summary(result_mdd_swiss)
-models[["mdd_swiss"]]["sample"] <- "Swiss Banks"
-models[["mdd_swiss"]]["obsperiod"] <- create_timestamp(dataset_mdd_swiss)
+models[["md_swiss"]] <- summary(result_md_swiss)
+models[["md_swiss"]]["sample"] <- "Swiss Banks"
+models[["md_swiss"]]["obsperiod"] <- create_timestamp(dataset_md_swiss)
 
-result_mdd_swiss_adj <- panelvar::pvarfeols(
-  dependent_vars = c("mdd"),
+result_md_swiss_adj <- panelvar::pvarfeols(
+  dependent_vars = c("md"),
   exog_vars = c("sentiment_wma_adj"),
   lags = 5,
-  data = dataset_mdd_swiss,
+  data = dataset_md_swiss,
   panel_identifier = c("bank", "date")
 )
 
-attr(result_mdd_swiss_adj$OLS$coef, "dimnames")[[1]] <- "demeaned_mdd"
+attr(result_md_swiss_adj$OLS$coef, "dimnames")[[1]] <- "demeaned_md"
 
-models[["mdd_swiss_adj"]] <- summary(result_mdd_swiss_adj)
-models[["mdd_swiss_adj"]]["sample"] <- "Swiss Banks"
-models[["mdd_swiss_adj"]]["obsperiod"] <- create_timestamp(dataset_mdd_swiss)
+models[["md_swiss_adj"]] <- summary(result_md_swiss_adj)
+models[["md_swiss_adj"]]["sample"] <- "Swiss Banks"
+models[["md_swiss_adj"]]["obsperiod"] <- create_timestamp(dataset_md_swiss)
 
 
-create_table(models[grep("mdd_euro_*", names(models))], "Panel VAR MDD", "mddpvar_euro")
-create_table(models[grep("mdd_swiss_*", names(models))], "Panel VAR MDD", "mddpvar_swiss")
+create_table(models[grep("md_euro_*", names(models))], "Panel VAR of MD on Sentiment", "mdpvar_euro")
+create_table(models[grep("md_swiss_*", names(models))], "Panel VAR of MD on Sentiment", "mdpvar_swiss")
 
 # =============================================================================.
 # 5. Is sentiment predictor of volatility? ----
@@ -913,7 +913,7 @@ models[["garchx_ubs"]] <- result_garchx_ubs
 models[["garchx_ubs"]]["sample"] <- "UBS" 
 models[["garchx_ubs"]]["obsperiod"] <- create_timestamp(dataset_vola_swiss_ubs)
 
-create_table(models[grep("garchx_*", names(models))], "GARCH-X", "garchx")
+create_table(models[grep("garchx_*", names(models))], "GARCH-X using Sentiment", "garchx")
 
 # heterogeneous autoregressive model
 
@@ -945,7 +945,7 @@ models[["har_ubs"]]["sample"] <- "UBS"
 models[["har_ubs"]]["nobs"] <- length(stockreturn_ubs)
 models[["har_ubs"]]["obsperiod"] <- create_timestamp(dataset_vola_swiss_ubs)
 
-create_table(models[grep("^har_*", names(models))], "HAR", "har")
+create_table(models[grep("^har_*", names(models))], "HAR using Sentiment", "har")
 
 
 # =============================================================================.
@@ -1064,5 +1064,5 @@ models[["topic_personnel"]] <- summary(result_topic_personnel_change)
 models[["topic_personnel"]]["sample"] <- "Swiss Banks"
 models[["topic_personnel"]]["obsperiod"] <- create_timestamp(dataset_cathart_swiss_topic)
 
-create_table(models[grep("^topic_*", names(models))], "TOPIC", "topic")
+create_table(models[grep("^topic_*", names(models))], "Panel VAR of CDS on Topic Sentiment", "topic")
 
