@@ -17,7 +17,7 @@ create_table <- function(models, caption, label, autoscale = T) {
   footnote <- "Notes: *** p\\textless{}0.01, ** p\\textless{}0.05, * p\\textless{}0.1. Standard errors reported in parantheses."
   
   textable <- c(
-    "\\begin{table}[h!]",
+    "\\begin{table}[H]",
     "\\centering",
     if (autoscale) "\\resizebox{\\textwidth}{!}{",
     paste0("\\begin{tabular}{l", strrep("r", ncol(content)-1), "}"),
@@ -345,7 +345,7 @@ create_table_har <- function(models) {
   
 }
 
-create_table_granger <- function(dataframe, caption, label) {
+create_table_granger <- function(dataframe, caption, label, autoscale = TRUE) {
   
   footnote <- "Notes: *** p\\textless{}0.01, ** p\\textless{}0.05, * p\\textless{}0.1."
   
@@ -372,16 +372,17 @@ create_table_granger <- function(dataframe, caption, label) {
   names(content) <- gsub("_", " ", names(content))
 
   textable <- c(
-    "\\begin{table}[h!]",
+    "\\begin{table}[H]",
     "\\centering",
+    if (autoscale) "\\resizebox{\\textwidth}{!}{",
     "\\begin{tabular}{cccccc}",
-    "\\hline",
     "& \\multicolumn{2}{c}{Credit Suisse} &  & \\multicolumn{2}{c}{UBS} \\\\ \\cline{2-3} \\cline{5-6}",
     "& $s$ causes $cdsspread$ & $cdsspread$ causes $s$ &  & $s$ causes $cdsspread$ & $cdsspread$ causes $s$ \\\\ \\hline",
     paste(apply(content, 1, paste, collapse = "&"), "\\\\"),
     "\\hline",
     paste0("\\multicolumn{", ncol(content), "}{l}{", footnote, "}"),
     "\\end{tabular}",
+    if (autoscale) "}",
     "",
     paste0("\\caption{", caption, "}"),
     paste0("\\label{tab:", label, "}"),
