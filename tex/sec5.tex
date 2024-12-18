@@ -72,11 +72,11 @@ First, we assume that the sentiment of the news media is reflected in the stock 
  This model is implemented in daily frequency. Hence the weighted moving average of the news sentiment as described in equation \ref{eq:sentind_wma} is used. Additionally, since $md$ is a measure for falling stock prices only, we also fit the regression model with the adjusted news sentiment indicator as defined in equation \ref{eq_sentind_wma_adj}. We therefore fit following panel autoregressive models:
 
 \begin{equation} \label{eq:mdd}
-	md_{b,t} = \alpha_b + \sum_{\tau=1}^5\delta_\tau md_{b,t-\tau} + \theta \tilde{s}_{b,t-1} + e_{b,t}
+	md_{b,t} = \alpha_b + \sum_{\tau=1}^5\delta_\tau md_{b,t-\tau} + \sum_{\tau=1}^5 \theta \tilde{s}_{b,t-\tau} + e_{b,t}
 \end{equation}
 
 \begin{equation} \label{eq:mdd}
-	md_{b,t} = \alpha_b + \sum_{\tau=1}^5\delta_\tau md_{b,t-\tau} + \theta \tilde{s}_{adj,b,t-1} + e_{b,t}
+	md_{b,t} = \alpha_b + \sum_{\tau=1}^5\delta_\tau md_{b,t-\tau} + \sum_{\tau=1}^5 \theta \tilde{s}_{adj,b,t-\tau} + e_{b,t}
 \end{equation}
 
 whereby $md_{b,t}$ is the $t+14$ maximum stock price decrease of the stock price of bank $b$ at time $t$. Again, as in the model as described in equation \ref{eq:panelvar-cds-exogsenti}, $md$ as the independent variable is included as lagged control variables for up to five lags in the model. To keep the model relatively simple and due to the high frequency, we do not include further controls. However, again fixed effects control for time invariant bank specific characteristics. Using this model, we check following hypothesis:
