@@ -1,6 +1,6 @@
 # newsews
 
-Implementation of an Early Warnings System based on News sentiment
+Implementation of an Early Warning Indicator based on News sentiment
 
 
 
@@ -60,3 +60,7 @@ paths <- list(
 
 rm(path_data, path_repo)
 ```
+
+## Instructions for Replication
+
+Please see `script/README.md` for the steps necessary to replicate this study.
