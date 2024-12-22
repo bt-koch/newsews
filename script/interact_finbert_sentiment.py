@@ -85,6 +85,19 @@ models.llm.finbert_german_sentiment.finbert_german_sentiment(
         )
 
 
+input="""
+Also dass die Credit Suisse haufenweise Kunden verliert und ein Kaugummi bald mehr
+Wert hat als eine CS-Aktie zeigt doch wie super gut unsere Lieblingsbank ist und
+dass sie überhaupt nicht in eine finanzielle Schieflage geraten ist.
+"""
+models.llm.finbert_german_sentiment.finbert_german_sentiment(
+            input,
+            tokenizer=model_initialise[0],
+            model=model_initialise[1],
+            device=device
+        )
+
+
 
 import models.llm
 device = models.llm.select_device()
