@@ -5,6 +5,47 @@
 
 As shown in the literature, the sentiment in news articles can be a leading indicator for movements in financial markets. The goal of this analysis is to construct a sentiment indicator from news media articles using a large language model (LLM) to classify the sentiment from a given text. For this analysis, a Bidirectional Encoder Representations from Transformers (BERT) model which was fine-tuned on financial text is used for sentiment classification. Due to its ability to understand the context of words within the rest of the text provided, it is expected that a BERT model performs better in correctly classifying the sentiment of text compared to traditional methods such as bag-of-word algorithms. Using news articles from different sources, a sentiment indicator in daily and weekly frequency is constructed. The goal of this indicator will be to deliver early warning for increased risk of a specific bank. This chapter is structured as follows. First, the preprocessing of news articles and the classification system is described. Then, the method to construct an indicator from the classified sentiment of the news articles is shown. Additionally, the possibility to further classify the articles by topic is presented. The chapter concludes by discussing the benefits and limitations of the constructed indicators.
 
+\begin{figure}[H]
+\resizebox{\textwidth}{!}{%
+\begin{tikzpicture}[node distance=2cm]
+	
+    % nodes
+    \node (article) [block, align=left] {paragraph 1\\paragraph 2\\paragraph 3\\paragraph 4\\paragraph 5};
+    \node (preproc1) [block, right=2cm of article, yshift=2.175cm, align=left] {paragraph 1};
+    \node (preproc2) [block, below=0.25cm of preproc1, align=left] {paragraph 2};
+    \node (preproc3) [block, below=0.25cm of preproc2, align=left] {\sout{paragraph 3}};
+    \node (preproc4) [block, below=0.25cm of preproc3, align=left] {\sout{paragraph 4}};
+    \node (preproc5) [block, below=0.25cm of preproc4, align=left] {paragraph 5};
+    \node (classified1) [block, right=1.5cm of preproc1, yshift=-1.05cm] {\hspace{0.25cm}-1\hspace*{0.25cm}};
+    \node (classified2) [block, below=0.25cm of classified1] {\hspace{0.25cm}-1\hspace*{0.25cm}};
+    \node (classified3) [block, below=0.25cm of classified2] {\hspace{0.25cm}\phantom{-}1\hspace*{0.25cm}};
+    \node (construction) [block, right=1cm of classified1, yshift=-1.1cm] {\(\dfrac{-1-1+1}{3} = -\dfrac{1}{3}\)};
+
+    % labels
+    \node[below=1.55cm of article, align=center] {Article};
+    \node[below=0.25cm of preproc5, align=center] {1) Preprocessing};
+    \node[below=1.375cm of classified3, align=center] {2) Estimation};
+    \node[below=2.3cm of construction, align=center] {3) Construction};
+
+    % arrows
+    \draw [arrow] (article.east) -- (preproc1.west);
+    \draw [arrow] (article.east) -- (preproc2.west);
+    \draw [arrow] (article.east) -- (preproc3.west);
+    \draw [arrow] (article.east) -- (preproc4.west);
+    \draw [arrow] (article.east) -- (preproc5.west);
+    \draw [arrow] (preproc1.east) -- (classified1.west);
+    \draw [arrow] (preproc2.east) -- (classified2.west);
+    \draw [arrow] (preproc5.east) -- (classified3.west);
+    \draw [arrow] (classified1.east) -- (construction.north west);
+    \draw [arrow] (classified2.east) -- (construction.west);
+    \draw [arrow] (classified3.east) -- (construction.south west);
+    
+\end{tikzpicture}
+}
+\caption{Process of Article to Sentiment Score}
+\label{fig:pipeline}
+\end{figure}
+
 
 \section{Step 1: Preprocessing of News Articles} \label{sec:preprocessing}
 
