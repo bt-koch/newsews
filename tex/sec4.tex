@@ -3,28 +3,35 @@
 
 \section{Overview}
 
-As shown in the literature, the sentiment in news articles can be a leading indicator for movements in financial markets. The goal of this analysis is to construct a sentiment indicator from news media articles using a large language model (LLM) to classify the sentiment from a given text. For this analysis, a Bidirectional Encoder Representations from Transformers (BERT) model which was fine-tuned on financial text is used for sentiment classification. Due to its ability to understand the context of words within the rest of the text provided, it is expected that a BERT model performs better in correctly classifying the sentiment of text compared to traditional methods such as bag-of-word algorithms. Using news articles from different sources, a sentiment indicator in daily and weekly frequency is constructed. The goal of this indicator will be to deliver early warning for increased risk of a specific bank. This chapter is structured as follows. First, the preprocessing of news articles and the classification system is described. Then, the method to construct an indicator from the classified sentiment of the news articles is shown. Additionally, the possibility to further classify the articles by topic is presented. The chapter concludes by discussing the benefits and limitations of the constructed indicators.
+As shown in the literature, the sentiment in news articles can be a leading indicator for movements in financial markets. The goal of this analysis is to construct a sentiment indicator from news media articles using a large language model (LLM) to classify the sentiment from a given text. For this analysis, a Bidirectional Encoder Representations from Transformers (BERT) model which was fine-tuned on financial text is used for sentiment classification. Due to its ability to understand the context of words within the rest of the text provided, it is expected that a BERT model performs better in correctly classifying the sentiment of text compared to traditional methods such as bag-of-word algorithms. Using news articles from different sources, a sentiment indicator in daily and weekly frequency is constructed. \textcolor{blue}{This indicator should be used as a leading indicator for several risk proxies of a corresponding bank and hence deliver early warning signals for financial distressed banks. In this Chapter, we present the process of estimating the sentiment score of a bank for a given time period. In the first step, which we describe in \mbox{Section~\ref{sec:preprocessing}}, we prepare the news article to be further processed. In \mbox{Section~\ref{sec:sentim-classification}}, we introduce the method of classifying the sentiment. Using this classification, we construct a single sentiment score as described in \mbox{Section~\ref{sec:construction}}. The process starting from the news article to the corresponding sentiment score is visualised in \mbox{Figure~\ref{fig:pipeline}}. Additionally, in \mbox{Section~\ref{sec:topicmodelling}} we present the possibility to further classify the articles by topic. The Chapter concludes with \mbox{Section~\ref{sec:discussion-sec4}}, where we discuss the benefits and limitations of the constructed indicators.}
 
 \begin{figure}[H]
-\resizebox{\textwidth}{!}{%
+\center
+%\resizebox{0.75\textwidth}{!}{%
 \begin{tikzpicture}[node distance=2cm]
 	
     % nodes
     \node (article) [block, align=left] {paragraph 1\\paragraph 2\\paragraph 3\\paragraph 4\\paragraph 5};
     \node (preproc1) [block, right=2cm of article, yshift=2.175cm, align=left] {paragraph 1};
     \node (preproc2) [block, below=0.25cm of preproc1, align=left] {paragraph 2};
-    \node (preproc3) [block, below=0.25cm of preproc2, align=left] {\sout{paragraph 3}};
-    \node (preproc4) [block, below=0.25cm of preproc3, align=left] {\sout{paragraph 4}};
+    \node (preproc3) [block, below=0.25cm of preproc2, align=left] {paragraph 3};
+    \node (preproc4) [block, below=0.25cm of preproc3, align=left] {paragraph 4};
     \node (preproc5) [block, below=0.25cm of preproc4, align=left] {paragraph 5};
     \node (classified1) [block, right=1.5cm of preproc1, yshift=-1.05cm] {\hspace{0.25cm}-1\hspace*{0.25cm}};
     \node (classified2) [block, below=0.25cm of classified1] {\hspace{0.25cm}-1\hspace*{0.25cm}};
     \node (classified3) [block, below=0.25cm of classified2] {\hspace{0.25cm}\phantom{-}1\hspace*{0.25cm}};
     \node (construction) [block, right=1cm of classified1, yshift=-1.1cm] {\(\dfrac{-1-1+1}{3} = -\dfrac{1}{3}\)};
 
+	% crosses
+	\draw [thick] (preproc3.north west) -- (preproc3.south east);
+	\draw [thick] (preproc3.south west) -- (preproc3.north east);
+	\draw [thick] (preproc4.north west) -- (preproc4.south east);
+	\draw [thick] (preproc4.south west) -- (preproc4.north east);
+
     % labels
     \node[below=1.55cm of article, align=center] {Article};
     \node[below=0.25cm of preproc5, align=center] {1) Preprocessing};
-    \node[below=1.375cm of classified3, align=center] {2) Estimation};
+    \node[below=1.375cm of classified3, align=center] {2) Classification};
     \node[below=2.3cm of construction, align=center] {3) Construction};
 
     % arrows
@@ -41,7 +48,7 @@ As shown in the literature, the sentiment in news articles can be a leading indi
     \draw [arrow] (classified3.east) -- (construction.south west);
     
 \end{tikzpicture}
-}
+%}
 \caption{Process of Article to Sentiment Score}
 \label{fig:pipeline}
 \end{figure}
@@ -53,9 +60,9 @@ Depending on the underlying data source used for this study, it is not guarantee
 
 Hence, to avoid introducing noise through irrelevant content, a preprocessing procedure is applied to identify articles which contain information about the corresponding bank. First, the article is split into its paragraphs. Using pattern matching and predefined identifying patterns for the corresponding bank, we check for each paragraph whether the bank is mentioned in it and remove paragraphs with no occurrence of the banks identifying pattern. Then, again using pattern matching, it is checked whether the content of these paragraphs is relevant from a financial perspective by checking for keywords of a predefined list of economic and financial keywords. We then classify the sentiment as described in Section \ref{sec:sentim-classification} only on these remaining paragraphs from the article.
 
-\section{Step 2: Estimate Sentiment of Text} \label{sec:sentim-classification}
+\section{Step 2: Sentiment Classification of Text} \label{sec:sentim-classification}
 
-Once the preprocessing of the news articles is finished, we have a list of paragraphs extracted from a specific article which we assume contain relevant information about the corresponding bank $b$ at time $t$. Next, for each paragraph, we want to assess whether the sentiment is positive, neutral or negative. For this classification, we use a Bidirectional Encoder Representation from Transaction (BERT) models based on \cite{devlin2019}. \cite{devlin2019} use a masked language model (MLM) and next sentence prediction (NSP) as two unsupervised tasks to train the BERT model. The MLM randomly masks 15\% of tokens in a sentence and predicts the  masked tokens using the remaining tokens in the sentence to obtain a bidirectional pre-trained model, and hence gains the ability to understand the relationship between words in a sentence. To further understand sentence relationships, \cite{devlin2019} pre-train the BERT model with a next sentence prediction task. Hence, the main advantage of using a BERT model in this analysis compared to traditional methods such as lexicon-based models is the ability of the BERT model to understand context. Additionally, fine-tuning a pre-trained BERT model to perform a specific task does not require substantial task-specific modifications of the architecture and is hence relatively easy \citep{devlin2019}. To classify both German and English text, this analysis utilises a BERT model which was fine-tuned for financial sentiment classification on the corresponding language. Both models are available on \url{https://huggingface.co}. The English model is described in \cite{araci2019} and available on \url{https://huggingface.co/ProsusAI/finbert}. The German model is described in \cite{scherrmann2023} and available on \url{https://huggingface.co/scherrmann/GermanFinBert_SC_Sentiment}. Table \ref{tab:bert-examples} demonstrates the ability of the German BERT model to correctly classify the sentiment of the text given the context.
+Once the preprocessing of the news articles is finished, we have a list of paragraphs extracted from a specific article which we assume contain relevant information about the corresponding bank $b$ at time $t$. Next, for each paragraph, we want to assess whether the sentiment is positive, neutral or negative. For this classification, we use a Bidirectional Encoder Representation from Transaction (BERT) models based on \cite{devlin2019}. \cite{devlin2019} use a masked language model (MLM) and next sentence prediction (NSP) as two unsupervised tasks to train the BERT model. The MLM randomly masks 15\% of tokens in a sentence and predicts the  masked tokens using the remaining tokens in the sentence to obtain a bidirectional pre-trained model, and hence gains the ability to understand the relationship between words in a sentence. To further understand sentence relationships, \cite{devlin2019} pre-train the BERT model with a next sentence prediction task. Hence, the main advantage of using a BERT model in this analysis compared to traditional methods such as lexicon-based models is the ability of the BERT model to understand context. Additionally, fine-tuning a pre-trained BERT model to perform a specific task does not require substantial task-specific modifications of the architecture and is hence relatively easy \citep{devlin2019}. To classify both German and English text, this analysis utilises a BERT model which was fine-tuned for financial sentiment classification on the corresponding language. Both models are available on \url{https://huggingface.co}. The English model is described in \cite{araci2019} and available on \url{https://huggingface.co/ProsusAI/finbert}. The German model is described in \cite{scherrmann2023} and available on \url{https://huggingface.co/scherrmann/GermanFinBert_SC_Sentiment}. Both \cite{araci2019} and \cite{scherrmann2023} evaluated the performance of their BERT model using the Financial PhraseBank dataset by \cite{malo2014}. \cite{araci2019} report an accuracy of 0.84 and an F1-score of 0.84 when evaluating their model over the whole dataset and an accuracy of 0.97 and an F1-score of 0.95 when evaluating their model on a subset of the data with 100\% annotator agreement. \cite{scherrmann2023}, which evaluates his model on a machine translated version of the Financial PhraseBank dataset by \cite{malo2014}, reports an accuracy of 0.96 and a macro F1-score of 0.93. Table \ref{tab:bert-examples} demonstrates the ability of the German BERT model to correctly classify the sentiment of the text given the context.
 
 \begin{table}[H]
 \caption{Examples of Sentiment Classification}
@@ -81,9 +88,9 @@ s_{b,t,a,p} = \begin{cases}
 \end{cases}
 \end{equation}
 
-Both the fine-tuned German and English BERT models were executed locally on a standard consumer laptop, enabling secure processing of sensitive data and practical implementation without requiring special hardware. Hence, these methodologies could be applied within a supervisory process without significant investments in IT infrastructure.
+Hence, the sentiment scores of the paragraphs $p$ are discrete with $s_{b,t,a,p} \in \{-1,0,1\}$. Both the fine-tuned German and English BERT models were executed locally on a standard consumer laptop, enabling secure processing of sensitive data and practical implementation without requiring special hardware. Hence, these methodologies could be applied within a supervisory process without significant investments in IT infrastructure.
 
-\section{Step 3: Construction of Sentiment Indicator}
+\section{Step 3: Construction of Sentiment Indicator} \label{sec:construction}
 
 After the sentiment of all paragraphs $P$ in article $a$ about bank $b$ at time $t$ is classified as described in Section \ref{sec:sentim-classification}, the overall sentiment of article $a$ ($s_{b,t,a}$) is calculated as the arithmetic mean of all corresponding paragraphs $p \in P$. To define the overall sentiment towards bank $b$ at time $t$, the sentiment is further aggregated by the arithmetic mean of the sentiment $s_{b,t,a}$ for all articles $a \in A$ about bank $b$ at time $t$:
 
@@ -106,13 +113,13 @@ As a result, we get a weekly and a daily indicator which proxies the sentiment i
 	\end{cases}
 \end{equation}
 
-This indicator $\tilde{s}_{adj,b,t}$ is a signal for negative sentiment of a sufficient degree only. Sentiment scores which are above the threshold of $-0.25$ are hence classified as neutral.
+This indicator $\tilde{s}_{adj,b,t}$ is a signal for negative sentiment of a sufficient degree only. Sentiment scores which are above the threshold of $-0.25$ are hence classified as neutral. When deciding on the threshold in \mbox{Equation~(\ref{eq_sentind_wma_adj})}, we are faced with following trade-off. When setting the too low, we might loose too much information. When setting the threshold not low enough, we might fail to effectively distinguish between marginally negative and significantly negative news.The threshold of -0.25 appears to be a reasonable choice. However, a more sophisticated approach could be considered to refine this threshold further. 
 
 \section{Additional Step: Topic Classification} \label{sec:topicmodelling}
 
 To construct the sentiment indicator, all content which was available after preprocessing as described in Section \ref{sec:preprocessing} was used to construct one single indicator. News sentiment can be further categorised by the topic of the content. The results of \cite{roeder2020} suggest, that news sentiment of different topics have different relations to CDS spreads, whereby negative news topics are associated with significant changes in CDS spreads. They also find that not only financial topics but also non-financial topics such as sanctions and legal issues are associated with CDS spread changes. \\
 
-In this additional step, the articles were classified by topic using another BERT model, which was trained for financial topic classification. Again, this model is publicly available on \url{https://huggingface.co/nickmuchi/finbert-tone-finetuned-finance-topic-classification}. This classifier was trained on a dataset with tweets about financial content which have a topic label from a list of 20 different topics. For this study, we focus on bank specific non-financial topics, since this would be a bigger contribution to measures which already proxy the financial market. We classify the topic of article $a$ as follows:
+In this additional step, the articles were classified by topic using another BERT model, which was trained for financial topic classification. Again, this model is publicly available on \url{https://huggingface.co/nickmuchi/finbert-tone-finetuned-finance-topic-classification}. This classifier was trained on a dataset with tweets about financial content which have a topic label from a list of 20 different topics. The author reports an accuracy of 0.91 and an F1-score of 0.91 on his evaluation set. For this study, we focus on bank specific non-financial topics, since this would be a bigger contribution to measures which already proxy the financial market. We classify the topic of article $a$ as follows:
 
 \begin{equation}
 	\text{topic}_a = \begin{cases}
@@ -152,7 +159,7 @@ This classification was performed once using the title and once using the lead o
 
 
 
-\section{Discussion}
+\section{Discussion} \label{sec:discussion-sec4}
 
 One of the main challenges of constructing a sentiment indicator from unstructured text is to determine whether the content within the text is relevant for the specific task. The simple pattern matching decision rule used in this study as described in \mbox{Section~\ref{sec:preprocessing}} could be further extended to filter out more noise from the indicator. The decision rule as used in this study could be designed more strictly by requiring the surpassing of a predefined quote of matched patterns to total words in the article. However, there is a trade-off between being too strict and filtering too much information or being not strict enough and introducing too much noise in the indicator. Another possibility to reduce the noise in the sentiment are filtering techniques as used in \mbox{Equation~(\ref{eq:sentind_wma})}. There might be other smoothing techniques such as the CUMSUM-filter or the exponential moving average which could perform better in this application. Additionally, the sentiment indicator could also be constructed to consider changes rather than levels in news sentiment by applying crossing moving averages or crossing exponential moving averages. \\
 
