@@ -10,7 +10,7 @@ create_plot_irfs <- function(oirfs) {
   
   xvals <- 0:(length(oirfs$cds[,1])-1)
 
-  par(mfrow = c(2,2), oma = c(2,4,1,1) + 0.1, mar = c(1,0,1,1) + 0.1)
+  par(mfrow = c(2,2), oma = c(4,4,1,4) + 0.1, mar = c(1,0,1,1) + 0.1)
   
   plot(xvals, oirfs$cds[,1], type = "n", xlab = "", ylab = "", xaxt = "n", yaxt = "n",
        ylim = c(ymin, ymax))
@@ -40,7 +40,9 @@ create_plot_irfs <- function(oirfs) {
   plot(xvals, oirfs$sentiment[,2], type = "l", ylim = c(ymin, ymax), xlab = "", ylab = "",
        yaxt = "n", main = "sentiment on sentiment", lwd = lwd)
   
-  
+  mtext("Steps (weeks)", side = 1, outer = TRUE, line = 2)
+  mtext("Change in units (percentage points for CDS)", side = 2, outer = TRUE, line = 2.5)
+  mtext("Change in units (sentiment score)", side = 4, outer = TRUE)
   
   dev.off()
   
