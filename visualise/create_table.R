@@ -67,11 +67,11 @@ create_table_plm <- function(models) {
         sort_index = 3
       ) |> 
       add_row(
-        variable = "sample", summary = models[[i]]$sample,
+        variable = "Sample", summary = models[[i]]$sample,
         sort_index = 4
       ) |> 
       add_row(
-        variable = "groups", summary = models[[i]]$groups |> as.character(),
+        variable = "Groups", summary = models[[i]]$groups |> as.character(),
         sort_index = 5
       ) |> 
       add_row(
@@ -135,11 +135,11 @@ create_table_pvarfeols <- function(models) {
       ) |> 
       select(variable, summary, sort_index) |>
       add_row(
-        variable = "sample", summary = models[[i]]$sample,
+        variable = "Sample", summary = models[[i]]$sample,
         sort_index = 4
       ) |> 
       add_row(
-        variable = "groups", summary = models[[i]]$nof_groups |> as.character(),
+        variable = "Groups", summary = models[[i]]$nof_groups |> as.character(),
         sort_index = 5
       ) |> 
       add_row(
@@ -218,11 +218,11 @@ create_table_pvargmm <- function(models) {
       ) |> 
       select(variable, summary, sort_index) |>
       add_row(
-        variable = "sample", summary = models[[i]]$sample,
+        variable = "Sample", summary = models[[i]]$sample,
         sort_index = 4
       ) |> 
       add_row(
-        variable = "groups", summary = models[[i]]$nof_groups |> as.character(),
+        variable = "Groups", summary = models[[i]]$nof_groups |> as.character(),
         sort_index = 5
       ) |> 
       add_row(
@@ -315,7 +315,7 @@ create_table_har <- function(models) {
       ) |> 
       cbind(variable = rownames(summary$coefficients)) |> 
       select(variable, summary) |> 
-      add_row(variable = "sample", summary = models[[i]]$sample) |> 
+      add_row(variable = "Sample", summary = models[[i]]$sample) |> 
       add_row(variable = "Number of Obs.", summary = models[[i]]$nobs |> as.character()) |> 
       add_row(variable = "Obs. Period", summary = models[[i]]$obsperiod)
     
