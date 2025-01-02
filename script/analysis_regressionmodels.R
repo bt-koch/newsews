@@ -662,22 +662,9 @@ models[["cathart_swiss"]]["obsperiod"] <- create_timestamp(dataset_cathart_swiss
 
 create_table(models[grep("cathart_*", names(models))], "Panel VAR of CDS on Sentiment", "cdspvar")
 
-oirfs <- panelvar::oirf(results_cathart_swiss, 8)
+girfs <- panelvar::girf(results_cathart_swiss, 8, 8)
 
-# ymin <- min(c(oirfs$cds, oirfs$sentiment))
-# ymax <- max(c(oirfs$cds, oirfs$sentiment))
-# 
-# par(mfrow = c(2,2))
-# plot(oirfs$cds[,1], type = "l", ylim = c(ymin, ymax), xlab = "", ylab = "")
-# plot(oirfs$cds[,2], type = "l", ylim = c(ymin, ymax), xlab = "", ylab = "")
-# plot(oirfs$sentiment[,1], type = "l", ylim = c(ymin, ymax), xlab = "", ylab = "")
-# plot(oirfs$sentiment[,2], type = "l", ylim = c(ymin, ymax), xlab = "", ylab = "")
-
-# png(filename="tex/images/oirfs.png")
-# plot(oirfs)
-# dev.off()
-
-create_plot_irfs(oirfs)
+create_plot_irfs(girfs)
 
 
 # to do: schauen ob diese analyse getrieben durch einzelne gruppe?
