@@ -6,6 +6,7 @@ venv_newsews
 test*.py
 literature/*
 tex/*
+!tex/ma_thesis.pdf
 !tex/sec[0-9]*.tex
 config/credentials.py
 config/environvars.py

@@ -1,8 +1,18 @@
 # newsews
 
-Implementation of an Early Warning Indicator based on News sentiment
+The goal of this project is an implementation of an Early Warning Indicator based on News sentiment.
+The sentiment of news articles is classified using a Bidirectional Encoder Representations from Transformers (BERT)
+model and the predictive performance is assessed by evaluating the predictive power of the indicator on common risk
+proxies using datae for Swiss and European banks for 2022 until 2024. The results show, dependent
+on the sample and risk proxy, that the news sentiment indicator has predictive power.
+Some further modifications in the construction of the indicator and in the application for
+forecasting are necessary to implement it in the context of an early warning system.
 
+For futher details, please see the [final report](to do).
 
+## About
+
+This project was created as my Master Thesis.
 
 ## Setup
 
