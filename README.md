@@ -8,11 +8,11 @@ on the sample and risk proxy, that the news sentiment indicator has predictive p
 Some further modifications in the construction of the indicator and in the application for
 forecasting are necessary to implement it in the context of an early warning system.
 
-For futher details, please see the [final report](to do).
+For futher details, please see the [final report](https://github.com/bt-koch/newsews/blob/main/tex/ma_thesis.pdf).
 
 ## About
 
-This project was created as my Master Thesis.
+Created as my Master's thesis project.
 
 ## Setup
 
